@@ -1,0 +1,899 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta
+        name="theme-color"
+        content="#05070d"
+    >
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <title>Bitcoin Investment</title>
+
+
+    <style>
+
+        /* =====================================================
+           GLOBAL
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        html,
+        body {
+
+            width: 100%;
+            height: 100%;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 50% 35%,
+                    #17120a 0%,
+                    #090b11 35%,
+                    #030408 100%
+                );
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+        }
+
+
+        body {
+            position: relative;
+        }
+
+
+        /* =====================================================
+           BACKGROUND
+        ===================================================== */
+
+        .background {
+
+            position: fixed;
+
+            inset: 0;
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+        }
+
+
+        .glow {
+
+            position: absolute;
+
+            width: 320px;
+            height: 320px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(247,147,26,0.22),
+                    rgba(247,147,26,0.05) 45%,
+                    transparent 70%
+                );
+
+            filter: blur(8px);
+
+            animation:
+                glowMove 6s ease-in-out infinite alternate;
+
+        }
+
+
+        .glow.one {
+
+            top: -120px;
+            left: -100px;
+
+        }
+
+
+        .glow.two {
+
+            right: -130px;
+            bottom: -120px;
+
+            animation-delay: 2s;
+
+        }
+
+
+        @keyframes glowMove {
+
+            0% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate3d(35px, 25px, 0) scale(1.18);
+            }
+
+        }
+
+
+        /* =====================================================
+           FLOATING PARTICLES
+        ===================================================== */
+
+        .particle {
+
+            position: absolute;
+
+            width: 4px;
+            height: 4px;
+
+            border-radius: 50%;
+
+            background: #f7931a;
+
+            opacity: 0;
+
+            box-shadow:
+                0 0 10px rgba(247,147,26,0.8);
+
+            animation:
+                particleFloat linear infinite;
+
+        }
+
+
+        .particle:nth-child(1) {
+            left: 12%;
+            bottom: -20px;
+            animation-duration: 7s;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 28%;
+            bottom: -20px;
+            animation-duration: 9s;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(3) {
+            left: 47%;
+            bottom: -20px;
+            animation-duration: 8s;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(4) {
+            left: 67%;
+            bottom: -20px;
+            animation-duration: 10s;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(5) {
+            left: 84%;
+            bottom: -20px;
+            animation-duration: 7.5s;
+            animation-delay: 4s;
+        }
+
+
+        @keyframes particleFloat {
+
+            0% {
+
+                transform:
+                    translateY(0)
+                    scale(0.5);
+
+                opacity: 0;
+
+            }
+
+            15% {
+                opacity: 0.8;
+            }
+
+            80% {
+                opacity: 0.45;
+            }
+
+            100% {
+
+                transform:
+                    translateY(-110vh)
+                    scale(1.2);
+
+                opacity: 0;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SPLASH SCREEN
+        ===================================================== */
+
+        #splash {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 10000;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            flex-direction: column;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #17120a 0%,
+                    #080a10 45%,
+                    #030408 100%
+                );
+
+            transition:
+                opacity 0.8s ease,
+                visibility 0.8s ease;
+
+        }
+
+
+        #splash.hide {
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+        }
+
+
+        /* =====================================================
+           BITCOIN COIN
+        ===================================================== */
+
+        .coin-wrapper {
+
+            position: relative;
+
+            width: 118px;
+            height: 118px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .coin-ring {
+
+            position: absolute;
+
+            inset: -10px;
+
+            border-radius: 50%;
+
+            border:
+                1px solid rgba(247,147,26,0.28);
+
+            box-shadow:
+                0 0 25px rgba(247,147,26,0.15);
+
+            animation:
+                ringPulse 2.4s ease-in-out infinite;
+
+        }
+
+
+        .coin-ring.two {
+
+            inset: -22px;
+
+            border-color:
+                rgba(247,147,26,0.10);
+
+            animation-delay: 0.8s;
+
+        }
+
+
+        @keyframes ringPulse {
+
+            0%,
+            100% {
+
+                transform: scale(0.92);
+
+                opacity: 0.35;
+
+            }
+
+            50% {
+
+                transform: scale(1.05);
+
+                opacity: 1;
+
+            }
+
+        }
+
+
+        .bitcoin-coin {
+
+            position: relative;
+
+            width: 105px;
+            height: 105px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #ffbd4a 0%,
+                    #f7931a 42%,
+                    #d96b00 100%
+                );
+
+            border:
+                3px solid rgba(255,255,255,0.25);
+
+            box-shadow:
+
+                inset 0 4px 8px
+                rgba(255,255,255,0.3),
+
+                inset 0 -8px 14px
+                rgba(112,49,0,0.35),
+
+                0 0 35px
+                rgba(247,147,26,0.42),
+
+                0 12px 35px
+                rgba(0,0,0,0.55);
+
+            animation:
+                coinFloat 3s ease-in-out infinite;
+
+        }
+
+
+        .bitcoin-coin::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 7px;
+
+            border-radius: 50%;
+
+            border:
+                1px solid rgba(255,255,255,0.32);
+
+        }
+
+
+        .bitcoin-symbol {
+
+            position: relative;
+
+            color: white;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size: 62px;
+
+            line-height: 1;
+
+            font-weight: 900;
+
+            text-shadow:
+                0 3px 6px rgba(0,0,0,0.35);
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        .bitcoin-symbol::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 5px;
+            height: 72px;
+
+            left: 50%;
+
+            top: -5px;
+
+            transform:
+                translateX(-50%);
+
+            background:
+                rgba(255,255,255,0.85);
+
+            border-radius: 4px;
+
+            opacity: 0.75;
+
+            z-index: -1;
+
+        }
+
+
+        @keyframes coinFloat {
+
+            0%,
+            100% {
+
+                transform:
+                    translateY(0)
+                    rotateY(0deg);
+
+            }
+
+            50% {
+
+                transform:
+                    translateY(-9px)
+                    rotateY(8deg);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           BRAND
+        ===================================================== */
+
+        .brand {
+
+            text-align: center;
+
+            animation:
+                brandReveal 1s ease forwards;
+
+        }
+
+
+        .brand-title {
+
+            font-size: 28px;
+
+            font-weight: 800;
+
+            letter-spacing: 0.5px;
+
+            color: white;
+
+        }
+
+
+        .brand-title span {
+
+            color: #f7931a;
+
+        }
+
+
+        .brand-subtitle {
+
+            margin-top: 8px;
+
+            font-size: 12px;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            color:
+                rgba(255,255,255,0.52);
+
+        }
+
+
+        @keyframes brandReveal {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(18px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+        .loading-area {
+
+            position: absolute;
+
+            bottom: 45px;
+
+            width: 180px;
+
+            text-align: center;
+
+        }
+
+
+        .loading-bar {
+
+            width: 100%;
+
+            height: 3px;
+
+            overflow: hidden;
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,0.08);
+
+        }
+
+
+        .loading-progress {
+
+            width: 0%;
+
+            height: 100%;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #d96b00,
+                    #f7931a,
+                    #ffbd4a
+                );
+
+            box-shadow:
+                0 0 12px
+                rgba(247,147,26,0.7);
+
+            animation:
+                loading 2.5s ease forwards;
+
+        }
+
+
+        .loading-text {
+
+            margin-top: 12px;
+
+            color:
+                rgba(255,255,255,0.42);
+
+            font-size: 11px;
+
+            letter-spacing: 1.5px;
+
+        }
+
+
+        @keyframes loading {
+
+            from {
+                width: 0%;
+            }
+
+            to {
+                width: 100%;
+            }
+
+        }
+
+
+        /* =====================================================
+           APP
+        ===================================================== */
+
+        #app {
+
+            position: fixed;
+
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            border: none;
+
+            background: #fff;
+
+            opacity: 0;
+
+            transition:
+                opacity 0.7s ease;
+
+        }
+
+
+        #app.loaded {
+
+            opacity: 1;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 480px) {
+
+            .coin-wrapper {
+
+                width: 105px;
+                height: 105px;
+
+            }
+
+
+            .bitcoin-coin {
+
+                width: 94px;
+                height: 94px;
+
+            }
+
+
+            .bitcoin-symbol {
+
+                font-size: 55px;
+
+            }
+
+
+            .brand-title {
+
+                font-size: 25px;
+
+            }
+
+
+            .brand-subtitle {
+
+                font-size: 10px;
+
+                letter-spacing: 2.5px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
+
+    <div class="background">
+
+        <div class="glow one"></div>
+
+        <div class="glow two"></div>
+
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PREMIUM SPLASH
+    ====================================================== -->
+
+    <section id="splash">
+
+
+        <div class="coin-wrapper">
+
+            <div class="coin-ring"></div>
+
+            <div class="coin-ring two"></div>
+
+
+            <div class="bitcoin-coin">
+
+                <span class="bitcoin-symbol">
+                    ₿
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="brand">
+
+            <h1 class="brand-title">
+                Bitcoin <span>Investment</span>
+            </h1>
+
+            <p class="brand-subtitle">
+                Digital Wealth Platform
+            </p>
+
+        </div>
+
+
+        <div class="loading-area">
+
+            <div class="loading-bar">
+
+                <div class="loading-progress"></div>
+
+            </div>
+
+            <div class="loading-text">
+                SECURE CONNECTION
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         LIVE APPLICATION
+    ====================================================== -->
+
+    <iframe
+        id="app"
+        src="https://bitcoin-m7kz.onrender.com"
+        title="Bitcoin Investment"
+        allow="camera; microphone; geolocation"
+    ></iframe>
+
+
+    <!-- =====================================================
+         SCRIPT
+    ====================================================== -->
+
+    <script>
+
+        const splash =
+            document.getElementById("splash");
+
+        const app =
+            document.getElementById("app");
+
+
+        app.addEventListener(
+            "load",
+            function () {
+
+                app.classList.add("loaded");
+
+                setTimeout(
+                    function () {
+
+                        splash.classList.add("hide");
+
+                    },
+                    700
+                );
+
+            }
+        );
+
+
+        /*
+         * Safety fallback.
+         *
+         * If the Render server takes longer
+         * to respond, the splash won't remain
+         * forever.
+         */
+
+        setTimeout(
+            function () {
+
+                if (
+                    !app.classList.contains("loaded")
+                ) {
+
+                    app.classList.add("loaded");
+
+                    splash.classList.add("hide");
+
+                }
+
+            },
+            8000
+        );
+
+    </script>
+
+
+</body>
+
+</html>
+

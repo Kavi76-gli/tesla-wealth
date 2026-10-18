@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <title>Reset M-PIN | Bitcoin Investment</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #ffffff;
+            font-family: "Inter", sans-serif;
+            color: #111111;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 22px;
+
+            border-radius: 22px;
+
+            background: #111111;
+            color: #ffffff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 40px;
+            font-weight: 800;
+
+            box-shadow:
+                0 15px 35px rgba(0,0,0,.12);
+        }
+
+        h1 {
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #777777;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #eeeeee;
+            border-radius: 24px;
+            padding: 24px;
+
+            box-shadow:
+                0 15px 45px rgba(0,0,0,.06);
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-text {
+            color: #888888;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .input {
+            width: 100%;
+            height: 52px;
+
+            border: 1px solid #dddddd;
+            border-radius: 14px;
+
+            padding: 0 16px;
+
+            font-size: 15px;
+            font-family: inherit;
+
+            outline: none;
+
+            transition: .2s;
+        }
+
+        .input:focus {
+            border-color: #111111;
+            box-shadow: 0 0 0 3px rgba(0,0,0,.05);
+        }
+
+        .btn {
+            width: 100%;
+            height: 52px;
+
+            margin-top: 14px;
+
+            border: none;
+            border-radius: 14px;
+
+            background: #111111;
+            color: #ffffff;
+
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .secondary-btn {
+            background: #f5f5f5;
+            color: #111111;
+        }
+
+        .otp-input {
+            text-align: center;
+            letter-spacing: 7px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .pin-input {
+            text-align: center;
+            letter-spacing: 12px;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+
+            color: #777777;
+            font-size: 12px;
+
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        #recaptcha-container {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .phone-display {
+            font-weight: 700;
+            color: #111111;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="container">
+
+        <div class="logo">₿</div>
+
+        <h1>Reset M-PIN</h1>
+
+        <div class="subtitle">
+            Verify your registered mobile number
+            and create a new 4-digit M-PIN.
+        </div>
+
+        <div class="card">
+
+            <!-- ======================================
+                 STEP 1
+            ======================================= -->
+
+            <section
+                id="stepPhone"
+                class="step active"
+            >
+
+                <div class="step-title">
+                    Verify Mobile Number
+                </div>
+
+                <div class="step-text">
+                    Enter the mobile number registered
+                    with your Bitcoin Investment account.
+                </div>
+
+                <input
+                    id="phoneInput"
+                    class="input"
+                    type="tel"
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="10-digit mobile number"
+                >
+
+                <div id="recaptcha-container"></div>
+
+                <button
+                    id="sendOtpBtn"
+                    class="btn"
+                    onclick="sendOTP()"
+                >
+                    Send OTP
+                </button>
+
+            </section>
+
+
+            <!-- ======================================
+                 STEP 2
+            ======================================= -->
+
+            <section
+                id="stepOtp"
+                class="step"
+            >
+
+                <div class="step-title">
+                    Enter OTP
+                </div>
+
+                <div class="step-text">
+                    OTP sent to
+                    <span
+                        id="phoneDisplay"
+                        class="phone-display"
+                    ></span>
+                </div>
+
+                <input
+                    id="otpInput"
+                    class="input otp-input"
+                    type="tel"
+                    inputmode="numeric"
+                    maxlength="6"
+                    placeholder="••••••"
+                >
+
+                <button
+                    class="btn"
+                    onclick="verifyOTP()"
+                >
+                    Verify OTP
+                </button>
+
+                <button
+                    class="btn secondary-btn"
+                    onclick="goBackToPhone()"
+                >
+                    Change Number
+                </button>
+
+            </section>
+
+
+            <!-- ======================================
+                 STEP 3
+            ======================================= -->
+
+            <section
+                id="stepPin"
+                class="step"
+            >
+
+                <div class="step-title">
+                    Create New M-PIN
+                </div>
+
+                <div class="step-text">
+                    Choose a new 4-digit M-PIN for
+                    secure login.
+                </div>
+
+                <input
+                    id="newPinInput"
+                    class="input pin-input"
+                    type="password"
+                    inputmode="numeric"
+                    maxlength="4"
+                    placeholder="••••"
+                >
+
+                <input
+                    id="confirmPinInput"
+                    class="input pin-input"
+                    type="password"
+                    inputmode="numeric"
+                    maxlength="4"
+                    placeholder="••••"
+                    style="margin-top:12px;"
+                >
+
+                <button
+                    id="resetPinBtn"
+                    class="btn"
+                    onclick="resetMPIN()"
+                >
+                    Reset M-PIN
+                </button>
+
+            </section>
+
+        </div>
+
+        <a
+            href="m-pin.html"
+            class="back"
+        >
+            ← Back to M-PIN Login
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ==================================================
+    // API
+    // ==================================================
+
+    const API_URL = "https://bitcoin-m7kz.onrender.com/api";
+
+
+    // ==================================================
+    // FIREBASE CONFIG
+    // ==================================================
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyBV4g_qG7ZnYopMt8UcznQojJnByVzynhQ",
+  authDomain: "televault-ead03.firebaseapp.com",
+  projectId: "televault-ead03",
+  storageBucket: "televault-ead03.firebasestorage.app",
+  messagingSenderId: "292306570636",
+  appId: "1:292306570636:web:f15004a0b5031d906ddaa9",
+  measurementId: "G-LYC0XT6HEL"
+};
+
+
+    // ==================================================
+    // FIREBASE INITIALIZATION
+    // ==================================================
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    const auth = firebase.auth();
+
+    let confirmationResult = null;
+    let firebaseVerifiedUser = null;
+    let recaptchaVerifier = null;
+
+
+    // ==================================================
+    // HELPERS
+    // ==================================================
+
+    function normalizePhone(phone) {
+
+        phone = String(phone || "")
+            .replace(/\D/g, "");
+
+        if (phone.startsWith("91") && phone.length === 12) {
+            return "+" + phone;
+        }
+
+        if (phone.length === 10) {
+            return "+91" + phone;
+        }
+
+        return "";
+    }
+
+
+    function showStep(id) {
+
+        document.querySelectorAll(".step")
+            .forEach(step => {
+                step.classList.remove("active");
+            });
+
+        document
+            .getElementById(id)
+            .classList.add("active");
+    }
+
+
+    // ==================================================
+    // RECAPTCHA
+    // ==================================================
+
+    function setupRecaptcha() {
+
+        if (recaptchaVerifier) {
+            return;
+        }
+
+        recaptchaVerifier =
+            new firebase.auth.RecaptchaVerifier(
+                "recaptcha-container",
+                {
+                    size: "normal",
+                    callback: function() {
+                        console.log("✅ reCAPTCHA verified");
+                    },
+                    "expired-callback": function() {
+                        console.log("⚠️ reCAPTCHA expired");
+                    }
+                }
+            );
+
+        recaptchaVerifier.render()
+            .then(widgetId => {
+                window.recaptchaWidgetId = widgetId;
+                console.log("✅ Firebase reCAPTCHA ready");
+            })
+            .catch(error => {
+                console.error(
+                    "❌ reCAPTCHA error:",
+                    error
+                );
+            });
+    }
+
+
+    // ==================================================
+    // SEND OTP
+    // ==================================================
+
+    async function sendOTP() {
+
+        const input =
+            document.getElementById("phoneInput");
+
+        const button =
+            document.getElementById("sendOtpBtn");
+
+        const phone =
+            normalizePhone(input.value);
+
+        if (!phone) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Invalid Number",
+                text: "Enter a valid 10-digit mobile number."
+            });
+
+            return;
+        }
+
+        try {
+
+            button.disabled = true;
+            button.textContent = "Sending OTP...";
+
+            setupRecaptcha();
+
+            if (!recaptchaVerifier) {
+                throw new Error(
+                    "reCAPTCHA is not ready."
+                );
+            }
+
+            confirmationResult =
+                await auth.signInWithPhoneNumber(
+                    phone,
+                    recaptchaVerifier
+                );
+
+            localStorage.setItem(
+                "reset_mpin_phone",
+                phone
+            );
+
+            document
+                .getElementById("phoneDisplay")
+                .textContent = phone;
+
+            showStep("stepOtp");
+
+            Swal.fire({
+                icon: "success",
+                title: "OTP Sent",
+                text: "A verification code has been sent to your mobile number.",
+                timer: 1800,
+                showConfirmButton: false
+            });
+
+            console.log("✅ Firebase OTP sent");
+
+        } catch (error) {
+
+            console.error(
+                "❌ Firebase OTP error:",
+                error
+            );
+
+            button.disabled = false;
+            button.textContent = "Send OTP";
+
+            let message =
+                "Unable to send OTP. Please try again.";
+
+            if (error.code ===
+                "auth/invalid-phone-number") {
+
+                message =
+                    "The mobile number is invalid.";
+
+            } else if (
+                error.code ===
+                "auth/too-many-requests"
+            ) {
+
+                message =
+                    "Too many attempts. Please try again later.";
+
+            } else if (
+                error.code ===
+                "auth/quota-exceeded"
+            ) {
+
+                message =
+                    "Firebase SMS quota has been exceeded.";
+
+            } else if (
+                error.message
+            ) {
+
+                message = error.message;
+            }
+
+            Swal.fire({
+                icon: "error",
+                title: "OTP Failed",
+                text: message
+            });
+        }
+    }
+
+
+    // ==================================================
+    // VERIFY OTP
+    // ==================================================
+
+    async function verifyOTP() {
+
+        const otp =
+            document
+                .getElementById("otpInput")
+                .value
+                .trim();
+
+        if (!/^\d{6}$/.test(otp)) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Invalid OTP",
+                text: "Please enter the 6-digit OTP."
+            });
+
+            return;
+        }
+
+        if (!confirmationResult) {
+
+            Swal.fire({
+                icon: "error",
+                title: "OTP Session Missing",
+                text: "Please request a new OTP."
+            });
+
+            return;
+        }
+
+        try {
+
+            Swal.fire({
+                title: "Verifying...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const result =
+                await confirmationResult.confirm(otp);
+
+            firebaseVerifiedUser =
+                result.user;
+
+            console.log(
+                "✅ Firebase phone verified:",
+                firebaseVerifiedUser.phoneNumber
+            );
+
+            Swal.close();
+
+            showStep("stepPin");
+
+            Swal.fire({
+                icon: "success",
+                title: "Mobile Verified",
+                text: "Now create your new 4-digit M-PIN.",
+                timer: 1800,
+                showConfirmButton: false
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ OTP verification error:",
+                error
+            );
+
+            Swal.close();
+
+            Swal.fire({
+                icon: "error",
+                title: "Invalid OTP",
+                text:
+                    error.code ===
+                    "auth/invalid-verification-code"
+                        ? "The OTP is incorrect."
+                        : "OTP verification failed."
+            });
+        }
+    }
+
+
+    // ==================================================
+    // RESET M-PIN
+    // ==================================================
+
+    async function resetMPIN() {
+
+        const newPin =
+            document
+                .getElementById("newPinInput")
+                .value
+                .trim();
+
+        const confirmPin =
+            document
+                .getElementById("confirmPinInput")
+                .value
+                .trim();
+
+        if (!/^\d{4}$/.test(newPin)) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Invalid M-PIN",
+                text: "M-PIN must contain exactly 4 digits."
+            });
+
+            return;
+        }
+
+        if (newPin !== confirmPin) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "M-PIN Mismatch",
+                text: "Both M-PIN values must match."
+            });
+
+            return;
+        }
+
+        if (!firebaseVerifiedUser) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Verification Required",
+                text: "Please verify your mobile number first."
+            });
+
+            return;
+        }
+
+        const button =
+            document.getElementById("resetPinBtn");
+
+        try {
+
+            button.disabled = true;
+            button.textContent = "Updating...";
+
+            // ==========================================
+            // GET FRESH FIREBASE ID TOKEN
+            // ==========================================
+
+            const firebaseIdToken =
+                await firebaseVerifiedUser.getIdToken(true);
+
+            const phone =
+                firebaseVerifiedUser.phoneNumber ||
+                localStorage.getItem("reset_mpin_phone");
+
+            // ==========================================
+            // BACKEND RESET
+            // ==========================================
+
+            const response =
+                await fetch(
+                    `${API_URL}/auth/reset-mpin`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${firebaseIdToken}`
+                        },
+
+                        body: JSON.stringify({
+                            phone: phone,
+                            mpin: newPin
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message ||
+                    "Unable to reset M-PIN."
+                );
+            }
+
+            // ==========================================
+            // M-PIN RESET SUCCESS
+            // ==========================================
+
+            localStorage.setItem(
+                "registered_phone",
+                phone
+            );
+
+            localStorage.setItem(
+                "mpin_set",
+                "true"
+            );
+
+            localStorage.removeItem(
+                "reset_mpin_phone"
+            );
+
+            await Swal.fire({
+                icon: "success",
+                title: "M-PIN Reset Successful",
+                text: "Your new M-PIN has been created.",
+                confirmButtonText: "Continue"
+            });
+
+            // Firebase OTP session is not used
+            // as the application's login JWT.
+            // User goes back to M-PIN login.
+
+            window.location.replace("m-pin.html");
+
+        } catch (error) {
+
+            console.error(
+                "❌ M-PIN reset error:",
+                error
+            );
+
+            button.disabled = false;
+            button.textContent = "Reset M-PIN";
+
+            Swal.fire({
+                icon: "error",
+                title: "Reset Failed",
+                text: error.message ||
+                    "Unable to reset M-PIN."
+            });
+        }
+    }
+
+
+    // ==================================================
+    // CHANGE PHONE
+    // ==================================================
+
+    function goBackToPhone() {
+
+        confirmationResult = null;
+        firebaseVerifiedUser = null;
+
+        document
+            .getElementById("otpInput")
+            .value = "";
+
+        showStep("stepPhone");
+    }
+
+
+    // ==================================================
+    // INITIALIZE
+    // ==================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            setupRecaptcha();
+
+            // If a registered phone already exists,
+            // pre-fill it for convenience.
+
+            const savedPhone =
+                localStorage.getItem(
+                    "registered_phone"
+                );
+
+            if (savedPhone) {
+
+                const digits =
+                    savedPhone
+                        .replace(/\D/g, "");
+
+                if (digits.length === 10) {
+
+                    document
+                        .getElementById("phoneInput")
+                        .value = digits;
+                }
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

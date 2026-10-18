@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Bitcoin Investment - Home</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Home CSS -->
+    <link
+        rel="stylesheet"
+        href="css/home.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<header class="top-header">
+
+    <div class="header-left">
+
+        <button
+            class="profile-button"
+            id="profileButton"
+            type="button"
+        >
+
+            <img
+                id="profileImage"
+                src="https://ui-avatars.com/api/?name=User&background=f7931a&color=fff"
+                alt="Profile"
+            >
+
+        </button>
+
+
+        <div class="welcome-text">
+
+            <span>
+                Welcome back
+            </span>
+
+            <h2 id="userName">
+                User
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="brand-mini">
+
+        <div class="brand-bitcoin">
+
+            <i class="fa-brands fa-bitcoin"></i>
+
+        </div>
+
+        <div>
+
+            <strong>
+                Bitcoin
+            </strong>
+
+            <span>
+                Investment
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="notification-button"
+        id="notificationButton"
+        type="button"
+        aria-label="Notifications"
+    >
+
+        <i class="fa-regular fa-bell"></i>
+
+        <span class="notification-dot"></span>
+
+    </button>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+====================================================== -->
+
+<main class="main-content">
+
+
+    <!-- =================================================
+         BALANCE CARD
+    ================================================== -->
+
+    <section class="balance-card magnetic reveal">
+
+        <div class="balance-glow glow-one"></div>
+
+        <div class="balance-glow glow-two"></div>
+
+        <div class="balance-grid"></div>
+
+        <div class="shine"></div>
+
+
+        <div class="balance-top">
+
+            <div>
+
+                <p>
+                    Available Balance
+                </p>
+
+                <h1 id="walletBalance">
+                    ₹0
+                </h1>
+
+            </div>
+
+
+            <div class="wallet-icon">
+
+                <i class="fa-solid fa-wallet"></i>
+
+            </div>
+
+        </div>
+
+
+        <div class="balance-footer">
+
+            <span>
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                Wallet balance
+
+            </span>
+
+
+            <button
+                id="refreshBalance"
+                class="refresh-button"
+                type="button"
+                aria-label="Refresh balance"
+            >
+
+                <i class="fa-solid fa-rotate"></i>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+<!-- =================================================
+     QUICK ACTIONS
+================================================== -->
+
+ <!-- =================================================
+         QUICK ACTIONS
+    ================================================== -->
+
+<!-- =================================================
+     QUICK ACTIONS
+================================================== -->
+
+<section class="quick-actions reveal-group">
+
+    <!-- Deposit -->
+    <button
+        class="quick-card magnetic reveal-item"
+        onclick="goToDeposit()"
+        type="button"
+    >
+        <div class="quick-icon deposit-icon">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+        <span>
+            Deposit
+        </span>
+
+        <small>
+            Add funds
+        </small>
+    </button>
+
+
+    <!-- Withdraw -->
+    <button
+        class="quick-card magnetic reveal-item"
+        onclick="goToWithdraw()"
+        type="button"
+    >
+        <div class="quick-icon withdraw-icon">
+            <i class="fa-solid fa-arrow-up"></i>
+        </div>
+
+        <span>
+            Withdraw
+        </span>
+
+        <small>
+            Cash out
+        </small>
+    </button>
+
+
+    <!-- Investments -->
+    <button
+        class="quick-card magnetic reveal-item"
+        onclick="goToInvestments()"
+        type="button"
+    >
+        <div class="quick-icon invest-icon">
+            <i class="fa-brands fa-bitcoin"></i>
+        </div>
+
+        <span>
+            Invest
+        </span>
+
+        <small>
+            Bitcoin
+        </small>
+    </button>
+
+
+    <!-- Transactions -->
+    <button
+        class="quick-card magnetic reveal-item"
+        onclick="goToTransactions()"
+        type="button"
+    >
+        <div class="quick-icon transaction-icon">
+            <i class="fa-solid fa-receipt"></i>
+        </div>
+
+        <span>
+            History
+        </span>
+
+        <small>
+            Activity
+        </small>
+    </button>
+
+
+    
+
+
+    <!-- About Company -->
+<button 
+    class="quick-card magnetic reveal-item" 
+    onclick="goToAboutCompany()" 
+    type="button"
+>
+    <div class="quick-icon company-icon">
+        <i class="fa-solid fa-building"></i>
+    </div>
+
+    <span>
+        About Company
+    </span>
+
+    <small>
+        Company Info
+    </small>
+</button>
+
+
+<!-- Company Documents -->
+<button 
+    class="quick-card magnetic reveal-item" 
+    onclick="goToCompanyDocuments()" 
+    type="button"
+>
+    <div class="quick-icon company-icon">
+        <i class="fa-solid fa-file-contract"></i>
+    </div>
+
+    <span>
+        Company Documents
+    </span>
+
+    <small>
+        Verify Documents
+    </small>
+</button>
+</section>
+
+
+
+    
+    <!-- =================================================
+         STATS
+    ================================================== -->
+
+    <section class="stats-grid reveal-group">
+
+
+        <div class="stat-card reveal-item">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-layer-group"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Active Plans
+                </span>
+
+                <strong id="activeInvestments">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card reveal-item">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-coins"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Daily Income
+                </span>
+
+                <strong id="dailyYield">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card reveal-item">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-chart-column"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Total Investment
+                </span>
+
+                <strong id="totalInvestment">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card reveal-item">
+
+            <div class="stat-icon">
+
+                <i class="fa-solid fa-money-bill-trend-up"></i>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Total Earned
+                </span>
+
+                <strong id="totalEarned">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         NOTICE
+    ================================================== -->
+
+    <section class="notice-card reveal">
+
+        <div class="notice-icon">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+        </div>
+
+
+        <div class="notice-content">
+
+            <strong>
+                Important Notice
+            </strong>
+
+            <p id="noticeText">
+
+                Review all account information and
+                available investment details before
+                making a transaction.
+
+            </p>
+
+        </div>
+
+
+        <i class="fa-solid fa-chevron-right notice-arrow"></i>
+
+    </section>
+
+
+
+    <!-- =================================================
+         BITCOIN SECTION
+    ================================================== -->
+
+    <section class="section-header reveal">
+
+        <div>
+
+            <div class="section-label">
+
+                <span></span>
+
+                DIGITAL ASSET
+
+            </div>
+
+            <h2>
+                Bitcoin Investment
+            </h2>
+
+            <p>
+                Explore your available Bitcoin options
+            </p>
+
+        </div>
+
+
+        <button
+            class="see-all"
+            onclick="goToInvestments()"
+            type="button"
+        >
+
+            Explore
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =================================================
+         BITCOIN CARD
+    ================================================== -->
+
+    <section class="bitcoin-card magnetic reveal">
+
+        <div class="bitcoin-grid"></div>
+
+        <div class="bitcoin-shine"></div>
+
+        <div class="bitcoin-orb orb-one"></div>
+
+        <div class="bitcoin-orb orb-two"></div>
+
+
+        <div class="bitcoin-top">
+
+            <div class="bitcoin-logo">
+
+                <i class="fa-brands fa-bitcoin"></i>
+
+            </div>
+
+
+            <div class="bitcoin-status">
+
+                <span class="status-dot"></span>
+
+                Digital Asset
+
+            </div>
+
+        </div>
+
+
+        <div class="bitcoin-content">
+
+            <span>
+                BTC
+            </span>
+
+            <h3>
+                Bitcoin
+            </h3>
+
+            <p>
+
+                Explore the Bitcoin-related options
+                available on your account. Review
+                the details of each option before
+                making an investment decision.
+
+            </p>
+
+        </div>
+
+
+        <div class="bitcoin-bottom">
+
+
+            <div>
+
+                <small>
+                    Asset
+                </small>
+
+                <strong>
+                    BTC
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <small>
+                    Category
+                </small>
+
+                <strong>
+                    Crypto
+                </strong>
+
+            </div>
+
+
+            <button
+                onclick="goToInvestments()"
+                type="button"
+            >
+
+                Explore
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         RECENT ACTIVITY
+    ================================================== -->
+
+    <section class="section-header activity-heading reveal">
+
+        <div>
+
+            <div class="section-label">
+
+                <span></span>
+
+                ACCOUNT
+
+            </div>
+
+            <h2>
+                Recent Activity
+            </h2>
+
+            <p>
+                Your latest wallet transactions
+            </p>
+
+        </div>
+
+
+        <button
+            class="see-all"
+            onclick="goToTransactions()"
+            type="button"
+        >
+
+            View All
+
+        </button>
+
+    </section>
+
+
+
+    <section
+        class="activity-container reveal"
+        id="activityContainer"
+    >
+
+        <div class="empty-activity">
+
+            <div class="empty-icon">
+
+                <i class="fa-solid fa-receipt"></i>
+
+            </div>
+
+            <strong>
+                No recent transactions
+            </strong>
+
+            <p>
+                Your latest activity will appear here.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <div class="bottom-space"></div>
+
+</main>
+
+
+
+<!-- =====================================================
+     WITHDRAWAL / ACTIVITY POPUP
+====================================================== -->
+<!-- =====================================================
+     PREMIUM LIVE DEMO WINNERS
+===================================================== -->
+<section class="winner-board" id="winnerBoard">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="winner-board-header">
+
+        <div class="winner-title-area">
+
+            <span class="winner-eyebrow">
+                🏆 TOP INVESTOR
+            </span>
+
+            <h2>
+                Investors Leaderboard
+            </h2>
+
+            <p>
+                <span class="live-dot"></span>
+                Live earnings • updates every 10 minutes
+            </p>
+
+        </div>
+
+
+        <!-- DEMO BADGE -->
+
+        <div class="live-demo-badge">
+
+            <span></span>
+
+            Live
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOP 3 PODIUM
+    ====================================================== -->
+
+    <div
+        class="winner-podium"
+        id="winnerPodium"
+    >
+
+
+        <!-- =================================================
+             RANK #2
+        ================================================== -->
+
+        <div class="podium-player podium-second">
+
+            <div class="podium-medal">
+                🥈
+            </div>
+
+
+            <div
+                class="podium-rank"
+                id="rank2Number"
+            >
+                02
+            </div>
+
+
+            <div
+                class="podium-name"
+                id="rank2Name"
+            >
+                Karthik Reddy
+            </div>
+
+
+            <span class="podium-label">
+                RETURN
+            </span>
+
+
+            <strong
+                class="podium-money"
+                id="rank2Amount"
+            >
+                ₹1,185,000
+            </strong>
+
+        </div>
+
+
+        <!-- =================================================
+             RANK #1
+        ================================================== -->
+
+        <div class="podium-player podium-first">
+
+            <div class="crown">
+                👑
+            </div>
+
+
+            <div class="podium-medal first-medal">
+                🥇
+            </div>
+
+
+            <div
+                class="podium-rank first-rank"
+                id="rank1Number"
+            >
+                01
+            </div>
+
+
+            <div
+                class="podium-name first-name"
+                id="rank1Name"
+            >
+                Arjun Kumar
+            </div>
+
+
+            <span class="podium-label">
+                HIGHEST RETURN
+            </span>
+
+
+            <strong
+                class="podium-money first-money"
+                id="rank1Amount"
+            >
+                ₹1,250,000
+            </strong>
+
+
+            <div class="champion-tag">
+
+                <span>★</span>
+
+                TOP INVESTOR
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RANK #3
+        ================================================== -->
+
+        <div class="podium-player podium-third">
+
+            <div class="podium-medal">
+                🥉
+            </div>
+
+
+            <div
+                class="podium-rank"
+                id="rank3Number"
+            >
+                03
+            </div>
+
+
+            <div
+                class="podium-name"
+                id="rank3Name"
+            >
+                Vijay Kumar
+            </div>
+
+
+            <span class="podium-label">
+                RETURN
+            </span>
+
+
+            <strong
+                class="podium-money"
+                id="rank3Amount"
+            >
+                ₹1,095,000
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         RANK #4 ONWARDS
+    ====================================================== -->
+
+    <div
+        class="winner-ranking-list"
+        id="winnerRankingList"
+    ></div>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <div class="winner-board-footer">
+
+
+        <div class="next-update">
+
+            <span class="update-icon">
+                ↻
+            </span>
+
+            Next Live update in
+
+            <strong id="leaderboardTimer">
+                10:00
+            </strong>
+
+        </div>
+
+
+        <div class="simulation-note">
+
+            Live Investors DATA
+
+        </div>
+
+    </div>
+
+</section>
+<!-- =====================================================
+     PREMIUM USER REVIEWS
+===================================================== -->
+
+<section class="reviews-section" id="reviewsSection">
+
+    <div class="reviews-header">
+
+        <div>
+            <span class="reviews-eyebrow">
+                💬 COMMUNITY FEEDBACK
+            </span>
+
+            <h2>User Thoughts</h2>
+
+            <p>
+                What users say about their experience
+            </p>
+        </div>
+
+        <div class="reviews-demo-badge">
+            SAMPLE
+        </div>
+
+    </div>
+
+
+    <!-- Rating Summary -->
+
+    <div class="reviews-summary">
+
+        <div class="rating-number">
+            4.8
+        </div>
+
+        <div class="rating-details">
+
+            <div class="stars">
+                ★★★★★
+            </div>
+
+            <strong>
+                Excellent Experience
+            </strong>
+
+            <span>
+                Sample community feedback
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- Reviews -->
+
+    <div class="reviews-slider" id="reviewsSlider">
+
+        <!-- JS inserts reviews -->
+
+    </div>
+
+
+    <!-- Dots -->
+
+    <div class="reviews-dots" id="reviewsDots"></div>
+
+
+    <div class="reviews-footer">
+        <span>ⓘ</span>
+        Sample reviews shown for demonstration.
+    </div>
+
+</section>
+<!-- =====================================================
+     FREQUENTLY ASKED QUESTIONS
+===================================================== -->
+<section class="faq-section" id="faqSection">
+
+    <div class="faq-heading">
+        <div>
+            <span class="faq-eyebrow">HELP CENTER</span>
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about Bitcoin Investment.</p>
+        </div>
+
+        <div class="faq-icon-main">
+            <i class="fas fa-circle-question"></i>
+        </div>
+    </div>
+
+    <div class="faq-list">
+
+        <!-- 01 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">01</span>
+                <span class="faq-question-text">What is Bitcoin Investment?</span>
+                <span class="faq-toggle">
+                    <i class="fas fa-plus"></i>
+                </span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Bitcoin investment allows you to participate in the digital-asset
+                    market by investing in Bitcoin-related opportunities. You can track
+                    your investment, balance, and applicable earnings directly from
+                    your dashboard.
+                </p>
+            </div>
+        </div>
+
+        <!-- 02 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">02</span>
+                <span class="faq-question-text">How can I earn from Bitcoin investment?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    When you invest, your money is allocated according to the selected
+                    investment option. If the investment performs positively, you can
+                    receive returns according to the applicable plan terms.
+                </p>
+            </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">03</span>
+                <span class="faq-question-text">What happens after I make an investment?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    After your investment is confirmed, it will appear in your account
+                    dashboard. You can monitor your investment amount, applicable
+                    earnings, and investment status from your account.
+                </p>
+            </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">04</span>
+                <span class="faq-question-text">When will I receive my investment returns?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Returns are provided according to the terms and duration of the
+                    investment option you select. Once an applicable earning becomes
+                    available, it will be reflected in your account balance as specified
+                    by the plan.
+                </p>
+            </div>
+        </div>
+
+        <!-- 05 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">05</span>
+                <span class="faq-question-text">Can I get my invested money back?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Yes, funds can be returned according to the withdrawal rules,
+                    investment duration, and terms applicable to your selected
+                    investment option.
+                </p>
+            </div>
+        </div>
+
+        <!-- 06 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">06</span>
+                <span class="faq-question-text">How do I know how much I can earn?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Before confirming an investment, you can review the available
+                    investment amount, duration, and applicable return information.
+                    This helps you understand the potential outcome before investing.
+                </p>
+            </div>
+        </div>
+
+        <!-- 07 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">07</span>
+                <span class="faq-question-text">Can I track my investment?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Yes. Your dashboard allows you to conveniently monitor your
+                    investment activity, balance, applicable earnings, and transaction
+                    history in one place.
+                </p>
+            </div>
+        </div>
+
+        <!-- 08 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">08</span>
+                <span class="faq-question-text">How do I start Bitcoin investment?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Simply deposit funds into your account, explore the available
+                    Bitcoin investment options, select an option that suits you,
+                    review its terms, and confirm your investment.
+                </p>
+            </div>
+        </div>
+
+        <!-- 09 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">09</span>
+                <span class="faq-question-text">How do I receive my earnings?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    When an applicable return is credited according to the selected
+                    investment option, it will be reflected in your account. You can
+                    then manage your available balance according to the platform's
+                    withdrawal rules.
+                </p>
+            </div>
+        </div>
+
+        <!-- 10 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">10</span>
+                <span class="faq-question-text">Can I withdraw my available balance?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Yes. Once funds become available for withdrawal according to the
+                    applicable terms, you can submit a withdrawal request from your
+                    account.
+                </p>
+            </div>
+        </div>
+
+        <!-- 11 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">11</span>
+                <span class="faq-question-text">Is Bitcoin investment suitable for everyone?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Bitcoin is a digital asset whose value can change over time.
+                    Before investing, users should review the investment details,
+                    terms, and associated risks and choose an amount they are
+                    comfortable investing.
+                </p>
+            </div>
+        </div>
+
+        <!-- 12 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">12</span>
+                <span class="faq-question-text">Is my investment guaranteed to increase?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Investment returns are not guaranteed. Bitcoin and digital-asset
+                    markets can change in value. Any returns shown on the platform
+                    should be understood according to the specific investment option
+                    and its terms.
+                </p>
+            </div>
+        </div>
+
+        <!-- 13 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">13</span>
+                <span class="faq-question-text">Where can I see my earnings?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Your applicable earnings and investment information can be viewed
+                    directly from your dashboard, making it easy to keep track of
+                    your account activity.
+                </p>
+            </div>
+        </div>
+
+        <!-- 14 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">14</span>
+                <span class="faq-question-text">What makes Bitcoin a digital asset?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Bitcoin is a decentralized digital asset that operates using
+                    blockchain technology. It can be transferred and held digitally
+                    without relying on a traditional central bank.
+                </p>
+            </div>
+        </div>
+
+        <!-- 15 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">15</span>
+                <span class="faq-question-text">Why do people invest in Bitcoin?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Many people choose Bitcoin because they are interested in digital
+                    assets, blockchain technology, and the possibility of long-term
+                    value appreciation. However, Bitcoin's price can also move downward.
+                </p>
+            </div>
+        </div>
+
+        <!-- 16 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">16</span>
+                <span class="faq-question-text">Can I start with a small amount?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    The minimum investment depends on the investment options available
+                    on the platform. You can review the available plans and their
+                    minimum requirements before confirming an investment.
+                </p>
+            </div>
+        </div>
+
+        <!-- 17 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">17</span>
+                <span class="faq-question-text">How can I keep track of my transactions?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Your deposit, investment, earnings, and withdrawal activity can
+                    be displayed in your transaction history, allowing you to easily
+                    review your account activity.
+                </p>
+            </div>
+        </div>
+
+        <!-- 18 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">18</span>
+                <span class="faq-question-text">What if I have questions about my investment?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    You can review the investment details and applicable terms from
+                    your account. If you need additional assistance, contact the
+                    platform's official support team.
+                </p>
+            </div>
+        </div>
+
+        <!-- 19 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">19</span>
+                <span class="faq-question-text">How long does an investment remain active?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    The active duration depends on the investment option you select.
+                    The applicable duration and conditions should be displayed before
+                    you confirm your investment.
+                </p>
+            </div>
+        </div>
+
+        <!-- 20 -->
+        <div class="faq-item">
+            <button class="faq-question">
+                <span class="faq-number">20</span>
+                <span class="faq-question-text">What should I check before investing?</span>
+                <span class="faq-toggle"><i class="fas fa-plus"></i></span>
+            </button>
+
+            <div class="faq-answer">
+                <p>
+                    Before confirming an investment, review the investment amount,
+                    duration, applicable returns, withdrawal conditions, fees if any,
+                    and associated risks. Investing with clear information helps you
+                    make better decisions.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="faq-footer">
+        <i class="fas fa-shield-halved"></i>
+        <span>Review investment terms and risks before investing.</span>
+    </div>
+
+</section>
+
+<!-- =====================================================
+     WINNER USER ACTIVITY
+===================================================== -->
+
+<section class="winner-activity-section" id="winnerActivitySection">
+
+    <div class="winner-activity-header">
+
+        <div>
+            <span class="winner-activity-eyebrow">
+                🏆 RECENT ACTIVITY
+            </span>
+
+            <h2>Investors Activity</h2>
+
+            <p>
+                Latest live user activity
+            </p>
+        </div>
+
+        <div class="activity-live-badge">
+            <span></span>
+            LIVE
+        </div>
+
+    </div>
+
+
+    <!-- ACTIVITY LIST -->
+
+    <div
+        class="winner-activity-list"
+        id="winnerActivityList">
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="winner-activity-footer">
+
+        <span>
+            ↻ Activity updates automatically
+        </span>
+
+        <strong>
+            Sample data
+        </strong>
+
+    </div>
+
+</section>
+
+<!-- =====================================================
+     COMPANY VERIFICATION SECTION
+===================================================== -->
+
+<section class="company-verification">
+
+    <div class="company-verification-container">
+
+        <div class="verification-heading">
+
+            <span class="verification-label">
+                <i class="fa-solid fa-building-shield"></i>
+                COMPANY INFORMATION
+            </span>
+
+            <h2>
+                Company &amp; Verification
+            </h2>
+
+            <p>
+                Important company information and available
+                documentation can be reviewed through our
+                official company information page.
+            </p>
+
+        </div>
+
+
+        <div class="verification-tags">
+
+            <div class="verification-tag">
+                <span class="tag-icon">
+                    <i class="fa-solid fa-building"></i>
+                </span>
+
+                <span>
+                    Company Information
+                </span>
+            </div>
+
+
+            <div class="verification-tag verified">
+
+                <span class="tag-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </span>
+
+                <span>
+                    Verified Documents
+                </span>
+
+            </div>
+
+
+            <div class="verification-tag">
+
+                <span class="tag-icon">
+                    <i class="fa-solid fa-file-shield"></i>
+                </span>
+
+                <span>
+                    Legal Documentation
+                </span>
+
+            </div>
+
+
+            <div class="verification-tag">
+
+                <span class="tag-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
+
+                <span>
+                    Security &amp; Transparency
+                </span>
+
+            </div>
+
+
+            <div class="verification-tag">
+
+                <span class="tag-icon">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </span>
+
+                <span>
+                    Compliance Information
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <a href="about-company.html"
+           class="company-documents-button">
+
+            <span>
+                <i class="fa-solid fa-file-circle-check"></i>
+                View Company Documents
+            </span>
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+</section>
+
+<!-- =====================================================
+     WITHDRAWAL POPUP
+====================================================== -->
+<!-- =====================================================
+     WITHDRAWAL POPUP
+===================================================== -->
+
+<div
+    class="withdraw-popup"
+    id="withdrawPopup"
+    aria-live="polite"
+>
+
+    <!-- ICON -->
+
+    <div class="withdraw-popup-icon">
+
+        <i class="fa-solid fa-circle-check"></i>
+
+    </div>
+
+
+    <!-- CONTENT -->
+
+    <div class="withdraw-content">
+
+        <div class="withdraw-title-row">
+
+            <strong id="withdrawUser">
+                User
+            </strong>
+
+            <span id="withdrawTime">
+                Just now
+            </span>
+
+        </div>
+
+
+        <span id="withdrawMessage">
+            Withdrawal ₹0
+        </span>
+
+
+        <small>
+            Withdrawal completed successfully
+        </small>
+
+    </div>
+
+
+    <!-- CLOSE -->
+
+    <button
+        type="button"
+        id="closeWithdrawPopup"
+        aria-label="Close notification"
+    >
+
+        <i class="fa-solid fa-xmark"></i>
+
+    </button>
+
+</div>
+<!-- =====================================================
+     BOTTOM NAVIGATION
+====================================================== -->
+
+<nav class="bottom-nav">
+
+
+    <button
+        class="nav-item active"
+        data-page="home"
+        onclick="navigate('home')"
+        type="button"
+    >
+
+        <div class="nav-icon">
+
+            <i class="fa-solid fa-house"></i>
+
+        </div>
+
+        <span>
+            Home
+        </span>
+
+    </button>
+
+
+
+    <button
+        class="nav-item"
+        data-page="investments"
+        onclick="navigate('investments')"
+        type="button"
+    >
+
+        <div class="nav-icon">
+
+            <i class="fa-brands fa-bitcoin"></i>
+
+        </div>
+
+        <span>
+            Invest
+        </span>
+
+    </button>
+
+
+
+    <button
+        class="nav-item nav-center"
+        data-page="deposit"
+        onclick="navigate('deposit')"
+        type="button"
+    >
+
+        <div class="center-nav-button">
+
+            <i class="fa-solid fa-plus"></i>
+
+        </div>
+
+        <span>
+            Deposit
+        </span>
+
+    </button>
+
+
+
+    <button 
+    class="nav-item" 
+    data-page="trading" 
+    onclick="window.location.href='trading.html'" 
+    type="button"
+>
+    
+    <div class="nav-icon">
+        <i class="fa-solid fa-chart-line"></i>
+    </div>
+
+    <span>
+        Trading
+    </span>
+
+</button>
+
+
+
+    <button
+        class="nav-item"
+        data-page="profile"
+        onclick="navigate('profile')"
+        type="button"
+    >
+
+        <div class="nav-icon">
+
+            <i class="fa-solid fa-user"></i>
+
+        </div>
+
+        <span>
+            Profile
+        </span>
+
+    </button>
+
+
+</nav>
+
+<!-- =====================================================
+     WELCOME MODAL
+====================================================== -->
+
+<div
+    id="welcomeModal"
+    class="welcome-modal"
+    aria-hidden="true"
+>
+
+    <div class="welcome-overlay"></div>
+
+    <div class="welcome-box">
+
+        <button
+            type="button"
+            id="closeWelcome"
+            class="welcome-close"
+            aria-label="Close welcome message"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+
+        <!-- Bitcoin Icon -->
+
+        <div class="welcome-icon">
+
+            <div class="welcome-bitcoin">
+
+                <i class="fa-brands fa-bitcoin"></i>
+
+            </div>
+
+        </div>
+
+
+        <span class="welcome-label">
+            WELCOME
+        </span>
+
+
+        <h2>
+            Welcome back,
+            <span id="welcomeUserName">
+                User
+            </span>
+        </h2>
+
+
+        <p class="welcome-text">
+
+            Welcome to your Bitcoin Investment dashboard.
+            Manage your balance, explore available options,
+            and keep track of your account activity.
+
+        </p>
+
+
+        <div class="welcome-info">
+
+            <div class="welcome-info-item">
+
+                <div class="welcome-info-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+
+                <div>
+                    <small>Available Balance</small>
+
+                    <strong id="welcomeBalance">
+                        ₹0
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="welcome-info-item">
+
+                <div class="welcome-info-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+                    <small>Account Status</small>
+
+                    <strong class="verified">
+                        Active
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="welcomeContinue"
+            class="welcome-button"
+        >
+
+            Continue to Dashboard
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+
+        <small class="welcome-note">
+
+            Please review your account information
+            before making transactions.
+
+        </small>
+
+    </div>
+
+</div>
+
+<script src="js/home.js"></script>
+
+</body>
+
+</html>

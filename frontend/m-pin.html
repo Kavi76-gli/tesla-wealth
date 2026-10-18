@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta
+        name="theme-color"
+        content="#ffffff"
+    >
+
+    <title>M-PIN Login | Bitcoin Investment</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background: #ffffff;
+
+            color: #111111;
+
+            font-family:
+                "Inter",
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            overflow-x: hidden;
+        }
+
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        .page {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 24px 18px;
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 390px;
+
+            text-align: center;
+        }
+
+
+        /* =====================================================
+           LOGO
+        ===================================================== */
+
+        .logo-box {
+
+            width: 72px;
+
+            height: 72px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 22px;
+
+            background: #111111;
+
+            color: #ffffff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 40px;
+
+            font-weight: 800;
+
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.12);
+
+            animation:
+                logoIn .55s ease forwards;
+        }
+
+
+        @keyframes logoIn {
+
+            from {
+                opacity: 0;
+                transform: scale(.85) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+
+        /* =====================================================
+           BRAND
+        ===================================================== */
+
+        .brand-name {
+
+            font-size: 21px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.7px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .brand-subtitle {
+
+            color: #888888;
+
+            font-size: 12px;
+
+            letter-spacing: .4px;
+
+            margin-bottom: 30px;
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+
+            width: 100%;
+
+            background: #ffffff;
+
+            border: 1px solid #eeeeee;
+
+            border-radius: 28px;
+
+            padding: 28px 22px 24px;
+
+            box-shadow:
+                0 18px 55px rgba(0, 0, 0, .065);
+        }
+
+
+        /* =====================================================
+           LOCK
+        ===================================================== */
+
+        .lock-circle {
+
+            width: 52px;
+
+            height: 52px;
+
+            margin: 0 auto 17px;
+
+            border-radius: 50%;
+
+            background: #f5f5f5;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 22px;
+        }
+
+
+        .title {
+
+            font-size: 20px;
+
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+
+        .description {
+
+            color: #858585;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            margin-bottom: 22px;
+        }
+
+
+        /* =====================================================
+           PHONE
+        ===================================================== */
+
+        .phone-box {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 34px;
+
+            padding: 0 14px;
+
+            margin-bottom: 20px;
+
+            border-radius: 50px;
+
+            background: #f7f7f7;
+
+            color: #555555;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           PIN DOTS
+        ===================================================== */
+
+        .pin-dots {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            margin: 6px 0 27px;
+        }
+
+
+        .dot {
+
+            width: 13px;
+
+            height: 13px;
+
+            border-radius: 50%;
+
+            border: 1.5px solid #bdbdbd;
+
+            background: #ffffff;
+
+            transition:
+                background .16s ease,
+                border-color .16s ease,
+                transform .16s ease;
+        }
+
+
+        .dot.filled {
+
+            background: #111111;
+
+            border-color: #111111;
+
+            transform: scale(1.08);
+        }
+
+
+        /* =====================================================
+           KEYPAD
+        ===================================================== */
+
+        .keypad {
+
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+        }
+
+
+        .key {
+
+            height: 55px;
+
+            border: 1px solid #eeeeee;
+
+            border-radius: 17px;
+
+            background: #fafafa;
+
+            color: #111111;
+
+            font-size: 19px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform .1s ease,
+                background .1s ease;
+        }
+
+
+        .key:active {
+
+            transform: scale(.94);
+
+            background: #eeeeee;
+        }
+
+
+        .key.delete {
+
+            font-size: 18px;
+
+            color: #666666;
+        }
+
+
+        .key.zero {
+
+            font-size: 19px;
+        }
+
+
+        /* =====================================================
+           LOGIN BUTTON
+        ===================================================== */
+
+        .login-button {
+
+            width: 100%;
+
+            height: 52px;
+
+            margin-top: 18px;
+
+            border: none;
+
+            border-radius: 15px;
+
+            background: #111111;
+
+            color: #ffffff;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform .15s ease,
+                opacity .15s ease;
+        }
+
+
+        .login-button:active {
+
+            transform: scale(.98);
+        }
+
+
+        .login-button:disabled {
+
+            opacity: .5;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           FORGOT
+        ===================================================== */
+
+        .forgot-button {
+
+            display: inline-block;
+
+            margin-top: 18px;
+
+            border: none;
+
+            background: transparent;
+
+            color: #555555;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .forgot-button:hover {
+
+            color: #111111;
+        }
+
+
+        /* =====================================================
+           PASSWORD LOGIN
+        ===================================================== */
+
+        .password-login {
+
+            margin-top: 16px;
+
+            padding-top: 16px;
+
+            border-top: 1px solid #eeeeee;
+
+            font-size: 11px;
+
+            color: #999999;
+        }
+
+
+        .password-login button {
+
+            border: none;
+
+            background: transparent;
+
+            color: #111111;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-left: 3px;
+        }
+
+
+        /* =====================================================
+           SECURITY TEXT
+        ===================================================== */
+
+        .security {
+
+            margin-top: 19px;
+
+            color: #aaaaaa;
+
+            font-size: 9px;
+
+            letter-spacing: .3px;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 390px) {
+
+            .page {
+                padding: 18px 14px;
+            }
+
+            .card {
+                padding: 25px 17px 21px;
+            }
+
+            .key {
+                height: 52px;
+            }
+
+            .pin-dots {
+                gap: 13px;
+            }
+        }
+
+
+        /* =====================================================
+           SMALL HEIGHT DEVICES
+        ===================================================== */
+
+        @media (max-height: 700px) {
+
+            .page {
+                align-items: flex-start;
+                padding-top: 18px;
+            }
+
+            .logo-box {
+                width: 58px;
+                height: 58px;
+                font-size: 32px;
+                margin-bottom: 12px;
+            }
+
+            .brand-subtitle {
+                margin-bottom: 17px;
+            }
+
+            .card {
+                padding-top: 20px;
+            }
+
+            .lock-circle {
+                margin-bottom: 10px;
+            }
+
+            .description {
+                margin-bottom: 15px;
+            }
+
+            .pin-dots {
+                margin-bottom: 17px;
+            }
+
+            .key {
+                height: 47px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+    <div class="container">
+
+
+        <!-- =================================================
+             BRAND LOGO
+        ================================================== -->
+
+        <div class="logo-box">
+            ₿
+        </div>
+
+
+        <div class="brand-name">
+            BITCOIN INVESTMENT
+        </div>
+
+
+        <div class="brand-subtitle">
+            Secure Digital Access
+        </div>
+
+
+        <!-- =================================================
+             LOGIN CARD
+        ================================================== -->
+
+        <div class="card">
+
+
+            <div class="lock-circle">
+                🔐
+            </div>
+
+
+            <div class="title">
+                Enter M-PIN
+            </div>
+
+
+            <div class="description">
+                Enter your 4-digit M-PIN to securely
+                access your account.
+            </div>
+
+
+            <!-- =================================================
+                 REGISTERED PHONE
+            ================================================== -->
+
+            <div
+                id="phoneBox"
+                class="phone-box"
+            >
+                Mobile: <span id="phoneText">••••••••••</span>
+            </div>
+
+
+            <!-- =================================================
+                 PIN DOTS
+            ================================================== -->
+
+            <div
+                id="pinDots"
+                class="pin-dots"
+            >
+
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+
+            </div>
+
+
+            <!-- =================================================
+                 KEYPAD
+            ================================================== -->
+
+            <div class="keypad">
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('1')"
+                >
+                    1
+                </button>
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('2')"
+                >
+                    2
+                </button>
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('3')"
+                >
+                    3
+                </button>
+
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('4')"
+                >
+                    4
+                </button>
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('5')"
+                >
+                    5
+                </button>
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('6')"
+                >
+                    6
+                </button>
+
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('7')"
+                >
+                    7
+                </button>
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('8')"
+                >
+                    8
+                </button>
+
+                <button
+                    type="button"
+                    class="key"
+                    onclick="addDigit('9')"
+                >
+                    9
+                </button>
+
+
+                <button
+                    type="button"
+                    class="key delete"
+                    onclick="deleteDigit()"
+                    aria-label="Delete"
+                >
+                    ⌫
+                </button>
+
+                <button
+                    type="button"
+                    class="key zero"
+                    onclick="addDigit('0')"
+                >
+                    0
+                </button>
+
+                <button
+                    type="button"
+                    class="key delete"
+                    onclick="clearPin()"
+                >
+                    C
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 LOGIN
+            ================================================== -->
+
+            <button
+                id="loginButton"
+                class="login-button"
+                type="button"
+                onclick="loginWithMPIN()"
+            >
+                Continue
+            </button>
+
+
+            <!-- =================================================
+                 FORGOT M-PIN
+            ================================================== -->
+
+            <button
+                type="button"
+                class="forgot-button"
+                onclick="forgotMPIN()"
+            >
+                Forgot M-PIN?
+            </button>
+
+
+            <!-- =================================================
+                 PASSWORD FALLBACK
+            ================================================== -->
+
+            <div class="password-login">
+
+                Prefer password login?
+
+                <button
+                    type="button"
+                    onclick="passwordLogin()"
+                >
+                    Login with Password
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="security">
+            Your M-PIN is securely verified by the platform.
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // CONFIGURATION
+    // =====================================================
+
+    const API_URL =
+        "http://localhost:5000/api";
+
+    const PIN_LENGTH = 4;
+
+    let pin = "";
+
+    let isLoggingIn = false;
+
+
+    // =====================================================
+    // GET REGISTERED PHONE
+    // =====================================================
+
+    function getRegisteredPhone() {
+
+        return (
+            localStorage.getItem("registered_phone") ||
+            localStorage.getItem("ki_phone") ||
+            localStorage.getItem("user_phone") ||
+            ""
+        );
+    }
+
+
+    // =====================================================
+    // NORMALIZE PHONE
+    // =====================================================
+
+    function normalizePhone(phone) {
+
+        phone = String(phone || "")
+            .replace(/\D/g, "");
+
+        if (
+            phone.startsWith("91") &&
+            phone.length === 12
+        ) {
+            return "+" + phone;
+        }
+
+        if (phone.length === 10) {
+            return "+91" + phone;
+        }
+
+        return phone;
+    }
+
+
+    // =====================================================
+    // DISPLAY PHONE
+    // =====================================================
+
+    function maskPhone(phone) {
+
+        const clean =
+            String(phone || "")
+                .replace(/\D/g, "");
+
+        if (clean.length === 10) {
+
+            return (
+                clean.substring(0, 2) +
+                "••••••" +
+                clean.substring(8)
+            );
+        }
+
+        if (clean.length === 12) {
+
+            return (
+                "+91 " +
+                clean.substring(2, 4) +
+                "••••••" +
+                clean.substring(10)
+            );
+        }
+
+        return "••••••••••";
+    }
+
+
+    // =====================================================
+    // UPDATE DOTS
+    // =====================================================
+
+    function updateDots() {
+
+        const dots =
+            document.querySelectorAll(".dot");
+
+        dots.forEach((dot, index) => {
+
+            if (index < pin.length) {
+
+                dot.classList.add("filled");
+
+            } else {
+
+                dot.classList.remove("filled");
+
+            }
+
+        });
+    }
+
+
+    // =====================================================
+    // ADD DIGIT
+    // =====================================================
+
+    function addDigit(digit) {
+
+        if (isLoggingIn) {
+            return;
+        }
+
+        if (pin.length >= PIN_LENGTH) {
+            return;
+        }
+
+        pin += String(digit);
+
+        updateDots();
+
+
+        // Automatically submit after
+        // the fourth digit.
+
+        if (pin.length === PIN_LENGTH) {
+
+            setTimeout(() => {
+
+                loginWithMPIN();
+
+            }, 120);
+
+        }
+    }
+
+
+    // =====================================================
+    // DELETE DIGIT
+    // =====================================================
+
+    function deleteDigit() {
+
+        if (isLoggingIn) {
+            return;
+        }
+
+        pin = pin.slice(0, -1);
+
+        updateDots();
+    }
+
+
+    // =====================================================
+    // CLEAR PIN
+    // =====================================================
+
+    function clearPin() {
+
+        if (isLoggingIn) {
+            return;
+        }
+
+        pin = "";
+
+        updateDots();
+    }
+
+
+    // =====================================================
+    // LOGIN WITH M-PIN
+    // =====================================================
+
+    async function loginWithMPIN() {
+
+        if (isLoggingIn) {
+            return;
+        }
+
+
+        // -----------------------------------------------
+        // Validate PIN
+        // -----------------------------------------------
+
+        if (!/^\d{4}$/.test(pin)) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Enter M-PIN",
+                text: "Please enter your 4-digit M-PIN.",
+                confirmButtonText: "OK"
+            });
+
+            return;
+        }
+
+
+        // -----------------------------------------------
+        // Get registered phone
+        // -----------------------------------------------
+
+        const registeredPhone =
+            getRegisteredPhone();
+
+        if (!registeredPhone) {
+
+            Swal.fire({
+                icon: "warning",
+                title: "Account Not Found",
+                text:
+                    "No registered mobile number was found on this device.",
+                confirmButtonText: "Continue"
+            }).then(() => {
+
+                window.location.replace(
+                    "auth.html"
+                );
+
+            });
+
+            return;
+        }
+
+
+        const phone =
+            normalizePhone(registeredPhone);
+
+
+        try {
+
+            isLoggingIn = true;
+
+            const button =
+                document.getElementById(
+                    "loginButton"
+                );
+
+            button.disabled = true;
+            button.textContent =
+                "Verifying...";
+
+
+            // -------------------------------------------
+            // BACKEND M-PIN LOGIN
+            // -------------------------------------------
+
+            const response =
+                await fetch(
+                    `${API_URL}/auth/login-mpin`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            phone: phone,
+
+                            mpin: pin
+
+                        })
+                    }
+                );
+
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch {
+
+                data = {};
+
+            }
+
+
+            // -------------------------------------------
+            // BACKEND ERROR
+            // -------------------------------------------
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "M-PIN verification failed."
+                );
+            }
+
+
+            // -------------------------------------------
+            // TOKEN CHECK
+            // -------------------------------------------
+
+            if (!data.token) {
+
+                throw new Error(
+                    "Login succeeded but no authentication token was returned."
+                );
+            }
+
+
+            // -------------------------------------------
+            // SAVE JWT
+            // -------------------------------------------
+
+            localStorage.setItem(
+                "ki_token",
+                data.token
+            );
+
+            localStorage.setItem(
+                "token",
+                data.token
+            );
+
+
+            // -------------------------------------------
+            // SAVE USER
+            // -------------------------------------------
+
+            if (data.user) {
+
+                localStorage.setItem(
+                    "ki_user",
+                    JSON.stringify(data.user)
+                );
+            }
+
+
+            // Keep the registered phone.
+
+            localStorage.setItem(
+                "registered_phone",
+                phone
+            );
+
+
+            // M-PIN is already configured.
+
+            localStorage.setItem(
+                "mpin_set",
+                "true"
+            );
+
+
+            // -------------------------------------------
+            // CLEAR PIN FROM MEMORY
+            // -------------------------------------------
+
+            pin = "";
+
+            updateDots();
+
+
+            // -------------------------------------------
+            // SUCCESS
+            // -------------------------------------------
+
+            await Swal.fire({
+
+                icon: "success",
+
+                title: "Welcome Back",
+
+                text: "Login successful.",
+
+                timer: 1100,
+
+                showConfirmButton: false
+
+            });
+
+
+            // -------------------------------------------
+            // HOME
+            // -------------------------------------------
+
+            window.location.replace(
+                "home.html"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "❌ M-PIN LOGIN ERROR:",
+                error
+            );
+
+
+            // Clear entered PIN.
+
+            pin = "";
+
+            updateDots();
+
+
+            let message =
+                error.message ||
+                "Unable to login with M-PIN.";
+
+
+            // -------------------------------------------
+            // COMMON BACKEND MESSAGES
+            // -------------------------------------------
+
+            if (
+                message
+                    .toLowerCase()
+                    .includes("locked")
+            ) {
+
+                // Keep backend lock message.
+
+            }
+
+
+            Swal.fire({
+
+                icon: "error",
+
+                title: "M-PIN Login Failed",
+
+                text: message,
+
+                confirmButtonText: "Try Again"
+
+            });
+
+
+        } finally {
+
+            isLoggingIn = false;
+
+            const button =
+                document.getElementById(
+                    "loginButton"
+                );
+
+            button.disabled = false;
+
+            button.textContent =
+                "Continue";
+        }
+    }
+
+
+    // =====================================================
+    // FORGOT M-PIN
+    // =====================================================
+
+    function forgotMPIN() {
+
+        window.location.href =
+            "reset-mpin.html";
+    }
+
+
+    // =====================================================
+    // PASSWORD FALLBACK
+    // =====================================================
+
+    function passwordLogin() {
+
+        window.location.href =
+            "auth.html?login=password";
+    }
+
+
+    // =====================================================
+    // KEYBOARD SUPPORT
+    // =====================================================
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            // Number keys
+
+            if (
+                event.key >= "0" &&
+                event.key <= "9"
+            ) {
+
+                addDigit(event.key);
+
+                return;
+            }
+
+
+            // Backspace
+
+            if (
+                event.key ===
+                "Backspace"
+            ) {
+
+                deleteDigit();
+
+                return;
+            }
+
+
+            // Escape
+
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                clearPin();
+
+                return;
+            }
+
+
+            // Enter
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                loginWithMPIN();
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // INITIAL PAGE LOAD
+    // =====================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            const phone =
+                getRegisteredPhone();
+
+
+            // -------------------------------------------
+            // No registered account
+            // -------------------------------------------
+
+            if (!phone) {
+
+                document
+                    .getElementById(
+                        "phoneText"
+                    )
+                    .textContent =
+                    "Not available";
+
+                return;
+            }
+
+
+            // -------------------------------------------
+            // Display masked phone
+            // -------------------------------------------
+
+            document
+                .getElementById(
+                    "phoneText"
+                )
+                .textContent =
+                maskPhone(phone);
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

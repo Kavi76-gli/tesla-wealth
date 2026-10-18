@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin - Transactions</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/admin-transactions.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         SIDEBAR
+    =========================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <i class="fa-solid fa-crown"></i>
+
+            <span>Admin Panel</span>
+
+        </div>
+
+
+        <nav>
+
+            <a href="./admin.html">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                Dashboard
+
+            </a>
+
+
+            <a href="./admin-users.html">
+
+                <i class="fa-solid fa-users"></i>
+
+                Users
+
+            </a>
+
+
+            <a href="./admin-deposits.html">
+
+                <i class="fa-solid fa-money-bill-wave"></i>
+
+                Deposits
+
+            </a>
+
+
+            <a href="./admin-withdrawals.html">
+
+                <i class="fa-solid fa-money-bill-transfer"></i>
+
+                Withdrawals
+
+            </a>
+
+
+            <a href="./investment-plans.html">
+
+                <i class="fa-solid fa-layer-group"></i>
+
+                Investment Plans
+
+            </a>
+
+
+            <a href="./payment-settings.html">
+
+                <i class="fa-solid fa-credit-card"></i>
+
+                Payment Settings
+
+            </a>
+
+
+            <a
+                href="./admin-transactions.html"
+                class="active"
+            >
+
+                <i class="fa-solid fa-receipt"></i>
+
+                Transactions
+
+            </a>
+
+
+        </nav>
+
+
+        <button
+            id="logoutBtn"
+            class="logout-btn"
+        >
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
+
+    </aside>
+
+
+
+    <!-- ==========================================
+         MAIN
+    =========================================== -->
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Transactions</h1>
+
+                <p>
+                    View all user wallet transactions
+                </p>
+
+            </div>
+
+
+            <button
+                id="refreshBtn"
+                class="refresh-btn"
+            >
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Refresh
+
+            </button>
+
+        </header>
+
+
+
+        <!-- ======================================
+             STATS
+        ======================================= -->
+
+        <section class="stats">
+
+
+            <div class="stat-card">
+
+                <span>Total</span>
+
+                <strong id="totalCount">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>Credits</span>
+
+                <strong id="creditCount">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>Debits</span>
+
+                <strong id="debitCount">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>Volume</span>
+
+                <strong id="volume">
+                    ₹0
+                </strong>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ======================================
+             FILTER
+        ======================================= -->
+
+        <section class="filter-card">
+
+            <div class="search-box">
+
+                <i
+                    class="fa-solid fa-magnifying-glass"
+                ></i>
+
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="Search user, phone, TX ID..."
+                >
+
+            </div>
+
+
+            <select id="typeFilter">
+
+                <option value="All">
+                    All
+                </option>
+
+                <option value="Credit">
+                    Credit
+                </option>
+
+                <option value="Debit">
+                    Debit
+                </option>
+
+            </select>
+
+        </section>
+
+
+
+        <!-- ======================================
+             TABLE
+        ======================================= -->
+
+        <section class="table-card">
+
+            <div class="table-header">
+
+                <h2>
+                    Transaction History
+                </h2>
+
+                <span id="resultCount">
+                    0 transactions
+                </span>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>User</th>
+
+                            <th>Transaction ID</th>
+
+                            <th>Type</th>
+
+                            <th>Amount</th>
+
+                            <th>Description</th>
+
+                            <th>Date</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="transactionTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="loading"
+                            >
+
+                                <i
+                                    class="
+                                        fa-solid
+                                        fa-spinner
+                                        fa-spin
+                                    "
+                                ></i>
+
+                                Loading transactions...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ==========================================
+         MODAL
+    =========================================== -->
+
+    <div
+        id="transactionModal"
+        class="modal"
+    >
+
+        <div class="modal-box">
+
+            <div class="modal-header">
+
+                <h2>
+                    Transaction Details
+                </h2>
+
+                <button
+                    id="closeModal"
+                    class="close-btn"
+                >
+
+                    <i
+                        class="fa-solid fa-xmark"
+                    ></i>
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="modalContent"
+                class="modal-content"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/admin-trnsaction.js"></script>
+
+</body>
+
+</html>

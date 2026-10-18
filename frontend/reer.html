@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Invite Friends | Bitcoin Invest</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- KEEPING YOUR EXISTING THEME -->
+    <link
+        rel="stylesheet"
+        href="css/reer.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- ==================================================
+         HEADER
+    =================================================== -->
+
+    <header class="top-header">
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </button>
+
+
+        <div>
+
+            <h1>Invite Friends</h1>
+
+            <p>
+                Invite friends and earn rewards
+            </p>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==================================================
+         HERO
+    =================================================== -->
+
+    <section class="invite-hero">
+
+        <div class="hero-icon">
+
+            <i class="fa-solid fa-gift"></i>
+
+        </div>
+
+
+        <h2>
+            Invite & Earn
+        </h2>
+
+
+        <p>
+            Share your referral link with friends
+            and earn 5% from qualifying deposits
+            made by your referred users.
+        </p>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         STATISTICS
+    =================================================== -->
+
+    <section class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon users">
+
+                <i class="fa-solid fa-users"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Total Invites
+                </span>
+
+
+                <strong
+                    id="referralCount"
+                >
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon money">
+
+                <i
+                    class="fa-solid fa-indian-rupee-sign"
+                ></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Referral Earnings
+                </span>
+
+
+                <strong
+                    id="referralEarnings"
+                >
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         REFERRAL CODE
+    =================================================== -->
+
+    <section class="referral-card">
+
+
+        <div class="section-title">
+
+            <i class="fa-solid fa-ticket"></i>
+
+            <span>
+                Your Referral Code
+            </span>
+
+        </div>
+
+
+
+        <div class="code-box">
+
+
+            <strong
+                id="inviteCode"
+            >
+                Loading...
+            </strong>
+
+
+            <button
+                type="button"
+                onclick="copyReferralCode()"
+                title="Copy referral code"
+            >
+
+                <i class="fa-solid fa-copy"></i>
+
+            </button>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         REFERRAL LINK
+    =================================================== -->
+
+    <section class="referral-card">
+
+
+        <div class="section-title">
+
+            <i class="fa-solid fa-link"></i>
+
+            <span>
+                Your Referral Link
+            </span>
+
+        </div>
+
+
+
+        <div class="link-box">
+
+
+            <span
+                id="referralLink"
+            >
+                Loading...
+            </span>
+
+
+            <button
+                type="button"
+                onclick="copyReferralLink()"
+                title="Copy referral link"
+            >
+
+                <i class="fa-solid fa-copy"></i>
+
+            </button>
+
+
+        </div>
+
+
+
+        <button
+            type="button"
+            class="share-main"
+            onclick="shareReferral()"
+        >
+
+            <i class="fa-solid fa-share-nodes"></i>
+
+            Share Referral Link
+
+        </button>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         SHARE BUTTONS
+    =================================================== -->
+
+    <section class="share-section">
+
+
+        <h3>
+            Share With Friends
+        </h3>
+
+
+
+        <div class="share-buttons">
+
+
+            <button
+                type="button"
+                class="share-btn whatsapp"
+                onclick="shareWhatsApp()"
+            >
+
+                <i
+                    class="fa-brands fa-whatsapp"
+                ></i>
+
+                WhatsApp
+
+            </button>
+
+
+
+            <button
+                type="button"
+                class="share-btn telegram"
+                onclick="shareTelegram()"
+            >
+
+                <i
+                    class="fa-brands fa-telegram"
+                ></i>
+
+                Telegram
+
+            </button>
+
+
+
+            <button
+                type="button"
+                class="share-btn copy"
+                onclick="copyReferralLink()"
+            >
+
+                <i
+                    class="fa-solid fa-copy"
+                ></i>
+
+                Copy
+
+            </button>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         REFERRAL PROGRAM
+    =================================================== -->
+
+    <section class="steps-card">
+
+
+        <h3>
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            Referral Program
+
+        </h3>
+
+
+
+        <div class="step">
+
+
+            <div class="step-number">
+                1
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Share Your Link
+                </strong>
+
+
+                <p>
+                    Send your personal referral
+                    link to friends.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="step">
+
+
+            <div class="step-number">
+                2
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Friend Registers
+                </strong>
+
+
+                <p>
+                    Your friend creates an account
+                    using your referral link.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="step">
+
+
+            <div class="step-number">
+                3
+            </div>
+
+
+            <div>
+
+                <strong>
+                    ₹12 Welcome Bonus
+                </strong>
+
+
+                <p>
+                    The newly registered referred
+                    user receives a ₹12 welcome bonus.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="step">
+
+
+            <div class="step-number">
+                4
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Earn 5% Commission
+                </strong>
+
+
+                <p>
+                    When your referred user makes
+                    a qualifying deposit, you receive
+                    5% of that deposit amount.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         REFERRAL HISTORY
+    =================================================== -->
+
+    <section class="history-section">
+
+
+        <div class="history-title">
+
+
+            <h3>
+                Referral History
+            </h3>
+
+
+            <span
+                id="historyCount"
+            >
+                0
+            </span>
+
+
+        </div>
+
+
+
+        <div
+            id="referralHistory"
+        >
+
+            <div class="loading">
+
+                Loading referral history...
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+</div>
+
+
+
+<!-- ======================================================
+     BOTTOM NAVIGATION
+====================================================== -->
+
+<nav class="bottom-nav">
+
+
+    <a href="home.html">
+
+        <i class="fa-solid fa-house"></i>
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+
+    <a href="investments.html">
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>
+            Invest
+        </span>
+
+    </a>
+
+
+
+    <a
+        href="invite.html"
+        class="active"
+    >
+
+        <div class="nav-main-icon">
+
+            <i class="fa-solid fa-gift"></i>
+
+        </div>
+
+        <span>
+            Invite
+        </span>
+
+    </a>
+
+
+
+    <a href="deposite.html">
+
+        <i class="fa-solid fa-circle-plus"></i>
+
+        <span>
+            Deposit
+        </span>
+
+    </a>
+
+
+
+    <a href="profile.html">
+
+        <i class="fa-solid fa-user"></i>
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+
+</nav>
+
+
+
+<!-- ======================================================
+     TOAST
+====================================================== -->
+
+<div
+    id="toast"
+    class="toast"
+>
+    Copied successfully
+</div>
+
+
+
+<!-- ======================================================
+     REFERRAL JAVASCRIPT
+====================================================== -->
+
+<script src="js/reer.js"></script>
+
+
+</body>
+
+</html>
+

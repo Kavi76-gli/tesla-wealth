@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>Investment Admin</h2>
+
+        </div>
+
+        <ul>
+
+            <li class="active">
+                <a href="dashboard.html">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="users.html">
+                    <i class="fas fa-users"></i>
+                    Users
+                </a>
+            </li>
+
+
+
+<li>
+    <a href="admin-referral-report.html">
+        <i class="fas fa-user-friends"></i>
+        Referral Report
+    </a>
+</li>
+
+
+            <li>
+                <a href="deposits.html">
+                    <i class="fas fa-wallet"></i>
+                    Deposits
+                </a>
+            </li>
+
+            <li>
+                <a href="withdrawals.html">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Withdrawals
+                </a>
+            </li>
+
+            <li>
+                <a href="investment-plans.html">
+                    <i class="fas fa-chart-pie"></i>
+                    Investment Plans
+                </a>
+            </li>
+
+            <li>
+                <a href="purchase-history.html">
+                    <i class="fas fa-shopping-cart"></i>
+                    Purchase History
+                </a>
+            </li>
+
+            <li>
+                <a href="daily-income.html">
+                    <i class="fas fa-hand-holding-dollar"></i>
+                    Daily Income
+                </a>
+            </li>
+
+            <li>
+                <a href="banner.html">
+                    <i class="fas fa-image"></i>
+                    Banner
+                </a>
+            </li>
+
+            <li>
+                <a href="notice.html">
+                    <i class="fas fa-bullhorn"></i>
+                    Notice
+                </a>
+            </li>
+
+            <li>
+                <a href="payment-setting.html">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutBtn">
+                    <i class="fas fa-right-from-bracket"></i>
+                    Logout
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <!-- Header -->
+
+        <div class="topbar">
+
+            <h1>📊 Dashboard</h1>
+
+            <div class="admin-box">
+
+                <i class="fas fa-user-shield"></i>
+
+                <span id="adminName">
+                    Administrator
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Dashboard Cards -->
+
+        <section class="cards">
+
+            <div class="card">
+
+                <i class="fas fa-users"></i>
+
+                <h3>Total Users</h3>
+
+                <h2 id="totalUsers">0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-user-check"></i>
+
+                <h3>Active Users</h3>
+
+                <h2 id="activeUsers">0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-user-lock"></i>
+
+                <h3>Blocked Users</h3>
+
+                <h2 id="blockedUsers">0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-user-shield"></i>
+
+                <h3>Admins</h3>
+
+                <h2 id="admins">0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-wallet"></i>
+
+                <h3>Total Deposits</h3>
+
+                <h2 id="totalDeposits">₹0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-money-bill-wave"></i>
+
+                <h3>Total Withdrawals</h3>
+
+                <h2 id="totalWithdrawals">₹0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-chart-pie"></i>
+
+                <h3>Investment Plans</h3>
+
+                <h2 id="investmentPlans">0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-shopping-cart"></i>
+
+                <h3>Purchase History</h3>
+
+                <h2 id="purchaseHistory">0</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fas fa-coins"></i>
+
+                <h3>Daily Income</h3>
+
+                <h2 id="dailyIncome">₹0</h2>
+
+            </div>
+
+        </section>
+
+        <!-- Recent Activity -->
+
+        <section class="recent-section">
+
+            <div class="recent-card">
+
+                <h2>Recent Activity</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>User</th>
+
+                            <th>Activity</th>
+
+                            <th>Date</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="activityTable">
+
+                        <tr>
+
+                            <td colspan="3">
+                                No recent activity available.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+
+</body>
+
+</html>

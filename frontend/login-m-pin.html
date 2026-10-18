@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <title>M-PIN | Bitcoin Investment</title>
+
+    <meta name="theme-color" content="#ffffff">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 50% 15%,
+                    rgba(69, 240, 106, 0.055),
+                    transparent 30%
+                ),
+                #ffffff;
+
+            color: #111111;
+
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           PAGE
+        ========================================= */
+
+        .page {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+
+            padding: 34px 20px 25px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 390px;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+        }
+
+        /* =========================================
+           TOP BRAND
+        ========================================= */
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            margin-bottom: 38px;
+
+            opacity: 0;
+
+            animation: fadeDown 0.65s ease forwards;
+        }
+
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+
+            border: 1px solid #e8e8e8;
+
+            box-shadow:
+                0 7px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .brand-logo span {
+            font-size: 23px;
+            font-weight: 800;
+
+            color: #111111;
+        }
+
+        .brand-name {
+            font-size: 15px;
+            font-weight: 800;
+
+            letter-spacing: -0.3px;
+        }
+
+        .brand-name span {
+            font-weight: 500;
+            color: #777777;
+        }
+
+        /* =========================================
+           LOCK
+        ========================================= */
+
+        .lock-wrap {
+            width: 76px;
+            height: 76px;
+
+            border-radius: 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+
+            border: 1px solid #eeeeee;
+
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.07),
+                0 4px 10px rgba(0, 0, 0, 0.03);
+
+            margin-bottom: 23px;
+
+            opacity: 0;
+
+            animation:
+                scaleIn 0.7s cubic-bezier(.2,.8,.2,1) 0.1s
+                forwards;
+        }
+
+        .lock {
+            font-size: 31px;
+        }
+
+        /* =========================================
+           TITLE
+        ========================================= */
+
+        .title {
+            font-size: 25px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.7px;
+
+            text-align: center;
+
+            opacity: 0;
+
+            animation:
+                fadeUp 0.65s ease 0.25s
+                forwards;
+        }
+
+        .description {
+            margin-top: 9px;
+
+            max-width: 290px;
+
+            text-align: center;
+
+            color: #8b8b8b;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            opacity: 0;
+
+            animation:
+                fadeUp 0.65s ease 0.35s
+                forwards;
+        }
+
+        /* =========================================
+           PIN DOTS
+        ========================================= */
+
+        .pin-area {
+            margin-top: 31px;
+
+            opacity: 0;
+
+            animation:
+                fadeUp 0.65s ease 0.45s
+                forwards;
+        }
+
+        .pin-dots {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            min-height: 18px;
+        }
+
+        .dot {
+            width: 13px;
+            height: 13px;
+
+            border-radius: 50%;
+
+            background: #e7e7e7;
+
+            transition:
+                transform 0.16s ease,
+                background 0.16s ease;
+        }
+
+        .dot.active {
+            background: #111111;
+
+            transform: scale(1.08);
+        }
+
+        .dot.success {
+            background: #45f06a;
+        }
+
+        /* =========================================
+           ERROR
+        ========================================= */
+
+        .error {
+            height: 18px;
+
+            margin-top: 9px;
+
+            font-size: 11px;
+
+            color: #d93636;
+
+            text-align: center;
+
+            opacity: 0;
+
+            transition: opacity 0.2s ease;
+        }
+
+        .error.show {
+            opacity: 1;
+        }
+
+        /* =========================================
+           FORGOT PIN
+        ========================================= */
+
+        .forgot {
+            margin-top: 7px;
+
+            border: none;
+
+            background: none;
+
+            color: #222222;
+
+            font-family: inherit;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            padding: 8px 12px;
+        }
+
+        .forgot:hover {
+            color: #45b95d;
+        }
+
+        /* =========================================
+           KEYPAD
+        ========================================= */
+
+        .keypad {
+            width: 100%;
+
+            max-width: 300px;
+
+            margin-top: 22px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 13px;
+
+            opacity: 0;
+
+            animation:
+                fadeUp 0.65s ease 0.55s
+                forwards;
+        }
+
+        .key {
+            height: 58px;
+
+            border: 1px solid #eeeeee;
+
+            border-radius: 18px;
+
+            background: #ffffff;
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, 0.035);
+
+            font-family: inherit;
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+            color: #181818;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.12s ease,
+                background 0.12s ease,
+                box-shadow 0.12s ease;
+        }
+
+        .key:active {
+            transform: scale(0.94);
+
+            background: #f7f7f7;
+
+            box-shadow:
+                0 2px 7px rgba(0,0,0,0.04);
+        }
+
+        .key.delete {
+            font-size: 19px;
+
+            color: #777777;
+        }
+
+        .key.empty {
+            border: none;
+
+            box-shadow: none;
+
+            background: transparent;
+
+            pointer-events: none;
+        }
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        .secure {
+            margin-top: 29px;
+
+            font-size: 9px;
+
+            letter-spacing: 1.2px;
+
+            color: #aaaaaa;
+
+            text-transform: uppercase;
+
+            opacity: 0;
+
+            animation:
+                fadeIn 0.7s ease 0.75s
+                forwards;
+        }
+
+        .secure-dot {
+            display: inline-block;
+
+            width: 5px;
+            height: 5px;
+
+            border-radius: 50%;
+
+            background: #45f06a;
+
+            margin-right: 5px;
+        }
+
+        /* =========================================
+           SHAKE
+        ========================================= */
+
+        .shake {
+            animation: shake 0.35s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-7px);
+            }
+
+            40% {
+                transform: translateX(7px);
+            }
+
+            60% {
+                transform: translateX(-5px);
+            }
+
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* =========================================
+           ANIMATIONS
+        ========================================= */
+
+        @keyframes fadeDown {
+
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+
+            from {
+                opacity: 0;
+                transform: scale(0.75);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* =========================================
+           SMALL SCREEN
+        ========================================= */
+
+        @media (max-height: 650px) {
+
+            .page {
+                padding-top: 20px;
+            }
+
+            .brand {
+                margin-bottom: 20px;
+            }
+
+            .lock-wrap {
+                width: 65px;
+                height: 65px;
+
+                margin-bottom: 15px;
+            }
+
+            .keypad {
+                margin-top: 15px;
+
+                gap: 9px;
+            }
+
+            .key {
+                height: 50px;
+            }
+
+            .secure {
+                margin-top: 15px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <main class="container">
+
+        <!-- BRAND -->
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                <span>₿</span>
+            </div>
+
+            <div class="brand-name">
+                BITCOIN <span>INVESTMENT</span>
+            </div>
+
+        </div>
+
+
+        <!-- LOCK -->
+
+        <div class="lock-wrap">
+            <div class="lock">🔐</div>
+        </div>
+
+
+        <!-- TITLE -->
+
+        <h1 class="title">
+            Welcome Back
+        </h1>
+
+        <p class="description">
+            Enter your M-PIN to securely access your account.
+        </p>
+
+
+        <!-- PIN -->
+
+        <div class="pin-area">
+
+            <div
+                class="pin-dots"
+                id="pinDots"
+            >
+
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+
+            </div>
+
+            <div
+                class="error"
+                id="errorMessage"
+            ></div>
+
+        </div>
+
+
+        <!-- FORGOT -->
+
+        <button
+            class="forgot"
+            id="forgotBtn"
+            type="button"
+        >
+            Forgot M-PIN?
+        </button>
+
+
+        <!-- KEYPAD -->
+
+        <div class="keypad">
+
+            <button
+                class="key"
+                data-number="1"
+                type="button"
+            >
+                1
+            </button>
+
+            <button
+                class="key"
+                data-number="2"
+                type="button"
+            >
+                2
+            </button>
+
+            <button
+                class="key"
+                data-number="3"
+                type="button"
+            >
+                3
+            </button>
+
+            <button
+                class="key"
+                data-number="4"
+                type="button"
+            >
+                4
+            </button>
+
+            <button
+                class="key"
+                data-number="5"
+                type="button"
+            >
+                5
+            </button>
+
+            <button
+                class="key"
+                data-number="6"
+                type="button"
+            >
+                6
+            </button>
+
+            <button
+                class="key"
+                data-number="7"
+                type="button"
+            >
+                7
+            </button>
+
+            <button
+                class="key"
+                data-number="8"
+                type="button"
+            >
+                8
+            </button>
+
+            <button
+                class="key"
+                data-number="9"
+                type="button"
+            >
+                9
+            </button>
+
+            <button
+                class="key empty"
+                type="button"
+                disabled
+            ></button>
+
+            <button
+                class="key"
+                data-number="0"
+                type="button"
+            >
+                0
+            </button>
+
+            <button
+                class="key delete"
+                id="deleteBtn"
+                type="button"
+            >
+                ⌫
+            </button>
+
+        </div>
+
+
+        <!-- SECURITY -->
+
+        <div class="secure">
+
+            <span class="secure-dot"></span>
+
+            Secure Login
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /* =========================================
+       CONFIG
+    ========================================= */
+
+    const API_URL = "http://localhost:5000/api";
+
+    const pinLength = 4;
+
+    let pin = "";
+
+    let isSubmitting = false;
+
+
+    /* =========================================
+       ELEMENTS
+    ========================================= */
+
+    const dots = document.querySelectorAll(".dot");
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+    const forgotBtn =
+        document.getElementById("forgotBtn");
+
+    const deleteBtn =
+        document.getElementById("deleteBtn");
+
+
+    /* =========================================
+       UPDATE DOTS
+    ========================================= */
+
+    function updateDots() {
+
+        dots.forEach((dot, index) => {
+
+            dot.classList.toggle(
+                "active",
+                index < pin.length
+            );
+
+        });
+
+    }
+
+
+    /* =========================================
+       ERROR
+    ========================================= */
+
+    function showError(message) {
+
+        errorMessage.textContent = message;
+
+        errorMessage.classList.add("show");
+
+        document.querySelector(".pin-area")
+            .classList.remove("shake");
+
+        void document.querySelector(".pin-area")
+            .offsetWidth;
+
+        document.querySelector(".pin-area")
+            .classList.add("shake");
+
+    }
+
+
+    function clearError() {
+
+        errorMessage.textContent = "";
+
+        errorMessage.classList.remove("show");
+
+    }
+
+
+    /* =========================================
+       ADD NUMBER
+    ========================================= */
+
+    function addNumber(number) {
+
+        if (isSubmitting) return;
+
+        clearError();
+
+        if (pin.length >= pinLength) {
+            return;
+        }
+
+        pin += number;
+
+        updateDots();
+
+        if (pin.length === pinLength) {
+
+            setTimeout(() => {
+
+                loginWithMPin();
+
+            }, 180);
+
+        }
+
+    }
+
+
+    /* =========================================
+       DELETE
+    ========================================= */
+
+    function deleteNumber() {
+
+        if (isSubmitting) return;
+
+        clearError();
+
+        pin = pin.slice(0, -1);
+
+        updateDots();
+
+    }
+
+
+    /* =========================================
+       KEYPAD EVENTS
+    ========================================= */
+
+    document
+        .querySelectorAll("[data-number]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    addNumber(
+                        button.dataset.number
+                    );
+
+                }
+            );
+
+        });
+
+
+    deleteBtn.addEventListener(
+        "click",
+        deleteNumber
+    );
+
+
+    /* =========================================
+       KEYBOARD SUPPORT
+    ========================================= */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key >= "0" &&
+                event.key <= "9"
+            ) {
+
+                addNumber(event.key);
+
+            }
+
+            if (
+                event.key === "Backspace"
+            ) {
+
+                deleteNumber();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================
+       GET REGISTERED PHONE
+       ========================================= */
+
+    function getRegisteredPhone() {
+
+        return (
+            localStorage.getItem(
+                "registered_phone"
+            ) ||
+
+            localStorage.getItem(
+                "ki_phone"
+            ) ||
+
+            localStorage.getItem(
+                "user_phone"
+            ) ||
+
+            ""
+        );
+
+    }
+
+
+    /* =========================================
+       M-PIN LOGIN
+       ========================================= */
+
+    async function loginWithMPin() {
+
+        if (isSubmitting) return;
+
+        const phone =
+            getRegisteredPhone();
+
+        if (!phone) {
+
+            showError(
+                "Registered mobile number not found."
+            );
+
+            pin = "";
+
+            updateDots();
+
+            setTimeout(() => {
+
+                window.location.replace(
+                    "auth.html"
+                );
+
+            }, 900);
+
+            return;
+
+        }
+
+        isSubmitting = true;
+
+        try {
+
+            const response = await fetch(
+                `${API_URL}/auth/login-mpin`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        phone: phone,
+                        mpin: pin
+                    })
+                }
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok || !data.success) {
+
+                throw new Error(
+                    data.message ||
+                    "Incorrect M-PIN."
+                );
+
+            }
+
+            /* -------------------------------
+               SAVE AUTH TOKEN
+            -------------------------------- */
+
+            if (data.token) {
+
+                localStorage.setItem(
+                    "ki_token",
+                    data.token
+                );
+
+                localStorage.setItem(
+                    "token",
+                    data.token
+                );
+
+            }
+
+
+            /* -------------------------------
+               SAVE USER
+            -------------------------------- */
+
+            if (data.user) {
+
+                localStorage.setItem(
+                    "ki_user",
+                    JSON.stringify(data.user)
+                );
+
+            }
+
+
+            /* -------------------------------
+               SUCCESS
+            -------------------------------- */
+
+            dots.forEach(dot => {
+
+                dot.classList.remove(
+                    "active"
+                );
+
+                dot.classList.add(
+                    "success"
+                );
+
+            });
+
+            setTimeout(() => {
+
+                window.location.replace(
+                    "home.html"
+                );
+
+            }, 250);
+
+        } catch (error) {
+
+            console.error(
+                "M-PIN LOGIN ERROR:",
+                error
+            );
+
+            showError(
+                error.message ||
+                "Incorrect M-PIN."
+            );
+
+            pin = "";
+
+            updateDots();
+
+        } finally {
+
+            isSubmitting = false;
+
+        }
+
+    }
+
+
+    /* =========================================
+       FORGOT M-PIN
+    ========================================= */
+
+    forgotBtn.addEventListener(
+        "click",
+        () => {
+
+            window.location.href =
+                "reset-mpin.html";
+
+        }
+    );
+
+
+    /* =========================================
+       INITIAL STATE
+    ========================================= */
+
+    updateDots();
+
+</script>
+
+</body>
+</html>

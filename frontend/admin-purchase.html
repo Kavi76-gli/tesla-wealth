@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Purchase History - Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="css/admin-purchase.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<header class="topbar">
+
+    <div>
+
+        <h1>
+            Purchase History
+        </h1>
+
+        <p>
+            All Investment Purchases
+        </p>
+
+    </div>
+
+
+    <button
+        id="refreshBtn"
+        class="refresh-btn"
+    >
+
+        ↻ Refresh
+
+    </button>
+
+</header>
+
+
+
+<!-- ==========================================
+     STAT CARDS
+========================================== -->
+
+<section class="stats">
+
+
+    <div class="stat-card">
+
+        <span>
+            Total Purchases
+        </span>
+
+        <strong id="totalPurchases">
+            0
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span>
+            Total Invested
+        </span>
+
+        <strong id="totalInvested">
+            ₹0
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span>
+            Running
+        </span>
+
+        <strong id="runningCount">
+            0
+        </strong>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span>
+            Completed
+        </span>
+
+        <strong id="completedCount">
+            0
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ==========================================
+     SEARCH
+========================================== -->
+
+<section class="toolbar">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search user, phone or plan..."
+    >
+
+
+    <select id="statusFilter">
+
+        <option value="all">
+            All Status
+        </option>
+
+        <option value="Running">
+            Running
+        </option>
+
+        <option value="Completed">
+            Completed
+        </option>
+
+        <option value="Cancelled">
+            Cancelled
+        </option>
+
+    </select>
+
+</section>
+
+
+
+<!-- ==========================================
+     TABLE
+========================================== -->
+
+<section class="table-card">
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        User
+                    </th>
+
+                    <th>
+                        Phone
+                    </th>
+
+                    <th>
+                        Plan
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Daily Income
+                    </th>
+
+                    <th>
+                        Duration
+                    </th>
+
+                    <th>
+                        Total Income
+                    </th>
+
+                    <th>
+                        Earned
+                    </th>
+
+                    <th>
+                        Remaining
+                    </th>
+
+                    <th>
+                        Purchase Date
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="purchaseTable">
+
+                <tr>
+
+                    <td
+                        colspan="12"
+                        class="loading"
+                    >
+
+                        Loading...
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+
+<script src="js/admin-purchase.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Investment Plans | Admin</title>
+
+    <link rel="stylesheet" href="css/admin-investment.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+    <!-- ==========================================
+         SIDEBAR
+    =========================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <i class="fa-solid fa-chart-line"></i>
+
+            <h2>Admin Panel</h2>
+
+        </div>
+
+
+        <ul>
+
+            <li>
+
+                <a href="dashboard.html">
+
+                    <i class="fa-solid fa-gauge"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="users.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Users
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="deposits.html">
+
+                    <i class="fa-solid fa-wallet"></i>
+
+                    Deposits
+
+                </a>
+
+            </li>
+
+
+            <li class="active">
+
+                <a href="investment-plans.html">
+
+                    <i class="fa-solid fa-coins"></i>
+
+                    Investment Plans
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="#" id="logoutBtn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+
+
+    <!-- ==========================================
+         MAIN CONTENT
+    =========================================== -->
+
+    <main class="main">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>Investment Plans</h1>
+
+                <p>Manage all investment plans and categories</p>
+
+            </div>
+
+
+            <button id="addPlanBtn" type="button">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add New Plan
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             DASHBOARD CARDS
+        =========================================== -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h2 id="totalPlans">0</h2>
+
+                <p>Total Plans</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2 id="activePlans">0</h2>
+
+                <p>Active Plans</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2 id="inactivePlans">0</h2>
+
+                <p>Inactive Plans</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2 id="highestPlan">₹0</h2>
+
+                <p>Highest Plan</p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             CREATE PLAN FORM
+        =========================================== -->
+
+        <div class="plan-form" id="planFormContainer">
+
+            <h2>
+
+                <i class="fa-solid fa-plus"></i>
+
+                Create Investment Plan
+
+            </h2>
+
+
+            <form id="planForm">
+
+
+                <!-- PLAN NAME + CATEGORY -->
+
+                <div class="row">
+
+                    <div class="input-box">
+
+                        <label>Plan Name</label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            placeholder="Example: Starter Plus Plan"
+                            required>
+
+                    </div>
+
+
+                    <div class="input-box">
+
+                        <label>Select Category</label>
+
+                        <select id="category" required>
+
+                            <option value="">
+
+                                Select Category
+
+                            </option>
+
+
+                            <option value="starter">
+
+                                🟢 Starter
+
+                            </option>
+
+
+                            <option value="pro">
+
+                                🔵 Pro
+
+                            </option>
+
+
+                            <option value="elite">
+
+                                🟣 Elite
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PRICE + DAILY INCOME -->
+
+                <div class="row">
+
+                    <div class="input-box">
+
+                        <label>Price</label>
+
+                        <input
+                            type="number"
+                            id="price"
+                            placeholder="500"
+                            min="1"
+                            required>
+
+                    </div>
+
+
+                    <div class="input-box">
+
+                        <label>Daily Income</label>
+
+                        <input
+                            type="number"
+                            id="dailyIncome"
+                            placeholder="35"
+                            min="0"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- DAYS + TOTAL RETURN -->
+
+                <div class="row">
+
+                    <div class="input-box">
+
+                        <label>Duration (Days)</label>
+
+                        <input
+                            type="number"
+                            id="days"
+                            placeholder="30"
+                            min="1"
+                            required>
+
+                    </div>
+
+
+                    <div class="input-box">
+
+                        <label>Total Return</label>
+
+                        <input
+                            type="number"
+                            id="totalIncome"
+                            placeholder="1050"
+                            min="0"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div class="row">
+
+                    <div class="input-box">
+
+                        <label>Status</label>
+
+                        <select id="status">
+
+                            <option value="true">
+
+                                Active
+
+                            </option>
+
+
+                            <option value="false">
+
+                                Inactive
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="input-box">
+
+                        <label>Sort Order</label>
+
+                        <input
+                            type="number"
+                            id="sortOrder"
+                            placeholder="1"
+                            min="0"
+                            value="0">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="input-box">
+
+                    <label>Description</label>
+
+                    <textarea
+                        id="description"
+                        rows="4"
+                        placeholder="Write plan description..."></textarea>
+
+                </div>
+
+
+
+                <!-- IMAGE -->
+
+                <div class="input-box">
+
+                    <label>Plan Image</label>
+
+                    <input
+                        type="file"
+                        id="image"
+                        accept="image/*">
+
+                </div>
+
+
+
+                <!-- IMAGE PREVIEW -->
+
+                <img
+                    id="preview"
+                    class="preview"
+                    alt="Plan Preview"
+                    style="display:none;">
+
+
+
+                <!-- SAVE BUTTON -->
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                    id="savePlanBtn">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Save Plan
+
+                </button>
+
+
+            </form>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             SEARCH
+        =========================================== -->
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="searchPlan"
+                placeholder="Search by plan name or category...">
+
+        </div>
+
+
+
+        <!-- ==========================================
+             PLANS TABLE
+        =========================================== -->
+
+        <div class="table-area">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Image</th>
+
+                        <th>Name</th>
+
+                        <th>Category</th>
+
+                        <th>Price</th>
+
+                        <th>Daily</th>
+
+                        <th>Days</th>
+
+                        <th>Total Return</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="plansTable">
+
+                    <!-- Plans will load here -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+
+<script src="js/admin-investment.js"></script>
+
+
+</body>
+
+</html>

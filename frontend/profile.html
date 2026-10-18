@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Profile</title>
+
+
+    <!-- =================================================
+         GOOGLE FONT
+    ================================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =================================================
+         FONT AWESOME
+    ================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+
+    <!-- =================================================
+         PROFILE CSS
+    ================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/profile.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =================================================
+         MAIN PAGE
+    ================================================== -->
+
+    <div class="page">
+
+
+        <!-- =================================================
+             PROFILE HERO
+        ================================================== -->
+
+        <section class="profile-hero">
+
+
+            <!-- Decorative circles -->
+
+            <div class="hero-circle circle-one"></div>
+
+            <div class="hero-circle circle-two"></div>
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <div class="profile-header">
+
+
+                <!-- Back -->
+
+                <button
+                    type="button"
+                    class="header-button"
+                    onclick="window.location.href='home.html'"
+                    aria-label="Go back"
+                >
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                </button>
+
+
+                <!-- Title -->
+
+                <div class="header-title">
+
+                    <span>ACCOUNT</span>
+
+                    <h1>My Profile</h1>
+
+                </div>
+
+
+                <!-- Logout -->
+
+                <button
+                    type="button"
+                    class="header-button"
+                    id="logoutBtn"
+                    aria-label="Logout"
+                >
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 USER INFORMATION
+            ================================================== -->
+
+            <div class="profile-user">
+
+
+                <!-- Avatar -->
+
+                <div class="avatar-wrapper">
+
+
+                    <div class="avatar-ring"></div>
+
+
+                    <div
+                        class="avatar"
+                        id="avatar"
+                    >
+
+                        <i class="fa-solid fa-user"></i>
+
+                    </div>
+
+
+                    <span class="online-dot"></span>
+
+                </div>
+
+
+                <!-- User details -->
+
+                <div class="user-info">
+
+
+                    <!-- IMPORTANT:
+                         JavaScript fills this from user.name
+                    -->
+
+                    <h2 id="userName">
+                        Loading...
+                    </h2>
+
+
+                    <!-- Phone -->
+
+                    <p id="phone">
+                        Loading...
+                    </p>
+
+
+                    <!-- Invite / UID -->
+
+                    <div class="uid-badge">
+
+                        <i class="fa-solid fa-id-card"></i>
+
+                        UID:
+
+                        <span id="uid">
+                            ------
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 WALLET GRID
+            ================================================== -->
+
+            <div class="wallet-grid">
+
+
+                <!-- Wallet -->
+
+                <div class="wallet-card">
+
+
+                    <div class="wallet-icon">
+
+                        <i class="fa-solid fa-wallet"></i>
+
+                    </div>
+
+
+                    <span>
+                        Wallet
+                    </span>
+
+
+                    <strong id="walletBalance">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <!-- Deposit -->
+
+                <div class="wallet-card">
+
+
+                    <div class="wallet-icon">
+
+                        <i class="fa-solid fa-arrow-down"></i>
+
+                    </div>
+
+
+                    <span>
+                        Deposit
+                    </span>
+
+
+                    <strong id="depositBalance">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <!-- Withdraw -->
+
+                <div class="wallet-card">
+
+
+                    <div class="wallet-icon">
+
+                        <i class="fa-solid fa-arrow-up"></i>
+
+                    </div>
+
+
+                    <span>
+                        Withdraw
+                    </span>
+
+
+                    <strong id="withdrawBalance">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <section class="statistics">
+
+
+            <!-- Total Recharge -->
+
+            <div class="stat-card">
+
+
+                <div class="stat-icon deposit">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Total Recharge
+                    </span>
+
+                    <strong id="totalDeposit">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Total Withdraw -->
+
+            <div class="stat-card">
+
+
+                <div class="stat-icon withdraw">
+
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Total Withdraw
+                    </span>
+
+                    <strong id="totalWithdraw">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FINANCIAL
+        ================================================== -->
+
+        <section class="menu-section">
+
+
+            <div class="section-title">
+
+                <span>
+                    FINANCIAL
+                </span>
+
+                <i class="fa-solid fa-wallet"></i>
+
+            </div>
+
+
+            <div class="menu-card">
+
+
+                <!-- Recharge -->
+
+                <a href="deposite.html">
+
+
+                    <div class="menu-icon green">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            Recharge
+                        </strong>
+
+                        <span>
+                            Add money to wallet
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+
+                <!-- Recharge History -->
+
+                <a href="transactions.html">
+
+
+                    <div class="menu-icon blue">
+
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            Recharge History
+                        </strong>
+
+                        <span>
+                            View recharge records
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+
+                <!-- Withdraw -->
+
+                <a href="withdraw.html">
+
+
+                    <div class="menu-icon orange">
+
+                        <i class="fa-solid fa-arrow-up"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            Withdraw
+                        </strong>
+
+                        <span>
+                            Withdraw your balance
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             INVESTMENT
+        ================================================== -->
+
+        <section class="menu-section">
+
+
+            <div class="section-title">
+
+                <span>
+                    INVESTMENT
+                </span>
+
+                <i class="fa-solid fa-chart-line"></i>
+
+            </div>
+
+
+            <div class="menu-card">
+
+
+                <!-- My Investment -->
+
+                <a href="my-investment.html">
+
+
+                    <div class="menu-icon purple">
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            My Investment
+                        </strong>
+
+                        <span>
+                            View active investments
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+
+                <!-- Income History -->
+
+                <a href="transactions.html">
+
+
+                    <div class="menu-icon blue">
+
+                        <i class="fa-solid fa-file-lines"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            Income History
+                        </strong>
+
+                        <span>
+                            View transaction history
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+
+
+
+
+        <!-- =================================================
+     DOWNLOAD APP
+================================================== -->
+
+<section class="download-app-section">
+
+    <div class="download-app-card">
+
+        <div class="download-app-icon">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+        </div>
+
+        <div class="download-app-content">
+
+            <span>GET THE APP</span>
+
+            <h3>Download Our App</h3>
+
+            <p>
+                Enjoy a faster and smoother experience on mobile.
+            </p>
+
+        </div>
+
+        <a
+            href="downloads/Bitcoin-Investment.apk"
+            class="download-app-btn"
+            id="downloadAppBtn"
+        >
+
+            <i class="fa-solid fa-download"></i>
+
+            <span>Download</span>
+
+        </a>
+
+    </div>
+
+</section>
+        <!-- =================================================
+             SETTINGS
+        ================================================== -->
+
+        <section class="menu-section">
+
+
+            <div class="section-title">
+
+                <span>
+                    SETTINGS
+                </span>
+
+                <i class="fa-solid fa-gear"></i>
+
+            </div>
+
+
+            <div class="menu-card">
+
+
+                <!-- Change Password -->
+
+                <a href="change-password.html">
+
+
+                    <div class="menu-icon dark">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            Change Password
+                        </strong>
+
+                        <span>
+                            Update your password
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+
+                <!-- About -->
+
+                <a href="about.html">
+
+
+                    <div class="menu-icon blue">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            About Us
+                        </strong>
+
+                        <span>
+                            Learn more about us
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+
+                <!-- Support -->
+
+                <a href="support.html">
+
+
+                    <div class="menu-icon green">
+
+                        <i class="fa-solid fa-headset"></i>
+
+                    </div>
+
+
+                    <div class="menu-text">
+
+                        <strong>
+                            Customer Support
+                        </strong>
+
+                        <span>
+                            Get help and support
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-right arrow"></i>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ADMIN AREA
+        ================================================== -->
+
+        <section
+            id="adminArea"
+            class="admin-area"
+            style="display: none;"
+        >
+
+
+            <a href="admin.html">
+
+                <i class="fa-solid fa-crown"></i>
+
+                <span>
+                    Admin Panel
+                </span>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </a>
+
+        </section>
+
+
+        <!-- =================================================
+             BOTTOM SPACE
+        ================================================== -->
+
+        <div class="bottom-space"></div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         BOTTOM NAVIGATION
+    ================================================== -->
+
+    <nav class="bottom-nav">
+
+
+        <a href="home.html">
+
+            <i class="fa-solid fa-house"></i>
+
+            <span>
+                Home
+            </span>
+
+        </a>
+
+
+        <a href="investments.html">
+
+            <i class="fa-solid fa-chart-line"></i>
+
+            <span>
+                Invest
+            </span>
+
+        </a>
+
+
+        <a href="deposite.html">
+
+            <i class="fa-solid fa-plus"></i>
+
+            <span>
+                Deposit
+            </span>
+
+        </a>
+
+
+        <a href="reer.html">
+
+            <i class="fa-solid fa-user-plus"></i>
+
+            <span>
+                Invite
+            </span>
+
+        </a>
+
+
+        <a
+            href="profile.html"
+            class="active"
+        >
+
+            <i class="fa-solid fa-user"></i>
+
+            <span>
+                Profile
+            </span>
+
+        </a>
+
+
+    </nav>
+
+
+    <!-- =================================================
+         PROFILE JAVASCRIPT
+         LOAD ONLY ONCE
+    ================================================== -->
+
+    <script src="js/profile.js"></script>
+
+
+</body>
+
+</html>

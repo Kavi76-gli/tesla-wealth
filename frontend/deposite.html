@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#ffffff"
+    >
+
+    <meta
+        name="description"
+        content="Secure and fast deposit page"
+    >
+
+    <title>Deposit Money</title>
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    >
+
+
+    <!-- =====================================================
+         DEPOSIT CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/deposite.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     PAGE
+========================================================= -->
+
+<div class="deposit-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="header-top">
+
+
+            <button
+                class="back-btn"
+                type="button"
+                onclick="history.back()"
+                aria-label="Go back"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </button>
+
+
+            <div class="header-title">
+
+                <i class="fa-solid fa-circle-plus"></i>
+
+                <span>
+                    Deposit Money
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <p>
+            Fast • Secure • Verified Payments
+        </p>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         PAYMENT CARD
+    ====================================================== -->
+
+    <section
+        class="payment-card"
+        aria-labelledby="paymentTitle"
+    >
+
+
+        <h2 id="paymentTitle">
+
+            <i class="fas fa-qrcode"></i>
+
+            Scan &amp; Pay
+
+        </h2>
+
+
+
+        <!-- =================================================
+             QR
+        ================================================== -->
+
+        <div class="qr-wrapper">
+
+
+            <div
+                class="qr-loading"
+                id="qrLoading"
+                aria-live="polite"
+            >
+
+                Loading QR...
+
+            </div>
+
+
+            <img
+                id="qrImage"
+                class="qr"
+                alt="Payment QR Code"
+                decoding="async"
+                loading="eager"
+            >
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             PAYMENT INFORMATION
+        ================================================== -->
+
+        <div class="payment-info">
+
+
+            <!-- UPI -->
+
+            <div class="row">
+
+                <span>
+                    UPI ID
+                </span>
+
+
+                <strong id="upiId">
+                    Loading...
+                </strong>
+
+            </div>
+
+
+
+            <!-- COPY UPI -->
+
+            <button
+                id="copyUpi"
+                type="button"
+            >
+
+                <i class="fas fa-copy"></i>
+
+                Copy UPI
+
+            </button>
+
+
+
+            
+
+            <!-- LIMITS -->
+
+            <div class="row">
+
+                <span>
+                    Deposit Limits
+                </span>
+
+
+                <strong id="limits">
+                    ₹100 - ₹100000
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DEPOSIT FORM
+    ====================================================== -->
+
+    <section class="deposit-form">
+
+
+        <h2>
+            Submit Deposit
+        </h2>
+
+
+
+        <form
+            id="depositForm"
+            novalidate
+        >
+
+
+            <!-- =================================================
+                 AMOUNT
+            ================================================== -->
+
+            <div class="form-group">
+
+                <label
+                    for="amount"
+                    class="sr-only"
+                >
+                    Deposit Amount
+                </label>
+
+
+                <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    placeholder="Deposit Amount"
+                    min="100"
+                    step="1"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- =================================================
+                 UTR
+            ================================================== -->
+
+            <div class="form-group">
+
+                <label
+                    for="utr"
+                    class="sr-only"
+                >
+                    UTR / Transaction ID
+                </label>
+
+
+                <input
+                    type="text"
+                    id="utr"
+                    name="utr"
+                    placeholder="UTR / Transaction ID"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    maxlength="50"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SCREENSHOT UPLOAD
+            ================================================== -->
+
+            <div class="form-group">
+
+
+                <label
+                    class="upload-box"
+                    for="screenshot"
+                >
+
+
+                    <input
+                        type="file"
+                        id="screenshot"
+                        name="screenshot"
+                        accept="image/jpeg,image/png,image/webp"
+                        hidden
+                    >
+
+
+                    <i
+                        class="fas fa-cloud-upload-alt"
+                        aria-hidden="true"
+                    ></i>
+
+
+                    <span>
+                        Upload Payment Screenshot
+                    </span>
+
+
+                    <small>
+                        JPG, PNG or WEBP • Max 3MB
+                    </small>
+
+
+                </label>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 IMAGE PREVIEW
+            ================================================== -->
+
+            <img
+                id="preview"
+                class="preview"
+                alt="Payment Screenshot Preview"
+                style="display:none;"
+                decoding="async"
+            >
+
+
+
+            <!-- =================================================
+                 SUBMIT
+            ================================================== -->
+
+            <button
+                type="submit"
+                id="submitDeposit"
+            >
+
+                <i
+                    class="fa-solid fa-paper-plane"
+                    aria-hidden="true"
+                ></i>
+
+                <span>
+                    Submit Deposit
+                </span>
+
+            </button>
+
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DEPOSIT HISTORY
+    ====================================================== -->
+
+    <section class="history">
+
+
+        <h2>
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            Deposit History
+
+        </h2>
+
+
+        <div
+            id="historyList"
+            aria-live="polite"
+        >
+
+            <div class="history-loading">
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                <span>
+                    Loading history...
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    src="js/deposite.js"
+    defer
+></script>
+
+
+</body>
+
+</html>

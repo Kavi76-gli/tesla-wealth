@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Referral Report | Investment Admin</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --background: #f4f7fb;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --green: #15803d;
+            --red: #b91c1c;
+            --orange: #b45309;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            min-height: 100vh;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar li.active {
+            background: rgba(37, 99, 235, 0.12);
+        }
+
+        .sidebar li.active a {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .main-content {
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .topbar h1 {
+            font-size: 26px;
+            margin: 0;
+        }
+
+        .admin-box {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .page-description {
+            color: var(--muted);
+            margin: 8px 0 22px;
+            line-height: 1.6;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+            min-width: 0;
+        }
+
+        .summary-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: #eff6ff;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        .report-panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+            margin-bottom: 24px;
+        }
+
+        .panel-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .panel-heading h2 {
+            font-size: 19px;
+            margin: 0;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: minmax(200px, 2fr) repeat(3, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .field label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            min-height: 42px;
+            padding: 10px 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 15px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            color: white;
+            background: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-light {
+            color: var(--text);
+            background: #e9eef5;
+        }
+
+        .btn-green {
+            color: white;
+            background: var(--green);
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1500px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 13px 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.35px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .person-name {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .person-phone {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #e2e8f0;
+            color: #334155;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-completed,
+        .badge-credited {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-cancelled,
+        .badge-failed,
+        .badge-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .message {
+            display: none;
+            margin: 0 0 16px;
+            padding: 12px 14px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .message.error {
+            display: block;
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        .message.success {
+            display: block;
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .message.info {
+            display: block;
+            color: #1e40af;
+            background: #dbeafe;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 35px 15px;
+            color: var(--muted);
+        }
+
+        .empty-state i {
+            display: block;
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .page-info {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .small-select {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: white;
+        }
+
+        .loading {
+            opacity: 0.65;
+            pointer-events: none;
+        }
+
+        @media (max-width: 1100px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .filters {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 650px) {
+            .main-content {
+                padding: 14px;
+            }
+
+            .topbar h1 {
+                font-size: 21px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .summary-card {
+                padding: 13px;
+            }
+
+            .summary-value {
+                font-size: 21px;
+            }
+
+            .summary-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .report-panel {
+                padding: 13px;
+            }
+
+            .btn {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>Investment Admin</h2>
+        </div>
+
+        <ul>
+            <li>
+                <a href="dashboard.html">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="users.html">
+                    <i class="fas fa-users"></i> Users
+                </a>
+            </li>
+
+            <li class="active">
+                <a href="admin-referral-report.html">
+                    <i class="fas fa-user-friends"></i> Referral Report
+                </a>
+            </li>
+
+            <li>
+                <a href="deposits.html">
+                    <i class="fas fa-wallet"></i> Deposits
+                </a>
+            </li>
+
+            <li>
+                <a href="withdrawals.html">
+                    <i class="fas fa-money-bill-wave"></i> Withdrawals
+                </a>
+            </li>
+
+            <li>
+                <a href="investment-plans.html">
+                    <i class="fas fa-chart-pie"></i> Investment Plans
+                </a>
+            </li>
+
+            <li>
+                <a href="purchase-history.html">
+                    <i class="fas fa-shopping-cart"></i> Purchase History
+                </a>
+            </li>
+
+            <li>
+                <a href="daily-income.html">
+                    <i class="fas fa-hand-holding-dollar"></i> Daily Income
+                </a>
+            </li>
+
+            <li>
+                <a href="banner.html">
+                    <i class="fas fa-image"></i> Banner
+                </a>
+            </li>
+
+            <li>
+                <a href="notice.html">
+                    <i class="fas fa-bullhorn"></i> Notice
+                </a>
+            </li>
+
+            <li>
+                <a href="payment-setting.html">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </li>
+
+            <li>
+                <a href="#" id="logoutBtn">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </a>
+            </li>
+        </ul>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <div class="topbar">
+            <h1><i class="fas fa-user-friends"></i> Referral Report</h1>
+
+            <div class="admin-box">
+                <i class="fas fa-user-shield"></i>
+                <span>Administrator</span>
+            </div>
+        </div>
+
+        <p class="page-description">
+            Review referral registrations, referred-user deposits, and recorded
+            referral commissions.
+        </p>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        <!-- SUMMARY CARDS -->
+        <section class="summary-grid">
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Total Referrals</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-users"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="totalReferrals">—</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Completed Referrals</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-user-check"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="completedReferrals">—</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Pending Referrals</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-clock"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="pendingReferrals">—</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Cancelled Referrals</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-user-times"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="cancelledReferrals">—</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Total Commissions</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-coins"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="totalCommissions">—</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Approved Deposits</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-wallet"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="approvedDeposits">—</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Credited Commissions</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="creditedCommissions">—</div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <span class="summary-label">Failed Commissions</span>
+                    <span class="summary-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </span>
+                </div>
+                <div class="summary-value" id="failedCommissions">—</div>
+            </div>
+
+        </section>
+
+        <!-- REFERRAL TABLE -->
+        <section class="report-panel">
+
+            <div class="panel-heading">
+                <h2><i class="fas fa-list"></i> Referral Records</h2>
+
+                <button type="button" class="btn btn-light" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="filters">
+
+                <div class="field">
+                    <label for="searchInput">Search</label>
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Name, phone, or referral code">
+                </div>
+
+                <div class="field">
+                    <label for="referralStatus">Referral Status</label>
+                    <select id="referralStatus">
+                        <option value="">All statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="commissionStatus">Commission Status</label>
+                    <select id="commissionStatus">
+                        <option value="">All statuses</option>
+                        <option value="Credited">Credited</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="startDate">From Date</label>
+                    <input type="date" id="startDate">
+                </div>
+
+                <div class="field">
+                    <label for="endDate">To Date</label>
+                    <input type="date" id="endDate">
+                </div>
+
+            </div>
+
+            <div class="actions">
+
+                <button type="button" class="btn btn-primary" id="applyBtn">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+
+                <button type="button" class="btn btn-light" id="resetBtn">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+
+                <button type="button" class="btn btn-green" id="exportBtn">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </button>
+
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Referrer</th>
+                            <th>Referred User</th>
+                            <th>Referral Code</th>
+                            <th>Registration Date</th>
+                            <th>Welcome Bonus</th>
+                            <th>Approved Deposits</th>
+                            <th>Commission Rate</th>
+                            <th>Commission Earned</th>
+                            <th>Referral Status</th>
+                            <th>Commission Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="referralTable">
+                        <tr>
+                            <td colspan="11" class="empty-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading referral records...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+
+                <div class="page-info" id="pageInfo">
+                    Waiting for report...
+                </div>
+
+                <div class="pagination">
+                    <label for="pageSize" class="page-info">Rows:</label>
+
+                    <select id="pageSize" class="small-select">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+
+                    <button type="button" class="btn btn-light" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+
+                    <span class="page-info" id="pageNumber">Page 1</span>
+
+                    <button type="button" class="btn btn-light" id="nextBtn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<script>
+"use strict";
+
+/* ==========================================
+   CONFIGURATION
+========================================== */
+
+const API_URL =
+    "http://localhost:5000/api/referral/admin/report";
+
+const $ = (id) => document.getElementById(id);
+
+let currentPage = 1;
+let totalPages = 1;
+let totalRecords = 0;
+let requestController = null;
+
+/* ==========================================
+   AUTHENTICATION
+   Uses common token keys from this project.
+========================================== */
+
+function getToken() {
+    return (
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("token") ||
+        localStorage.getItem("ki_token") ||
+        ""
+    );
+}
+
+function logout() {
+    [
+        "adminToken",
+        "token",
+        "ki_token"
+    ].forEach(key => localStorage.removeItem(key));
+
+    window.location.href = "login.html";
+}
+
+$("logoutBtn").addEventListener("click", function(event) {
+    event.preventDefault();
+    logout();
+});
+
+/* ==========================================
+   SAFE DATA HELPERS
+========================================== */
+
+function firstValue(...values) {
+    return values.find(value =>
+        value !== undefined && value !== null && value !== ""
+    );
+}
+
+function asNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : 0;
+}
+
+function money(value) {
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+    }).format(asNumber(value));
+}
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[character]);
+}
+
+function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "—";
+    }
+
+    return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function setMessage(text, type = "info") {
+    const element = $("message");
+
+    element.textContent = text;
+    element.className = "message " + type;
+}
+
+function clearMessage() {
+    $("message").textContent = "";
+    $("message").className = "message";
+}
+
+function getObjectName(person) {
+    if (!person) return "—";
+
+    if (typeof person === "string") {
+        return person;
+    }
+
+    return firstValue(person.name, person.fullName, person.phone, person._id, "—");
+}
+
+function getPersonPhone(person) {
+    if (!person || typeof person !== "object") return "";
+
+    return firstValue(person.phone, person.mobile, "");
+}
+
+function badge(status) {
+    const value = String(status || "Unknown");
+    const normalized = value.toLowerCase();
+
+    let className = "";
+
+    if (normalized === "completed") className = "badge-completed";
+    if (normalized === "credited") className = "badge-credited";
+    if (normalized === "pending") className = "badge-pending";
+
+    if (
+        normalized === "cancelled" ||
+        normalized === "failed" ||
+        normalized === "rejected"
+    ) {
+        className = "badge-cancelled";
+    }
+
+    return `<span class="badge ${className}">${escapeHtml(value)}</span>`;
+}
+
+/* ==========================================
+   RESPONSE NORMALIZATION
+
+   Supports common response wrappers.
+   Exact response fields depend on the backend.
+========================================== */
+
+function extractRecords(data) {
+    const candidates = [
+        data?.records,
+        data?.referrals,
+        data?.data?.records,
+        data?.data?.referrals,
+        data?.data?.data,
+        data?.data,
+        data?.results
+    ];
+
+    return candidates.find(Array.isArray) || [];
+}
+
+function extractSummary(data) {
+    return data?.summary ||
+           data?.data?.summary ||
+           data?.stats ||
+           {};
+}
+
+function updateSummary(data) {
+    const summary = extractSummary(data);
+
+    const total = firstValue(
+        summary.totalReferrals,
+        summary.total,
+        data?.total,
+        data?.pagination?.total
+    );
+
+    const completed = firstValue(
+        summary.completedReferrals,
+        summary.completed,
+        summary.totalCompleted
+    );
+
+    const pending = firstValue(
+        summary.pendingReferrals,
+        summary.pending,
+        summary.totalPending
+    );
+
+    const cancelled = firstValue(
+        summary.cancelledReferrals,
+        summary.cancelled,
+        summary.totalCancelled
+    );
+
+    const commissions = firstValue(
+        summary.totalCommissions,
+        summary.totalCommission,
+        summary.totalCommissionEarned
+    );
+
+    const deposits = firstValue(
+        summary.totalApprovedDeposits,
+        summary.approvedDeposits,
+        summary.totalDeposits
+    );
+
+    const credited = firstValue(
+        summary.creditedCommissions,
+        summary.totalCreditedCommissions
+    );
+
+    const failed = firstValue(
+        summary.failedCommissions,
+        summary.totalFailedCommissions
+    );
+
+    $("totalReferrals").textContent =
+        total !== undefined ? Number(total).toLocaleString("en-IN") : "—";
+
+    $("completedReferrals").textContent =
+        completed !== undefined ? Number(completed).toLocaleString("en-IN") : "—";
+
+    $("pendingReferrals").textContent =
+        pending !== undefined ? Number(pending).toLocaleString("en-IN") : "—";
+
+    $("cancelledReferrals").textContent =
+        cancelled !== undefined ? Number(cancelled).toLocaleString("en-IN") : "—";
+
+    $("totalCommissions").textContent =
+        commissions !== undefined ? money(commissions) : "—";
+
+    $("approvedDeposits").textContent =
+        deposits !== undefined ? money(deposits) : "—";
+
+    $("creditedCommissions").textContent =
+        credited !== undefined ? money(credited) : "—";
+
+    $("failedCommissions").textContent =
+        failed !== undefined ? money(failed) : "—";
+}
+
+/* ==========================================
+   FILTERS AND PAGINATION
+========================================== */
+
+function buildQuery() {
+    const params = new URLSearchParams();
+
+    params.set("page", String(currentPage));
+    params.set("limit", $("pageSize").value);
+
+    if ($("searchInput").value.trim()) {
+        params.set("search", $("searchInput").value.trim());
+    }
+
+    if ($("referralStatus").value) {
+        params.set("referralStatus", $("referralStatus").value);
+    }
+
+    if ($("commissionStatus").value) {
+        params.set("commissionStatus", $("commissionStatus").value);
+    }
+
+    if ($("startDate").value) {
+        params.set("startDate", $("startDate").value);
+    }
+
+    if ($("endDate").value) {
+        params.set("endDate", $("endDate").value);
+    }
+
+    return params;
+}
+
+function readPagination(data, records) {
+    const pagination = data?.pagination ||
+                       data?.data?.pagination ||
+                       {};
+
+    const reportedTotal = firstValue(
+        pagination.total,
+        pagination.totalRecords,
+        data?.total,
+        data?.totalRecords
+    );
+
+    totalRecords = reportedTotal !== undefined
+        ? asNumber(reportedTotal)
+        : records.length;
+
+    const reportedPages = firstValue(
+        pagination.totalPages,
+        data?.totalPages
+    );
+
+    totalPages = reportedPages !== undefined
+        ? Math.max(1, asNumber(reportedPages))
+        : Math.max(1, Math.ceil(totalRecords / Number($("pageSize").value)));
+
+    const reportedPage = firstValue(
+        pagination.page,
+        data?.page
+    );
+
+    if (reportedPage !== undefined) {
+        currentPage = Math.max(1, asNumber(reportedPage));
+    }
+
+    $("pageInfo").textContent =
+        totalRecords === 0
+            ? "No referral records found"
+            : `Showing ${((currentPage - 1) * Number($("pageSize").value)) + 1}–${
+                Math.min(currentPage * Number($("pageSize").value), totalRecords)
+            } of ${totalRecords} records`;
+
+    $("pageNumber").textContent = `Page ${currentPage} of ${totalPages}`;
+
+    $("prevBtn").disabled = currentPage <= 1;
+    $("nextBtn").disabled = currentPage >= totalPages;
+}
+
+/* ==========================================
+   TABLE RENDERING
+========================================== */
+
+function renderTable(records) {
+    const tbody = $("referralTable");
+
+    if (!records.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    No referral records found.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = records.map((record, index) => {
+        const referrer = record.referrer || {};
+        const referred = record.referredUser || record.referred || {};
+
+        const referrerName = getObjectName(referrer);
+        const referredName = getObjectName(referred);
+
+        const referrerPhone = getPersonPhone(referrer);
+        const referredPhone = getPersonPhone(referred);
+
+        const code = firstValue(
+            record.referralCode,
+            record.code,
+            "—"
+        );
+
+        const registrationDate = firstValue(
+            record.registrationDate,
+            record.referredUser?.createdAt,
+            record.createdAt,
+            record.date
+        );
+
+        const welcomeBonus = firstValue(
+            record.welcomeBonus,
+            record.bonus,
+            0
+        );
+
+        const approvedDeposits = firstValue(
+            record.approvedDeposits,
+            record.totalApprovedDeposits,
+            record.approvedDepositTotal,
+            0
+        );
+
+        const commissionRate = firstValue(
+            record.commissionRate,
+            record.rate,
+            5
+        );
+
+        const commissionEarned = firstValue(
+            record.totalCommission,
+            record.commissionEarned,
+            record.commissionAmount,
+            0
+        );
+
+        const referralStatus = firstValue(
+            record.status,
+            record.referralStatus,
+            "Pending"
+        );
+
+        const commissionStatus = firstValue(
+            record.commissionStatus,
+            record.latestCommissionStatus,
+            "—"
+        );
+
+        const rowNumber =
+            ((currentPage - 1) * Number($("pageSize").value)) + index + 1;
+
+        return `
+            <tr>
+                <td>${rowNumber}</td>
+
+                <td>
+                    <div class="person-name">${escapeHtml(referrerName)}</div>
+                    <div class="person-phone">${escapeHtml(referrerPhone)}</div>
+                </td>
+
+                <td>
+                    <div class="person-name">${escapeHtml(referredName)}</div>
+                    <div class="person-phone">${escapeHtml(referredPhone)}</div>
+                </td>
+
+                <td>${escapeHtml(code)}</td>
+
+                <td>${escapeHtml(formatDate(registrationDate))}</td>
+
+                <td>${money(welcomeBonus)}</td>
+
+                <td>${money(approvedDeposits)}</td>
+
+                <td>${escapeHtml(commissionRate)}%</td>
+
+                <td>${money(commissionEarned)}</td>
+
+                <td>${badge(referralStatus)}</td>
+
+                <td>${badge(commissionStatus)}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+/* ==========================================
+   LOAD REPORT
+========================================== */
+
+async function loadReport() {
+    const token = getToken();
+
+    if (!token) {
+        setMessage(
+            "Administrator token not found. Please sign in to your admin panel first.",
+            "error"
+        );
+
+        $("referralTable").innerHTML = `
+            <tr>
+                <td colspan="11" class="empty-state">
+                    Please sign in to view the referral report.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    if (
+        $("startDate").value &&
+        $("endDate").value &&
+        $("startDate").value > $("endDate").value
+    ) {
+        setMessage("The From Date cannot be later than the To Date.", "error");
+        return;
+    }
+
+    if (requestController) {
+        requestController.abort();
+    }
+
+    requestController = new AbortController();
+
+    const main = document.querySelector(".main-content");
+    main.classList.add("loading");
+
+    $("referralTable").innerHTML = `
+        <tr>
+            <td colspan="11" class="empty-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading referral records...
+            </td>
+        </tr>
+    `;
+
+    clearMessage();
+
+    try {
+        const response = await fetch(
+            `${API_URL}?${buildQuery().toString()}`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/json"
+                },
+                cache: "no-store",
+                signal: requestController.signal
+            }
+        );
+
+        const contentType = response.headers.get("content-type") || "";
+
+        let data;
+
+        if (contentType.includes("application/json")) {
+            data = await response.json();
+        } else {
+            const body = await response.text();
+            throw new Error(
+                response.ok
+                    ? "The server did not return JSON. Check the referral API response."
+                    : `Server error (${response.status}): ${body.slice(0, 180)}`
+            );
+        }
+
+        if (response.status === 401) {
+            setMessage(
+                "Your login session is invalid or expired. Please sign in again.",
+                "error"
+            );
+            return;
+        }
+
+        if (response.status === 403) {
+            setMessage(
+                "Access denied. Your account must have administrator permissions.",
+                "error"
+            );
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                data.message ||
+                data.error ||
+                `The server returned status ${response.status}.`
+            );
+        }
+
+        if (data.success === false) {
+            throw new Error(data.message || "The server could not load the report.");
+        }
+
+        const records = extractRecords(data);
+
+        updateSummary(data);
+        readPagination(data, records);
+        renderTable(records);
+
+        if (records.length === 0 && totalRecords > 0) {
+            setMessage(
+                "The API reports records, but its response structure differs from the expected format. Please check the API response.",
+                "info"
+            );
+        }
+
+    } catch (error) {
+        if (error.name === "AbortError") return;
+
+        console.error("Referral report error:", error);
+
+        $("referralTable").innerHTML = `
+            <tr>
+                <td colspan="11" class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Could not load referral records.
+                </td>
+            </tr>
+        `;
+
+        setMessage(
+            error.message || "Unable to load referral report. Check your backend.",
+            "error"
+        );
+
+    } finally {
+        main.classList.remove("loading");
+    }
+}
+
+/* ==========================================
+   CSV EXPORT
+========================================== */
+
+async function exportCSV() {
+    const token = getToken();
+
+    if (!token) {
+        setMessage("Please sign in before exporting the report.", "error");
+        return;
+    }
+
+    const button = $("exportBtn");
+    button.disabled = true;
+
+    try {
+        const params = buildQuery();
+
+        // Ask the backend for CSV instead of downloading
+        // only the records visible on the current page.
+        params.set("format", "csv");
+        params.delete("page");
+        params.delete("limit");
+
+        const response = await fetch(
+            `${API_URL}?${params.toString()}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "text/csv"
+                },
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            let errorMessage = `Export failed (${response.status}).`;
+
+            try {
+                const data = await response.json();
+                errorMessage = data.message || errorMessage;
+            } catch (_) {}
+
+            throw new Error(errorMessage);
+        }
+
+        const blob = await response.blob();
+
+        if (blob.type.includes("application/json")) {
+            const text = await blob.text();
+            let message = "The server did not return a CSV file.";
+
+            try {
+                message = JSON.parse(text).message || message;
+            } catch (_) {}
+
+            throw new Error(message);
+        }
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download =
+            `referral-report-${new Date().toISOString().slice(0, 10)}.csv`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        setMessage("CSV export downloaded successfully.", "success");
+
+    } catch (error) {
+        console.error("CSV export error:", error);
+
+        setMessage(
+            error.message || "Could not export the CSV report.",
+            "error"
+        );
+
+    } finally {
+        button.disabled = false;
+    }
+}
+
+/* ==========================================
+   EVENT LISTENERS
+========================================== */
+
+$("applyBtn").addEventListener("click", () => {
+    currentPage = 1;
+    loadReport();
+});
+
+$("refreshBtn").addEventListener("click", loadReport);
+
+$("exportBtn").addEventListener("click", exportCSV);
+
+$("resetBtn").addEventListener("click", () => {
+    $("searchInput").value = "";
+    $("referralStatus").value = "";
+    $("commissionStatus").value = "";
+    $("startDate").value = "";
+    $("endDate").value = "";
+    $("pageSize").value = "10";
+
+    currentPage = 1;
+    loadReport();
+});
+
+$("prevBtn").addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        loadReport();
+    }
+});
+
+$("nextBtn").addEventListener("click", () => {
+    if (currentPage < totalPages) {
+        currentPage++;
+        loadReport();
+    }
+});
+
+$("pageSize").addEventListener("change", () => {
+    currentPage = 1;
+    loadReport();
+});
+
+$("searchInput").addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        currentPage = 1;
+        loadReport();
+    }
+});
+
+// Initial report load.
+loadReport();
+</script>
+
+</body>
+</html>

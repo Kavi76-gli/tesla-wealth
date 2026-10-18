@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>About Company | Bitcoin Invest</title>
+
+    <meta name="description"
+        content="Learn about Bitcoin Invest, company information, registration documents, business certificates and platform information.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1769e0;
+            --primary-dark: #0d47a1;
+            --primary-soft: #edf5ff;
+
+            --dark: #101828;
+            --text: #344054;
+            --muted: #667085;
+
+            --white: #ffffff;
+            --background: #f6f8fc;
+
+            --border: #e5eaf1;
+
+            --green: #079455;
+            --green-dark: #067647;
+            --green-soft: #ecfdf3;
+
+            --shadow: 0 20px 60px rgba(16, 24, 40, .07);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: rgba(255, 255, 255, .94);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar {
+            max-width: 1180px;
+            height: 74px;
+
+            margin: auto;
+            padding: 0 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            font-size: 19px;
+            font-weight: 800;
+
+            color: var(--dark);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            background: linear-gradient(
+                135deg,
+                #0d47a1,
+                #2d83ec
+            );
+
+            color: white;
+
+            box-shadow:
+                0 8px 22px rgba(23, 105, 224, .25);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: #667085;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .back-btn {
+            padding: 10px 16px;
+
+            border-radius: 10px;
+
+            background: var(--primary-soft);
+
+            color: var(--primary) !important;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+
+            padding: 100px 20px 90px;
+
+            background:
+                radial-gradient(
+                    circle at 10% 20%,
+                    rgba(39, 130, 237, .18),
+                    transparent 31%
+                ),
+                radial-gradient(
+                    circle at 90% 30%,
+                    rgba(23, 105, 224, .13),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    180deg,
+                    #ffffff,
+                    #f8fbff
+                );
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 15px;
+
+            border-radius: 30px;
+
+            background: var(--primary-soft);
+            color: var(--primary);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: .7px;
+
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            color: var(--dark);
+
+            font-size: clamp(40px, 6vw, 66px);
+
+            line-height: 1.05;
+            letter-spacing: -3px;
+
+            margin-bottom: 23px;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            max-width: 720px;
+
+            margin: auto;
+
+            color: var(--muted);
+
+            font-size: 17px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+
+            gap: 12px;
+
+            margin-top: 30px;
+
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 13px 20px;
+
+            border-radius: 11px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            transition: .2s;
+        }
+
+        .btn-primary {
+            color: white;
+            background: var(--primary);
+
+            box-shadow:
+                0 10px 25px rgba(23, 105, 224, .22);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            color: var(--dark);
+            background: white;
+
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            max-width: 1120px;
+
+            margin: auto;
+
+            padding: 78px 20px;
+        }
+
+        .section-heading {
+            max-width: 720px;
+
+            margin: 0 auto 45px;
+
+            text-align: center;
+        }
+
+        .section-label {
+            display: inline-block;
+
+            color: var(--primary);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: .8px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 9px;
+        }
+
+        .section-heading h2 {
+            color: var(--dark);
+
+            font-size: clamp(28px, 4vw, 38px);
+
+            line-height: 1.2;
+            letter-spacing: -1px;
+
+            margin-bottom: 11px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* =========================
+           COMPANY
+        ========================= */
+
+        .company-grid {
+            display: grid;
+
+            grid-template-columns: 1.1fr .9fr;
+
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 22px;
+
+            padding: 33px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .card h2 {
+            color: var(--dark);
+            font-size: 24px;
+        }
+
+        .card p {
+            color: var(--muted);
+
+            font-size: 14px;
+
+            margin-bottom: 15px;
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* =========================
+           COMPANY INFORMATION
+        ========================= */
+
+        .company-info {
+            display: grid;
+            gap: 13px;
+        }
+
+        .info-item {
+            padding: 16px 17px;
+
+            border-radius: 13px;
+
+            background: #f8fafc;
+
+            border: 1px solid #edf0f5;
+        }
+
+        .info-item small {
+            display: block;
+
+            color: #98a2b3;
+
+            font-size: 11px;
+
+            margin-bottom: 3px;
+        }
+
+        .info-item strong {
+            color: var(--dark);
+
+            font-size: 14px;
+        }
+
+        /* =========================
+           DOCUMENTS
+        ========================= */
+
+        .documents-section {
+            background: white;
+
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .documents-grid {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .document-card {
+            position: relative;
+
+            padding: 28px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            transition: .25s;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+
+            box-shadow:
+                0 20px 50px rgba(16, 24, 40, .09);
+        }
+
+        .document-icon {
+            width: 50px;
+            height: 50px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 14px;
+
+            background: var(--primary-soft);
+
+            color: var(--primary);
+
+            font-size: 19px;
+
+            margin-bottom: 18px;
+        }
+
+        .document-card h3 {
+            color: var(--dark);
+
+            font-size: 17px;
+
+            margin-bottom: 7px;
+        }
+
+        .document-card p {
+            color: var(--muted);
+
+            font-size: 13px;
+
+            min-height: 62px;
+
+            margin-bottom: 18px;
+        }
+
+        .verified-status {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 7px 10px;
+
+            border-radius: 8px;
+
+            background: var(--green-soft);
+
+            color: var(--green-dark);
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            margin-bottom: 17px;
+        }
+
+        .view-document {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+
+            padding: 11px;
+
+            border-radius: 10px;
+
+            background: var(--dark);
+
+            color: white;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            transition: .2s;
+        }
+
+        .view-document:hover {
+            background: var(--primary);
+
+            transform: translateY(-1px);
+        }
+
+        /* =========================
+           DOCUMENT SHOWCASE
+        ========================= */
+
+        .document-showcase {
+            margin-top: 55px;
+        }
+
+        .document-showcase-box {
+            background: #f8fafc;
+
+            border: 1px solid var(--border);
+
+            border-radius: 25px;
+
+            padding: 12px;
+
+            box-shadow:
+                0 25px 70px rgba(16, 24, 40, .08);
+        }
+
+        .document-showcase-image {
+            display: block;
+
+            width: 100%;
+
+            max-height: 650px;
+
+            object-fit: contain;
+
+            border-radius: 17px;
+
+            cursor: zoom-in;
+
+            background: white;
+
+            transition: .25s;
+        }
+
+        .document-showcase-image:hover {
+            transform: scale(1.005);
+        }
+
+        .showcase-bottom {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+
+            padding: 18px 10px 7px;
+        }
+
+        .showcase-title {
+            color: var(--dark);
+
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .showcase-subtitle {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-top: 2px;
+        }
+
+        .verified-pill {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 8px 12px;
+
+            border-radius: 9px;
+
+            background: var(--green-soft);
+
+            color: var(--green-dark);
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+        /* =========================
+           TRANSPARENCY
+        ========================= */
+
+        .principles {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .principle {
+            padding: 28px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 20px;
+
+            transition: .25s;
+        }
+
+        .principle:hover {
+            transform: translateY(-4px);
+
+            box-shadow:
+                0 18px 45px rgba(16, 24, 40, .07);
+        }
+
+        .principle-icon {
+            width: 48px;
+            height: 48px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            background: var(--primary-soft);
+
+            color: var(--primary);
+
+            margin-bottom: 17px;
+        }
+
+        .principle h3 {
+            color: var(--dark);
+
+            font-size: 17px;
+
+            margin-bottom: 7px;
+        }
+
+        .principle p {
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           FAQ
+        ========================= */
+
+        .faq-list {
+            max-width: 820px;
+
+            margin: auto;
+
+            display: grid;
+
+            gap: 12px;
+        }
+
+        .faq-item {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+
+            border: 0;
+
+            background: transparent;
+
+            padding: 19px 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            text-align: left;
+
+            color: var(--dark);
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+        .faq-question i {
+            color: var(--primary);
+
+            transition: .25s;
+        }
+
+        .faq-answer {
+            max-height: 0;
+
+            overflow: hidden;
+
+            transition: max-height .3s ease;
+        }
+
+        .faq-answer p {
+            padding: 0 20px 20px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        /* =========================
+           PREMIUM BOTTOM SECTION
+        ========================= */
+
+        .company-bottom {
+            position: relative;
+            overflow: hidden;
+
+            padding: 85px 20px;
+
+            background:
+                radial-gradient(
+                    circle at 10% 20%,
+                    rgba(37, 99, 235, .24),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 80%,
+                    rgba(124, 58, 237, .20),
+                    transparent 30%
+                ),
+                #07111f;
+
+            color: white;
+        }
+
+        .company-bottom-inner {
+            max-width: 1080px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .bottom-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 8px 14px;
+
+            border: 1px solid rgba(255,255,255,.14);
+
+            border-radius: 50px;
+
+            background: rgba(255,255,255,.06);
+
+            color: #b8d5ff;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 1px;
+        }
+
+        .company-bottom h2 {
+            max-width: 750px;
+
+            margin: 20px auto 14px;
+
+            font-size: clamp(30px, 5vw, 48px);
+
+            line-height: 1.12;
+
+            letter-spacing: -1.5px;
+        }
+
+        .company-bottom h2 span {
+            color: #65a5ff;
+        }
+
+        .company-bottom > .company-bottom-inner > p {
+            max-width: 650px;
+
+            margin: auto;
+
+            color: #aab7c8;
+
+            font-size: 14px;
+        }
+
+        .bottom-tags {
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-top: 30px;
+        }
+
+        .bottom-tag {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 10px 14px;
+
+            border-radius: 10px;
+
+            background: rgba(255,255,255,.06);
+
+            border: 1px solid rgba(255,255,255,.10);
+
+            color: #dbe7f7;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .bottom-tag i {
+            color: #65a5ff;
+        }
+
+        .bottom-actions {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+            margin-top: 32px;
+        }
+
+        .bottom-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 13px 20px;
+
+            border-radius: 11px;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            transition: .2s;
+        }
+
+        .bottom-btn-primary {
+            background: white;
+
+            color: #0b1728;
+        }
+
+        .bottom-btn-secondary {
+            background: rgba(255,255,255,.07);
+
+            color: white;
+
+            border: 1px solid rgba(255,255,255,.15);
+        }
+
+        .bottom-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .bottom-note {
+            max-width: 700px;
+
+            margin: 25px auto 0;
+
+            color: #7f8da1;
+
+            font-size: 10px;
+
+            line-height: 1.7;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9999;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(3, 9, 20, .95);
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal img {
+            max-width: 96%;
+            max-height: 90vh;
+
+            object-fit: contain;
+
+            border-radius: 13px;
+        }
+
+        .modal-close {
+            position: absolute;
+
+            top: 18px;
+            right: 20px;
+
+            width: 45px;
+            height: 45px;
+
+            border: 0;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, .13);
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 20px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media(max-width: 900px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .company-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .documents-grid,
+            .principles {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 600px) {
+
+            .hero {
+                padding: 70px 18px 65px;
+            }
+
+            .hero h1 {
+                letter-spacing: -2px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 55px 17px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .documents-grid,
+            .principles {
+                grid-template-columns: 1fr;
+            }
+
+            .showcase-bottom {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+            .company-bottom {
+                padding: 65px 18px;
+            }
+
+            .bottom-tags {
+                gap: 8px;
+            }
+
+            .bottom-tag {
+                padding: 9px 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="header">
+
+        <nav class="navbar">
+
+            <a href="index.html" class="logo">
+
+                <span class="logo-icon">
+                    <i class="fa-brands fa-bitcoin"></i>
+                </span>
+
+                Bitcoin Investment
+
+            </a>
+
+            
+
+        </nav>
+
+    </header>
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+
+                <i class="fa-solid fa-building-shield"></i>
+
+                COMPANY INFORMATION
+
+            </div>
+
+            <h1>
+                About
+                <span>Bitcoin Investment</span>
+            </h1>
+
+            <p>
+                Learn more about our platform, company information,
+                registration documents and business certificates.
+                Relevant documentation is presented for review
+                and reference.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#documents" class="btn btn-primary">
+
+                    <i class="fa-solid fa-file-circle-check"></i>
+
+                    View Documents
+
+                </a>
+
+                <a href="#faq" class="btn btn-secondary">
+
+                    <i class="fa-solid fa-circle-question"></i>
+
+                    Learn More
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <main>
+
+        <!-- =========================
+             COMPANY OVERVIEW
+        ========================= -->
+
+        <section class="container" id="company">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    Company Overview
+                </span>
+
+                <h2>
+                    Information about our platform
+                </h2>
+
+                <p>
+                    A central place to review company information,
+                    business documentation and available certificates.
+                </p>
+
+            </div>
+
+
+            <div class="company-grid">
+
+                <div class="card">
+
+                    <div class="card-heading">
+
+                        <div class="card-icon">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+
+                        <h2>
+                            Bitcoin Investment
+                        </h2>
+
+                    </div>
+
+                    <p>
+                        Bitcoin Invest is a digital platform providing
+                        users with access to its online services through
+                        a modern web-based interface.
+                    </p>
+
+                    <p>
+                        The platform brings account access, service
+                        information, plan information and related
+                        digital features together in one place.
+                    </p>
+
+                    <p>
+                        Users are encouraged to review applicable terms,
+                        privacy information, risk disclosures and
+                        available company documentation before using
+                        platform services.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-heading">
+
+                        <div class="card-icon">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </div>
+
+                        <h2>
+                            Company Details
+                        </h2>
+
+                    </div>
+
+                    <div class="company-info">
+
+                        <div class="info-item">
+
+                            <small>
+                                Platform Name
+                            </small>
+
+                            <strong>
+                                Bitcoin Investment
+                            </strong>
+
+                        </div>
+
+
+                        <div class="info-item">
+
+                            <small>
+                                Platform Type
+                            </small>
+
+                            <strong>
+                                Digital Platform
+                            </strong>
+
+                        </div>
+
+
+                        <div class="info-item">
+
+                            <small>
+                                Documentation
+                            </small>
+
+                            <strong>
+                                Available for Review
+                            </strong>
+
+                        </div>
+
+
+                        <div class="info-item">
+
+                            <small>
+                                Business Certificates
+                            </small>
+
+                            <strong>
+                                Available for Reference
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             DOCUMENTS
+        ========================= -->
+
+        <section class="documents-section" id="documents">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="section-label">
+                        Documentation
+                    </span>
+
+                    <h2>
+                        Company Registration & Documentation
+                    </h2>
+
+                    <p>
+                        The following documents and certificates are
+                        made available for review and reference.
+                        Please review the original documents and their
+                        issuing details independently.
+                    </p>
+
+                </div>
+
+
+                <div class="documents-grid">
+
+
+                    <!-- COMPANY REGISTRATION -->
+
+                    <div class="document-card">
+
+                        <div class="document-icon">
+                            <i class="fa-solid fa-building-circle-check"></i>
+                        </div>
+
+                        <h3>
+                            Company Registration
+                        </h3>
+
+                        <p>
+                            Company registration documentation made
+                            available for review and reference.
+                        </p>
+
+                        <div class="verified-status">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                            DOCUMENT AVAILABLE
+
+                        </div>
+
+                        <a href="COMNAYREGISTER.png"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="view-document">
+
+                            <i class="fa-solid fa-eye"></i>
+
+                            View Document
+
+                        </a>
+
+                    </div>
+
+
+                    
+                    
+
+                    <!-- UDYAM -->
+
+                    <div class="document-card">
+
+                        <div class="document-icon">
+                            <i class="fa-solid fa-building-circle-check"></i>
+                        </div>
+
+                        <h3>
+                            Udyam Registration Certificate
+                        </h3>
+
+                        <p>
+                            Official Udyam Registration Certificate
+                            provided for business registration
+                            reference.
+                        </p>
+
+                        <div class="verified-status">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                            OFFICIAL CERTIFICATE
+
+                        </div>
+
+                        <a href="UDYAM.png"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="view-document">
+
+                            <i class="fa-solid fa-eye"></i>
+
+                            View Certificate
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- GOOD STANDING -->
+
+                    
+
+
+                </div>
+
+
+                <!-- DOCUMENT SHOWCASE -->
+
+                
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             TRANSPARENCY
+        ========================= -->
+
+        <section class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    Transparency
+                </span>
+
+                <h2>
+                    Clear information matters
+                </h2>
+
+                <p>
+                    Important company and platform information
+                    should remain easy for users to access and review.
+                </p>
+
+            </div>
+
+
+            <div class="principles">
+
+
+                <div class="principle">
+
+                    <div class="principle-icon">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                    </div>
+
+                    <h3>
+                        Transparency
+                    </h3>
+
+                    <p>
+                        Company information and available
+                        documentation are presented clearly
+                        for review.
+                    </p>
+
+                </div>
+
+
+                <div class="principle">
+
+                    <div class="principle-icon">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                    </div>
+
+                    <h3>
+                        Security
+                    </h3>
+
+                    <p>
+                        Account security and responsible handling
+                        of user information are important aspects
+                        of the platform.
+                    </p>
+
+                </div>
+
+
+                <div class="principle">
+
+                    <div class="principle-icon">
+
+                        <i class="fa-solid fa-file-circle-check"></i>
+
+                    </div>
+
+                    <h3>
+                        Documentation
+                    </h3>
+
+                    <p>
+                        Relevant company documentation can be
+                        accessed through the dedicated documentation
+                        section.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             FAQ
+        ========================= -->
+
+        <section class="container" id="faq">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    FAQ
+                </span>
+
+                <h2>
+                    Frequently Asked Questions
+                </h2>
+
+                <p>
+                    Common questions about company information
+                    and documentation.
+                </p>
+
+            </div>
+
+
+            <div class="faq-list">
+
+
+                <div class="faq-item">
+
+                    <button class="faq-question">
+
+                        <span>
+                            What is Bitcoin Investment?
+                        </span>
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Bitcoin Investment is a digital platform
+                            providing access to its online services
+                            through a web-based interface.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="faq-item">
+
+                    <button class="faq-question">
+
+                        <span>
+                            Where can I view company documents?
+                        </span>
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Available company documentation is
+                            displayed in the Company Registration
+                            & Documentation section of this page.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="faq-item">
+
+                    <button class="faq-question">
+
+                        <span>
+                            Which certificates are available?
+                        </span>
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            The page currently provides access to
+                            company registration information an
+                            Udyam Registration Certificate.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="faq-item">
+
+                    <button class="faq-question">
+
+                        <span>
+                            How can I review a document?
+                        </span>
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Select the "View Document" or
+                            "View Certificate" button on the
+                            relevant document card. The document
+                            will open in a separate browser tab.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="faq-item">
+
+                    <button class="faq-question">
+
+                        <span>
+                            Where can I find platform information?
+                        </span>
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </button>
+
+                    <div class="faq-answer">
+
+                        <p>
+                            Company information, documentation and
+                            general platform information are available
+                            throughout this page for review.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PREMIUM BOTTOM
+        ========================= -->
+
+        <section class="company-bottom">
+
+            <div class="company-bottom-inner">
+
+                <div class="bottom-badge">
+
+                    <i class="fa-solid fa-building-shield"></i>
+
+                    COMPANY • INFORMATION • DOCUMENTATION
+
+                </div>
+
+                <h2>
+                    Information You Can
+                    <span>Review With Confidence</span>
+                </h2>
+
+                <p>
+                    Explore company information, registration records
+                    and available business certificates from one
+                    dedicated location.
+                </p>
+
+
+                <div class="bottom-tags">
+
+                    <div class="bottom-tag">
+                        <i class="fa-solid fa-building"></i>
+                        Company Information
+                    </div>
+
+                    <div class="bottom-tag">
+                        <i class="fa-solid fa-file-circle-check"></i>
+                        Registration Documents
+                    </div>
+
+                    <div class="bottom-tag">
+                        <i class="fa-solid fa-certificate"></i>
+                        Business Certificates
+                    </div>
+
+                    <div class="bottom-tag">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Security Focus
+                    </div>
+
+                    <div class="bottom-tag">
+                        <i class="fa-solid fa-eye"></i>
+                        Transparent Information
+                    </div>
+
+                </div>
+
+
+                <div class="bottom-actions">
+
+                    <a href="#documents"
+                       class="bottom-btn bottom-btn-primary">
+
+                        <i class="fa-solid fa-file-lines"></i>
+
+                        View Documents
+
+                    </a>
+
+                    <a href="home.html"
+                       class="bottom-btn bottom-btn-secondary">
+
+                        <i class="fa-solid fa-house"></i>
+
+                        Back to Home
+
+                    </a>
+
+                </div>
+
+
+                <p class="bottom-note">
+                    <p>
+    Please review the Government Registration Certificate
+    and Udyam Registration Certificate provided on this
+    platform for company registration and business
+    information.
+</p>
+
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         IMAGE MODAL
+    ========================= -->
+
+    <div class="modal" id="imageModal">
+
+        <button class="modal-close" id="modalClose">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+        <img
+            src=""
+            alt="Company document"
+            id="modalImage">
+
+    </div>
+
+
+    <script>
+
+        /* =========================
+           DOCUMENT IMAGE ZOOM
+        ========================= */
+
+        const documentImage =
+            document.getElementById("documentImage");
+
+        const imageModal =
+            document.getElementById("imageModal");
+
+        const modalImage =
+            document.getElementById("modalImage");
+
+        const modalClose =
+            document.getElementById("modalClose");
+
+
+        if (documentImage) {
+
+            documentImage.addEventListener("click", function () {
+
+                modalImage.src = this.src;
+
+                imageModal.classList.add("show");
+
+                document.body.style.overflow = "hidden";
+
+            });
+
+        }
+
+
+        function closeModal() {
+
+            imageModal.classList.remove("show");
+
+            document.body.style.overflow = "";
+
+        }
+
+
+        if (modalClose) {
+
+            modalClose.addEventListener(
+                "click",
+                closeModal
+            );
+
+        }
+
+
+        if (imageModal) {
+
+            imageModal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (event.target === imageModal) {
+
+                        closeModal();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Escape") {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           FAQ
+        ========================= */
+
+        const faqItems =
+            document.querySelectorAll(".faq-item");
+
+
+        faqItems.forEach(function (item) {
+
+            const question =
+                item.querySelector(".faq-question");
+
+            const answer =
+                item.querySelector(".faq-answer");
+
+
+            question.addEventListener(
+                "click",
+                function () {
+
+                    const active =
+                        item.classList.contains("active");
+
+
+                    faqItems.forEach(function (other) {
+
+                        other.classList.remove("active");
+
+                        const otherAnswer =
+                            other.querySelector(".faq-answer");
+
+                        otherAnswer.style.maxHeight = null;
+
+                    });
+
+
+                    if (!active) {
+
+                        item.classList.add("active");
+
+                        answer.style.maxHeight =
+                            answer.scrollHeight + "px";
+
+                    }
+
+                }
+            );
+
+        });
+
+    </script>
+
+</body>
+
+</html>

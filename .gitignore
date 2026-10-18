@@ -1,0 +1,13 @@
+.env
+ServiceAccountKey.json
+
+backend/.env
+backend/node_modules/
+backend/uploads/
+
+backend/config/firebaseServiceAccountKey.json
+backend/config/ServiceAccountKey.json
+
+*.log
+.DS_Store
+Thumbs.db

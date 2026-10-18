@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>My Investments | Kubota Invest</title>
+
+<!-- =====================================================
+     GOOGLE FONT
+====================================================== -->
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
+
+
+<!-- =====================================================
+     FONT AWESOME
+====================================================== -->
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+>
+
+
+<!-- =====================================================
+     SWEETALERT
+====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<!-- =====================================================
+     PAGE CSS
+====================================================== -->
+
+<link
+    rel="stylesheet"
+    href="css/my-investment.css"
+>
+
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     APP SHELL
+====================================================== -->
+
+<div class="app-shell">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <header class="top-header">
+
+        <div class="header-left">
+
+            <button
+                class="back-button"
+                type="button"
+                onclick="goBack()"
+                aria-label="Go Back"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+
+            <div class="page-heading">
+
+                <span>
+                    Investment Portfolio
+                </span>
+
+                <h1>
+                    My Investments
+                </h1>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="refresh-button"
+            id="refreshButton"
+            type="button"
+            onclick="refreshInvestments()"
+            aria-label="Refresh Investments"
+        >
+            <i class="fa-solid fa-rotate"></i>
+        </button>
+
+    </header>
+
+
+
+    <!-- =================================================
+         MAIN CONTENT
+    ================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             PORTFOLIO SUMMARY
+        ================================================== -->
+
+       <section class="portfolio-card">
+
+    <div class="portfolio-glow glow-one"></div>
+
+    <div class="portfolio-glow glow-two"></div>
+
+
+    <div class="portfolio-top">
+
+        <div>
+
+            <span class="portfolio-label">
+                Total Invested
+            </span>
+
+            <h2 id="totalInvested">
+                ₹0.00
+            </h2>
+
+            <small class="portfolio-subtitle">
+                Your active investment portfolio
+            </small>
+
+        </div>
+
+
+        <div class="portfolio-icon">
+
+            <i class="fa-solid fa-chart-line"></i>
+
+        </div>
+
+    </div>
+
+
+    <div class="portfolio-bottom">
+
+        <div class="portfolio-stat">
+
+            <span>
+                Active
+            </span>
+
+            <strong id="activeInvestments">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="portfolio-stat">
+
+            <span>
+                Total Earned
+            </span>
+
+            <strong
+                id="totalProfit"
+                class="profit-value"
+            >
+                ₹0.00
+            </strong>
+
+        </div>
+
+
+        <div class="portfolio-stat">
+
+            <span>
+                Completed
+            </span>
+
+            <strong id="completedInvestments">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+        <!-- =================================================
+             FILTERS
+        ================================================== -->
+
+        <section class="filter-section">
+
+            <button
+                class="filter-button active"
+                data-filter="all"
+                onclick="setInvestmentFilter('all')"
+            >
+                <i class="fa-solid fa-layer-group"></i>
+                All
+            </button>
+
+
+            <button
+                class="filter-button"
+                data-filter="active"
+                onclick="setInvestmentFilter('active')"
+            >
+                <i class="fa-solid fa-bolt"></i>
+                Active
+            </button>
+
+
+            <button
+                class="filter-button"
+                data-filter="completed"
+                onclick="setInvestmentFilter('completed')"
+            >
+                <i class="fa-solid fa-circle-check"></i>
+                Completed
+            </button>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SECTION HEADER
+        ================================================== -->
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Investment History
+                </h2>
+
+                <p id="investmentCount">
+                    Loading investments...
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INVESTMENTS CONTAINER
+        ================================================== -->
+
+        <section
+            id="investmentsContainer"
+            class="investments-container"
+        >
+
+            <div class="loading-card">
+
+                <div class="loader"></div>
+
+                <strong>
+                    Loading investments
+                </strong>
+
+                <span>
+                    Please wait...
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BOTTOM SPACE
+        ================================================== -->
+
+        <div class="bottom-space"></div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         BOTTOM NAVIGATION
+    ====================================================== -->
+
+    <nav class="bottom-nav">
+
+
+        <button
+            class="nav-item"
+            type="button"
+            onclick="goTo('home.html')"
+        >
+
+            <div class="nav-icon">
+                <i class="fa-solid fa-house"></i>
+            </div>
+
+            <span>
+                Home
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item active"
+            type="button"
+        >
+
+            <div class="nav-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+
+            <span>
+                Invest
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item nav-center"
+            type="button"
+            onclick="goTo('deposite.html')"
+        >
+
+            <div class="center-nav-button">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+
+            <span>
+                Deposit
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item"
+            type="button"
+            onclick="goTo('withdraw.html')"
+        >
+
+            <div class="nav-icon">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+            </div>
+
+            <span>
+                Withdraw
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item"
+            type="button"
+            onclick="goTo('profile.html')"
+        >
+
+            <div class="nav-icon">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <span>
+                Profile
+            </span>
+
+        </button>
+
+
+    </nav>
+
+</div>
+
+
+
+<!-- =====================================================
+     PAGE JAVASCRIPT
+====================================================== -->
+
+<script src="js/my-investment.js"></script>
+
+
+</body>
+
+</html>

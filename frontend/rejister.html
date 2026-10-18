@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Create Account | Kubota Invest</title>
+    <!-- Web Icons -->
+    <link rel="shortcut icon" href="https://i.postimg.cc/nc352FMP/168539.jpg">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom Style System -->
+    <link rel="stylesheet" href="css/auth.css">
+    
+    <!-- Firebase App and Auth Client CDNs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="auth-page">
+        <!-- LEFT: Brand Slogan & Dynamic Features -->
+        <div class="auth-side-brand">
+            <div class="brand-header">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-seedling" style="color: white; font-size: 20px;"></i>
+                </div>
+                <span class="brand-title">Kubota Invest</span>
+            </div>
+            <div class="brand-content">
+                <h1 class="brand-tagline">Invest in the <br>Future of <span class="text-orange">Agriculture.</span></h1>
+                <p class="brand-description">
+                    Empowering modern agriculture with premium Kubota machinery leases. Secure stable daily yields and watch your capital grow with eco-smart farming investments.
+                </p>
+                <div class="brand-features">
+                    <div class="brand-feat-card">
+                        <div class="brand-feat-icon">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <h4 class="brand-feat-title">High Daily Yields</h4>
+                        <p class="brand-feat-desc">Profits credited every 24 hours directly to your wallet.</p>
+                    </div>
+                    <div class="brand-feat-card">
+                        <div class="brand-feat-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h4 class="brand-feat-title">Secure & Regulated</h4>
+                        <p class="brand-feat-desc">Asset-backed plans protecting 100% of your funds.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="brand-footer">
+                <span><i class="fa-solid fa-lock"></i> SSL Secured Platform</span>
+                <span>© 2026 Bitcoin Investment Corp.</span>
+            </div>
+        </div>
+        <!-- RIGHT: Interactive Registration Forms -->
+        <div class="auth-side-form">
+            <div class="auth-form-card">
+                <!-- Mobile brand logo -->
+                <div class="mobile-brand-header">
+                    <img src="https://i.postimg.cc/nc352FMP/168539.jpg" alt="Kubota Logo">
+                    <h1>Bitcoin Investment</h1>
+                </div>
+                <div class="form-header">
+                    <h2>Register Account</h2>
+                    <p>Start earning daily yields today. Already registered? <a href="auth.html">Sign in</a></p>
+                </div>
+                <!-- Tabs -->
+                <div class="form-tabs">
+                    <a href="auth.html" class="form-tab">Log In</a>
+                    <a href="register.html" class="form-tab active">Register</a>
+                </div>
+                <!-- Invisible Recaptcha target Container for Firebase OTP -->
+                <div id="recaptcha-container"></div>
+                <!-- Fields -->
+                <div class="form-group">
+                    <label class="form-label" for="f_phone">Mobile Number</label>
+                    <div class="input-wrapper">
+                        <span class="country-code">+91</span>
+                        <input type="tel" id="f_phone" placeholder="Enter 10-digit number" inputmode="numeric"
+                               oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f_pass">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock field-icon"></i>
+                        <input type="password" id="f_pass" placeholder="Create login password">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('f_pass', 'eye1')">
+                            <i class="fa-regular fa-eye-slash" id="eye1"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f_pass2">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock field-icon"></i>
+                        <input type="password" id="f_pass2" placeholder="Confirm login password">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('f_pass2', 'eye2')">
+                            <i class="fa-regular fa-eye-slash" id="eye2"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Firebase Captcha trigger replacement row -->
+                <div class="form-group">
+                    <label class="form-label" for="f_ref">Referral Code</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-group field-icon" style="color: var(--primary);"></i>
+                        <input type="text" id="f_ref" placeholder="Referral ID" readonly>
+                    </div>
+                </div>
+                <button type="button" class="submit-btn" id="regBtn" onclick="sendSMSVerification()">
+                    Verify Mobile & Register <i class="fa-solid fa-envelope-open-text"></i>
+                </button>
+                <div class="auth-form-footer">
+                    <p>By registering, you agree to the <a href="#">Investment Terms & Service</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Core App Auth Scripts -->
+    <script src="js/firebase-init.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

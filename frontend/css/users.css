@@ -1,0 +1,310 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#f5f7fb;
+    overflow:hidden;
+}
+
+/* ===========================
+   ADMIN LAYOUT
+=========================== */
+
+.admin-container{
+    display:flex;
+    width:100%;
+    height:100vh;
+}
+
+/* ===========================
+   SIDEBAR
+=========================== */
+
+.sidebar{
+    width:260px;
+    background:#111827;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+}
+
+.logo{
+    padding:25px;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.logo h2{
+    color:#fff;
+    font-size:24px;
+}
+
+.sidebar ul{
+    list-style:none;
+    padding:20px 0;
+}
+
+.sidebar li{
+    margin:6px 12px;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 18px;
+    color:#d1d5db;
+    text-decoration:none;
+    border-radius:10px;
+    transition:.3s;
+    font-size:15px;
+}
+
+.sidebar a:hover{
+    background:#2563eb;
+    color:#fff;
+}
+
+.sidebar .active a{
+    background:#2563eb;
+    color:#fff;
+}
+
+/* ===========================
+   MAIN CONTENT
+=========================== */
+
+.main-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow:auto;
+}
+
+/* ===========================
+   TOPBAR
+=========================== */
+
+.topbar{
+    height:70px;
+    background:#fff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 30px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.topbar h1{
+    font-size:24px;
+    color:#222;
+}
+
+.admin-profile{
+    font-weight:600;
+    color:#2563eb;
+}
+
+/* ===========================
+   STATISTICS
+=========================== */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    padding:25px;
+}
+
+.card{
+    background:#fff;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.card h3{
+    color:#777;
+    font-size:15px;
+    margin-bottom:10px;
+}
+
+.card h2{
+    color:#111;
+    font-size:30px;
+}
+
+/* ===========================
+   SEARCH
+=========================== */
+
+.search-box{
+    padding:0 25px 20px;
+}
+
+.search-box input{
+    width:100%;
+    padding:14px 18px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    outline:none;
+    font-size:15px;
+}
+
+.search-box input:focus{
+    border-color:#2563eb;
+}
+
+/* ===========================
+   TABLE
+=========================== */
+
+.table-container{
+    padding:0 25px 25px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+thead{
+    background:#2563eb;
+    color:#fff;
+}
+
+th,
+td{
+    padding:15px;
+    text-align:center;
+}
+
+tbody tr{
+    border-bottom:1px solid #eee;
+}
+
+tbody tr:hover{
+    background:#f9fbff;
+}
+
+/* ===========================
+   STATUS
+=========================== */
+
+.status-active{
+    color:#16a34a;
+    font-weight:600;
+}
+
+.status-blocked{
+    color:#dc2626;
+    font-weight:600;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.btn{
+    border:none;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    color:#fff;
+    margin:2px;
+    transition:.3s;
+}
+
+.view-btn{
+    background:#2563eb;
+}
+
+.block-btn{
+    background:#f59e0b;
+}
+
+.delete-btn{
+    background:#dc2626;
+}
+
+.btn:hover{
+    opacity:.85;
+}
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#2563eb;
+    border-radius:10px;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:1200px){
+
+.stats{
+    grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:900px){
+
+.sidebar{
+    width:80px;
+}
+
+.logo h2{
+    display:none;
+}
+
+.sidebar a{
+    justify-content:center;
+    font-size:0;
+}
+
+.sidebar a i{
+    font-size:20px;
+}
+
+.topbar h1{
+    font-size:20px;
+}
+
+}
+
+@media(max-width:768px){
+
+.stats{
+    grid-template-columns:1fr;
+}
+
+.table-container{
+    overflow:auto;
+}
+
+table{
+    min-width:900px;
+}
+
+.topbar{
+    padding:0 15px;
+}
+
+}

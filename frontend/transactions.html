@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Transactions</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/transaction.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         HEADER
+    =========================================== -->
+
+    <header class="topbar">
+
+        <button
+            class="back-btn"
+            onclick="history.back()"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </button>
+
+
+        <div>
+
+            <h1>Transactions</h1>
+
+            <p>Wallet transaction history</p>
+
+        </div>
+
+
+        <button
+            id="refreshBtn"
+            class="refresh-btn"
+        >
+
+            <i class="fa-solid fa-rotate"></i>
+
+        </button>
+
+    </header>
+
+
+
+    <!-- ==========================================
+         SUMMARY
+    =========================================== -->
+
+    <section class="summary">
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-list"></i>
+
+            </div>
+
+            <div>
+
+                <span>Total Transactions</span>
+
+                <strong id="totalTransactions">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon income">
+
+                <i class="fa-solid fa-arrow-down"></i>
+
+            </div>
+
+            <div>
+
+                <span>Total Credit</span>
+
+                <strong id="totalCredit">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon expense">
+
+                <i class="fa-solid fa-arrow-up"></i>
+
+            </div>
+
+            <div>
+
+                <span>Total Debit</span>
+
+                <strong id="totalDebit">
+                    ₹0
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==========================================
+         FILTER
+    =========================================== -->
+
+    <section class="filter-card">
+
+        <div class="search-box">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search transaction..."
+            >
+
+        </div>
+
+
+        <select id="typeFilter">
+
+            <option value="All">
+                All Transactions
+            </option>
+
+            <option value="Credit">
+                Credit
+            </option>
+
+            <option value="Debit">
+                Debit
+            </option>
+
+        </select>
+
+    </section>
+
+
+
+    <!-- ==========================================
+         TRANSACTION LIST
+    =========================================== -->
+
+    <main>
+
+        <div
+            id="transactionList"
+            class="transaction-list"
+        >
+
+            <div class="loading">
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Loading transactions...
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ==========================================
+         TRANSACTION MODAL
+    =========================================== -->
+
+    <div
+        id="transactionModal"
+        class="modal"
+    >
+
+        <div class="modal-box">
+
+            <div class="modal-header">
+
+                <h2>
+                    Transaction Details
+                </h2>
+
+                <button
+                    id="closeModal"
+                    class="close-btn"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="transactionDetails"
+                class="transaction-details"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/transaction.js"></script>
+
+</body>
+
+</html>

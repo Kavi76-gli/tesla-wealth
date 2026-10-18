@@ -1,0 +1,9 @@
+{
+  "appId": "com.teslawealth.app",
+  "appName": "Tesla Wealth",
+  "webDir": "www",
+  "server": {
+    "url": "https://YOUR-TESLA-WEALTH-BACKEND.onrender.com",
+    "cleartext": false
+  }
+}

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Withdraw</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Withdraw CSS -->
+    <link
+        rel="stylesheet"
+        href="css/withdraw.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<header class="top-header">
+
+    <button
+        class="back-btn"
+        onclick="history.back()"
+    >
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+    </button>
+
+
+    <div class="header-title">
+
+        <i class="fa-solid fa-wallet"></i>
+
+        <span>Withdraw</span>
+
+    </div>
+
+
+    <div class="header-space"></div>
+
+</header>
+
+
+
+<!-- ==========================================
+     MAIN
+========================================== -->
+
+<main class="withdraw-container">
+
+
+    <!-- ======================================
+         WITHDRAWABLE EARNINGS CARD
+    ======================================= -->
+
+    <section class="balance-card">
+
+        <div class="balance-icon">
+
+            <i class="fa-solid fa-coins"></i>
+
+        </div>
+
+
+        <div class="balance-info">
+
+            <span>Withdrawable Earnings</span>
+
+            <h2 id="balance">
+
+                ₹0.00
+
+            </h2>
+
+            <small>
+
+                Investment returns available for withdrawal
+
+            </small>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ======================================
+         WALLET BALANCE
+    ======================================= -->
+
+    <div class="wallet-balance-card">
+
+    <div class="wallet-lock-badge">
+        <i class="fa-solid fa-lock"></i>
+        Locked
+    </div>
+
+    <div class="wallet-icon">
+        <i class="fa-solid fa-wallet"></i>
+    </div>
+
+    <div class="wallet-label">
+        Wallet Balance
+    </div>
+
+    <span id="walletBalance">
+        ₹0.00
+    </span>
+
+    <div class="wallet-note">
+        <i class="fa-solid fa-circle-info"></i>
+
+        <span>
+            Wallet balance cannot be withdrawn.
+            It can only be used for investments.
+        </span>
+    </div>
+
+</div>
+
+    <!-- ======================================
+         WITHDRAW FORM
+    ======================================= -->
+
+    <section class="withdraw-card">
+
+        <div class="section-title">
+
+            <i class="fa-solid fa-money-bill-transfer"></i>
+
+            <h3>Withdraw Earnings</h3>
+
+        </div>
+
+
+        <form id="withdrawForm">
+
+
+            <!-- ==================================
+                 AMOUNT
+            =================================== -->
+
+            <div class="form-group">
+
+                <label for="amount">
+
+                    Withdrawal Amount
+
+                </label>
+
+
+                <div class="input-box">
+
+                    <span class="currency">₹</span>
+
+
+                    <input
+                        type="number"
+                        id="amount"
+                        name="amount"
+                        placeholder="Minimum ₹500"
+                        min="500"
+                        step="1"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <small class="amount-hint">
+
+                    Minimum withdrawal amount: ₹500
+
+                </small>
+
+            </div>
+
+
+
+            <!-- ==================================
+                 WITHDRAWAL CALCULATION
+            =================================== -->
+
+            <div
+                id="withdrawalCalculation"
+                class="withdrawal-calculation"
+            >
+
+                <div class="calculation-row">
+
+                    <span>Withdrawal Amount</span>
+
+                    <strong id="previewAmount">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="calculation-row fee-row">
+
+                    <span>
+
+                        Platform Fee
+
+                        <small>(3%)</small>
+
+                    </span>
+
+                    <strong id="previewFee">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="calculation-divider"></div>
+
+
+                <div class="calculation-row receive-row">
+
+                    <span>You Receive</span>
+
+                    <strong id="previewNet">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="calculation-row remaining-row">
+
+                    <span>Remaining Earnings</span>
+
+                    <strong id="previewRemaining">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================================
+                 PAYMENT METHOD
+            =================================== -->
+
+            <div class="form-group">
+
+                <label>
+
+                    Payment Method
+
+                </label>
+
+
+                <div class="method-container">
+
+
+                    <label class="method-option">
+
+                        <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="UPI"
+                            checked
+                        >
+
+                        <span class="method-box">
+
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+
+                            <span>UPI</span>
+
+                        </span>
+
+                    </label>
+
+
+
+                    <label class="method-option">
+
+                        <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="Bank"
+                        >
+
+                        <span class="method-box">
+
+                            <i class="fa-solid fa-building-columns"></i>
+
+                            <span>Bank</span>
+
+                        </span>
+
+                    </label>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================================
+                 UPI DETAILS
+            =================================== -->
+
+            <div
+                id="upiSection"
+                class="payment-section"
+            >
+
+                <div class="form-group">
+
+                    <label for="upiId">
+
+                        UPI ID
+
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-at"></i>
+
+                        <input
+                            type="text"
+                            id="upiId"
+                            placeholder="example@upi"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================================
+                 BANK DETAILS
+            =================================== -->
+
+            <div
+                id="bankSection"
+                class="payment-section hidden"
+            >
+
+
+                <div class="form-group">
+
+                    <label for="accountHolder">
+
+                        Account Holder Name
+
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-user"></i>
+
+                        <input
+                            type="text"
+                            id="accountHolder"
+                            placeholder="Account holder name"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="bankName">
+
+                        Bank Name
+
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-building-columns"></i>
+
+                        <input
+                            type="text"
+                            id="bankName"
+                            placeholder="Bank name"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="accountNumber">
+
+                        Account Number
+
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-credit-card"></i>
+
+                        <input
+                            type="text"
+                            id="accountNumber"
+                            placeholder="Account number"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="ifscCode">
+
+                        IFSC Code
+
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-code"></i>
+
+                        <input
+                            type="text"
+                            id="ifscCode"
+                            placeholder="IFSC code"
+                        >
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ==================================
+                 MESSAGE
+            =================================== -->
+
+            <div
+                id="withdrawMessage"
+                class="withdraw-message"
+                style="display:none;"
+            ></div>
+
+
+
+            <!-- ==================================
+                 SUBMIT BUTTON
+            =================================== -->
+
+            <button
+                type="submit"
+                id="withdrawBtn"
+                class="withdraw-btn"
+            >
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+                <span>Submit Withdrawal</span>
+
+            </button>
+
+
+        </form>
+
+    </section>
+
+
+
+    <!-- ======================================
+         WITHDRAWAL HISTORY
+    ======================================= -->
+
+    <section class="history-card">
+
+
+        <div class="section-title">
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            <h3>Withdrawal History</h3>
+
+        </div>
+
+
+        <div
+            id="withdrawalHistory"
+            class="withdrawal-history"
+        >
+
+            <div class="loading">
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Loading...
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+
+<script src="js/withdraw.js"></script>
+
+
+</body>
+
+</html>

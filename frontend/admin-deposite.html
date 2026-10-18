@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Deposit Management</title>
+
+<link rel="stylesheet"
+href="css/admin-deposite.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- Sidebar -->
+
+<aside class="sidebar">
+
+<div class="logo">
+
+<h2>Investment Admin</h2>
+
+</div>
+
+<ul>
+
+<li><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+
+<li><a href="users.html"><i class="fas fa-users"></i> Users</a></li>
+
+<li class="active"><a href="#"><i class="fas fa-wallet"></i> Deposits</a></li>
+
+<li><a href="withdrawals.html"><i class="fas fa-money-bill-wave"></i> Withdrawals</a></li>
+
+<li><a href="investment-plans.html"><i class="fas fa-chart-pie"></i> Investment Plans</a></li>
+
+<li><a href="payment-settings.html"><i class="fas fa-qrcode"></i> Payment Settings</a></li>
+
+<li><a href="#" id="logoutBtn"><i class="fas fa-right-from-bracket"></i> Logout</a></li>
+
+</ul>
+
+</aside>
+
+<!-- Main -->
+
+<main class="main-content">
+
+<div class="topbar">
+
+<h1>💰 Deposit Management</h1>
+
+<div id="adminName">Administrator</div>
+
+</div>
+
+<!-- Cards -->
+
+<div class="cards">
+
+<div class="card">
+
+<h3>Total Deposits</h3>
+
+<h2 id="totalDeposit">₹0</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Pending</h3>
+
+<h2 id="pendingCount">0</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Approved</h3>
+
+<h2 id="approvedCount">0</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Rejected</h3>
+
+<h2 id="rejectedCount">0</h2>
+
+</div>
+
+</div>
+
+<!-- Search -->
+
+<div class="toolbar">
+
+<input
+type="text"
+id="searchDeposit"
+placeholder="Search Name / Phone / UTR">
+
+<select id="statusFilter">
+
+<option value="">All</option>
+
+<option>Pending</option>
+
+<option>Approved</option>
+
+<option>Rejected</option>
+
+</select>
+
+</div>
+
+<!-- Table -->
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>User</th>
+
+<th>Phone</th>
+
+<th>Amount</th>
+
+<th>UTR</th>
+
+<th>Screenshot</th>
+
+<th>Status</th>
+
+<th>Date</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="depositTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="js/admin-deposite.js"></script>
+
+</body>
+
+</html>

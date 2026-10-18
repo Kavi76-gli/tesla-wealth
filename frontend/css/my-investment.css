@@ -1,0 +1,3248 @@
+
+/* =========================================================
+   MY INVESTMENT — PREMIUM PORTFOLIO
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    min-height: 100%;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+
+    font-family: "Poppins", sans-serif;
+
+    color: #192038;
+
+    background:
+        radial-gradient(
+            circle at 5% 5%,
+            rgba(118, 102, 245, 0.18),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 95% 10%,
+            rgba(67, 135, 255, 0.15),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 50% 75%,
+            rgba(170, 90, 255, 0.08),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #f8f9ff 0%,
+            #eef0ff 48%,
+            #f7f8ff 100%
+        );
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app-shell {
+    width: 100%;
+    max-width: 1500px;
+    min-height: 100vh;
+    margin: auto;
+    position: relative;
+}
+
+/* =========================================================
+   PAGE ENTRANCE
+   ========================================================= */
+
+.top-header,
+.portfolio-card,
+.filter-section,
+.section-header,
+.investments-container,
+.bottom-space {
+    opacity: 0;
+    transform: translateY(24px);
+
+    animation:
+        pageEntrance
+        0.65s
+        cubic-bezier(.2, .8, .2, 1)
+        forwards;
+}
+
+.top-header {
+    animation-delay: 0.05s;
+}
+
+.portfolio-card {
+    animation-delay: 0.15s;
+}
+
+.filter-section {
+    animation-delay: 0.25s;
+}
+
+.section-header {
+    animation-delay: 0.35s;
+}
+
+.investments-container {
+    animation-delay: 0.45s;
+}
+
+.bottom-space {
+    animation-delay: 0.55s;
+}
+
+@keyframes pageEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.top-header {
+    width: 90%;
+    max-width: 1100px;
+
+    height: 90px;
+
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: relative;
+    z-index: 20;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.back-button {
+    width: 48px;
+    height: 48px;
+
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.78);
+
+    color: #6654e8;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+
+    box-shadow:
+        0 10px 30px rgba(63, 56, 130, 0.10);
+
+    backdrop-filter: blur(18px);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.back-button:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 15px 35px rgba(63, 56, 130, 0.16);
+}
+
+.back-button:active {
+    transform: scale(0.94);
+}
+
+/* =========================================================
+   PAGE HEADING
+   ========================================================= */
+
+.page-heading span {
+    display: block;
+
+    color: #9297aa;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.page-heading h1 {
+    margin-top: 2px;
+
+    color: #172039;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    letter-spacing: -0.4px;
+}
+
+/* =========================================================
+   REFRESH BUTTON
+   ========================================================= */
+
+.refresh-button {
+    width: 48px;
+    height: 48px;
+
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.78);
+
+    color: #6654e8;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+
+    box-shadow:
+        0 10px 30px rgba(63, 56, 130, 0.10);
+
+    backdrop-filter: blur(18px);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.refresh-button:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 15px 35px rgba(63, 56, 130, 0.17);
+}
+
+.refresh-button:active {
+    transform: scale(0.94);
+}
+
+.refresh-button.rotating i {
+    animation: refreshSpin 0.7s linear;
+}
+
+@keyframes refreshSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.main-content {
+    width: 90%;
+    max-width: 1100px;
+
+    margin: auto;
+
+    padding-bottom: 30px;
+}
+
+/* =========================================================
+   PORTFOLIO CARD
+========================================================= */
+/* =========================================================
+   INVESTMENT CARD
+   Premium User Investment Portfolio
+========================================================= */
+
+.investment-card {
+    position: relative;
+
+    width: 100%;
+
+    padding: 20px;
+
+    margin-bottom: 16px;
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #fafbff 55%,
+            #f5f6ff 100%
+        );
+
+    border:
+        1px solid rgba(92, 77, 210, 0.08);
+
+    box-shadow:
+        0 12px 35px rgba(42, 35, 100, 0.08);
+
+    animation:
+        investmentCardEnter
+        0.55s
+        cubic-bezier(.22, 1, .36, 1)
+        both;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+
+/* =========================================================
+   CARD HOVER
+========================================================= */
+
+.investment-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    border-color:
+        rgba(92, 77, 210, 0.15);
+
+    box-shadow:
+        0 18px 45px rgba(42, 35, 100, 0.12);
+}
+
+
+/* =========================================================
+   CARD LIGHT EFFECT
+========================================================= */
+
+.investment-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 170px;
+    height: 170px;
+
+    top: -105px;
+    right: -75px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(103, 84, 233, 0.07);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CARD BOTTOM GLOW
+========================================================= */
+
+.investment-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 130px;
+    height: 130px;
+
+    bottom: -85px;
+    left: -55px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(103, 84, 233, 0.045);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CARD ENTER ANIMATION
+========================================================= */
+
+@keyframes investmentCardEnter {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(18px)
+            scale(0.985);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   INVESTMENT TOP
+========================================================= */
+
+.investment-top {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   INVESTMENT TITLE
+========================================================= */
+
+.investment-title {
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.investment-title h3 {
+
+    margin: 0;
+
+    color: #17203a;
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    letter-spacing: -0.3px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.investment-title span {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: #929ab0;
+
+    font-size: 11px;
+
+    font-weight: 500;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   INVESTMENT STATUS
+========================================================= */
+
+.investment-status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+
+    min-height: 30px;
+
+    padding:
+        0 11px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+
+.investment-status i {
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   ACTIVE STATUS
+========================================================= */
+
+.investment-status.active {
+
+    color: #059669;
+
+    background:
+        #ecfdf5;
+
+    border:
+        1px solid #d1fae5;
+}
+
+
+/* =========================================================
+   COMPLETED STATUS
+========================================================= */
+
+.investment-status.completed {
+
+    color: #4f46e5;
+
+    background:
+        #eef2ff;
+
+    border:
+        1px solid #e0e7ff;
+}
+
+
+/* =========================================================
+   CANCELLED STATUS
+========================================================= */
+
+.investment-status.cancelled {
+
+    color: #dc2626;
+
+    background:
+        #fef2f2;
+
+    border:
+        1px solid #fee2e2;
+}
+
+
+/* =========================================================
+   PENDING STATUS
+========================================================= */
+
+.investment-status.pending {
+
+    color: #b45309;
+
+    background:
+        #fffbeb;
+
+    border:
+        1px solid #fef3c7;
+}
+
+
+/* =========================================================
+   INVESTMENT DETAILS
+========================================================= */
+
+.investment-details {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+}
+
+
+/* =========================================================
+   DETAIL BOX
+========================================================= */
+
+.investment-detail {
+
+    min-width: 0;
+
+    padding:
+        13px 14px;
+
+    border-radius: 16px;
+
+    background:
+        #f7f8fc;
+
+    border:
+        1px solid rgba(35, 42, 75, 0.045);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.investment-detail:hover {
+
+    background:
+        #f1f2fb;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   DETAIL LABEL
+========================================================= */
+
+.investment-detail span {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #9aa1b5;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    letter-spacing: 0.1px;
+}
+
+
+/* =========================================================
+   DETAIL VALUE
+========================================================= */
+
+.investment-detail strong {
+
+    display: block;
+
+    color: #1b2440;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   DAILY INCOME
+========================================================= */
+
+.investment-detail .daily-income {
+
+    color: #059669;
+}
+
+
+/* =========================================================
+   TOTAL EARNED
+========================================================= */
+
+.investment-detail .investment-profit {
+
+    color: #10a779;
+}
+
+
+/* =========================================================
+   NEXT INCOME BOX
+========================================================= */
+
+.next-income-box {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    width: 100%;
+
+    padding:
+        13px 14px;
+
+    margin-bottom: 14px;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0edff 0%,
+            #f7f5ff 100%
+        );
+
+    border:
+        1px solid rgba(103, 84, 233, 0.10);
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.7);
+}
+
+
+/* =========================================================
+   NEXT INCOME ICON
+========================================================= */
+
+.next-income-icon {
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    color: #5b4ddd;
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 5px 15px
+        rgba(91, 77, 221, 0.10);
+}
+
+
+.next-income-icon i {
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   NEXT INCOME CONTENT
+========================================================= */
+
+.next-income-content {
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.next-income-content span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #969cb2;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.next-income-content strong {
+
+    display: block;
+
+    color: #242c49;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+.income-countdown {
+
+    font-variant-numeric:
+        tabular-nums;
+
+    letter-spacing:
+        -0.1px;
+}
+
+
+/* =========================================================
+   NEXT INCOME AMOUNT
+========================================================= */
+
+.next-income-amount {
+
+    flex-shrink: 0;
+
+    text-align: right;
+
+    padding-left: 7px;
+}
+
+
+.next-income-amount span {
+
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #969cb2;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.next-income-amount strong {
+
+    display: block;
+
+    color: #059669;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   COMPLETED INCOME BOX
+========================================================= */
+
+.completed-income-box {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        12px 14px;
+
+    margin-bottom: 14px;
+
+    border-radius: 15px;
+
+    color: #047857;
+
+    background:
+        #ecfdf5;
+
+    border:
+        1px solid #d1fae5;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.completed-income-box i {
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   INVESTMENT DAYS
+========================================================= */
+
+.investment-days {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
+
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   DAYS ITEM
+========================================================= */
+
+.days-item {
+
+    min-width: 0;
+
+    padding:
+        10px 8px;
+
+    text-align: center;
+
+    border-radius: 13px;
+
+    background:
+        #fafaff;
+
+    border:
+        1px solid rgba(35, 42, 75, 0.045);
+}
+
+
+.days-item span {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #a0a6b8;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.days-item strong {
+
+    display: block;
+
+    color: #26304d;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   INVESTMENT PROGRESS
+========================================================= */
+
+.investment-progress {
+
+    position: relative;
+
+    z-index: 2;
+
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   PROGRESS HEADER
+========================================================= */
+
+.progress-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 7px;
+}
+
+
+.progress-header span {
+
+    color: #969db2;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.progress-header strong {
+
+    color: #5b4ddd;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   PROGRESS BAR
+========================================================= */
+
+.progress-bar {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 7px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background:
+        #ececf5;
+}
+
+
+/* =========================================================
+   PROGRESS FILL
+========================================================= */
+
+.progress-fill {
+
+    width: 0;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #8b7cf6 0%,
+            #5b4ddd 100%
+        );
+
+    box-shadow:
+        0 2px 8px
+        rgba(91, 77, 221, 0.25);
+
+    transition:
+        width 0.8s
+        cubic-bezier(.22, 1, .36, 1);
+}
+
+
+/* =========================================================
+   INVESTMENT FOOTER
+========================================================= */
+
+.investment-footer {
+
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding-top: 13px;
+
+    border-top:
+        1px solid #eeeeF5;
+}
+
+
+/* =========================================================
+   FOOTER LEFT
+========================================================= */
+
+.investment-footer span {
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    color: #9aa1b4;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.investment-footer span i {
+
+    flex-shrink: 0;
+
+    color: #a2a8ba;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   FOOTER RIGHT
+========================================================= */
+
+.investment-footer strong {
+
+    flex-shrink: 0;
+
+    color: #596176;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ACTIVE FOOTER
+========================================================= */
+
+.investment-card:has(
+    .investment-status.active
+)
+.investment-footer strong {
+
+    color: #059669;
+}
+
+
+/* =========================================================
+   COMPLETED FOOTER
+========================================================= */
+
+.investment-card:has(
+    .investment-status.completed
+)
+.investment-footer strong {
+
+    color: #5b4ddd;
+}
+
+
+/* =========================================================
+   TABLET / DESKTOP
+========================================================= */
+
+@media (min-width: 601px) {
+
+    .investment-card {
+
+        padding: 23px;
+
+        border-radius: 26px;
+    }
+
+
+    .investment-details {
+
+        grid-template-columns:
+            repeat(4, 1fr);
+    }
+
+
+    .investment-detail {
+
+        padding:
+            14px;
+    }
+
+
+    .investment-title h3 {
+
+        font-size: 20px;
+    }
+
+
+    .investment-detail strong {
+
+        font-size: 16px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .investment-card {
+
+        padding: 17px;
+
+        margin-bottom: 13px;
+
+        border-radius: 21px;
+
+        box-shadow:
+            0 9px 27px
+            rgba(42, 35, 100, 0.07);
+    }
+
+
+    .investment-card:hover {
+
+        transform: none;
+
+        box-shadow:
+            0 9px 27px
+            rgba(42, 35, 100, 0.07);
+    }
+
+
+    .investment-top {
+
+        margin-bottom: 14px;
+    }
+
+
+    .investment-title h3 {
+
+        font-size: 17px;
+    }
+
+
+    .investment-title span {
+
+        margin-top: 4px;
+
+        font-size: 9px;
+    }
+
+
+    .investment-status {
+
+        min-height: 27px;
+
+        padding:
+            0 9px;
+
+        font-size: 9px;
+    }
+
+
+    .investment-status i {
+
+        font-size: 8px;
+    }
+
+
+    .investment-details {
+
+        gap: 8px;
+
+        margin-bottom: 11px;
+    }
+
+
+    .investment-detail {
+
+        padding:
+            11px 12px;
+
+        border-radius: 14px;
+    }
+
+
+    .investment-detail span {
+
+        font-size: 8px;
+
+        margin-bottom: 4px;
+    }
+
+
+    .investment-detail strong {
+
+        font-size: 13px;
+    }
+
+
+    .next-income-box {
+
+        gap: 9px;
+
+        padding:
+            11px;
+
+        margin-bottom: 11px;
+
+        border-radius: 15px;
+    }
+
+
+    .next-income-icon {
+
+        width: 34px;
+        height: 34px;
+
+        border-radius: 10px;
+    }
+
+
+    .next-income-icon i {
+
+        font-size: 12px;
+    }
+
+
+    .next-income-content span {
+
+        font-size: 8px;
+    }
+
+
+    .next-income-content strong {
+
+        font-size: 11px;
+    }
+
+
+    .next-income-amount span {
+
+        font-size: 8px;
+    }
+
+
+    .next-income-amount strong {
+
+        font-size: 10px;
+    }
+
+
+    .investment-days {
+
+        gap: 6px;
+
+        margin-bottom: 12px;
+    }
+
+
+    .days-item {
+
+        padding:
+            8px 5px;
+
+        border-radius: 11px;
+    }
+
+
+    .days-item span {
+
+        font-size: 7px;
+    }
+
+
+    .days-item strong {
+
+        font-size: 10px;
+    }
+
+
+    .investment-progress {
+
+        margin-bottom: 13px;
+    }
+
+
+    .progress-header {
+
+        margin-bottom: 6px;
+    }
+
+
+    .progress-header span {
+
+        font-size: 8px;
+    }
+
+
+    .progress-header strong {
+
+        font-size: 9px;
+    }
+
+
+    .progress-bar {
+
+        height: 6px;
+    }
+
+
+    .investment-footer {
+
+        padding-top: 11px;
+    }
+
+
+    .investment-footer span,
+    .investment-footer strong {
+
+        font-size: 8px;
+    }
+
+
+    .investment-footer span i {
+
+        font-size: 8px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .investment-card {
+
+        padding: 14px;
+
+        border-radius: 19px;
+    }
+
+
+    .investment-title h3 {
+
+        font-size: 16px;
+    }
+
+
+    .investment-status {
+
+        min-height: 25px;
+
+        padding:
+            0 8px;
+
+        font-size: 8px;
+    }
+
+
+    .investment-details {
+
+        gap: 6px;
+    }
+
+
+    .investment-detail {
+
+        padding:
+            9px 10px;
+
+        border-radius: 12px;
+    }
+
+
+    .investment-detail span {
+
+        font-size: 7px;
+    }
+
+
+    .investment-detail strong {
+
+        font-size: 12px;
+    }
+
+
+    .next-income-box {
+
+        padding:
+            9px;
+    }
+
+
+    .next-income-icon {
+
+        width: 31px;
+        height: 31px;
+
+        border-radius: 9px;
+    }
+
+
+    .next-income-content strong {
+
+        font-size: 10px;
+    }
+
+
+    .next-income-amount strong {
+
+        font-size: 9px;
+    }
+
+
+    .days-item {
+
+        padding:
+            7px 3px;
+    }
+
+
+    .days-item span {
+
+        font-size: 6px;
+    }
+
+
+    .days-item strong {
+
+        font-size: 9px;
+    }
+
+
+    .investment-footer span,
+    .investment-footer strong {
+
+        font-size: 7px;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (
+    prefers-reduced-motion: reduce
+) {
+
+    .investment-card {
+
+        animation: none !important;
+
+        transition: none !important;
+    }
+
+
+    .progress-fill {
+
+        transition: none !important;
+    }
+}
+.portfolio-card {
+    position: relative;
+
+    min-height: 225px;
+
+    padding: 30px;
+
+    overflow: hidden;
+
+    isolation: isolate;
+
+    color: #ffffff;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7b69fa 0%,
+            #6754e9 45%,
+            #4d3bc1 100%
+        );
+
+    box-shadow:
+        0 25px 60px
+        rgba(88, 70, 220, 0.28);
+
+    animation:
+        portfolioEnter
+        0.6s
+        ease
+        both;
+}
+
+
+/* =========================================================
+   PORTFOLIO ENTER ANIMATION
+========================================================= */
+
+@keyframes portfolioEnter {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(18px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   PORTFOLIO DECORATIVE CIRCLE ONE
+========================================================= */
+
+.portfolio-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 280px;
+    height: 280px;
+
+    right: -100px;
+    top: -150px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.10);
+
+    animation:
+        portfolioFloat
+        6s
+        ease-in-out
+        infinite;
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+
+/* =========================================================
+   PORTFOLIO DECORATIVE CIRCLE TWO
+========================================================= */
+
+.portfolio-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 200px;
+    height: 200px;
+
+    left: 35%;
+    bottom: -150px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.07);
+
+    animation:
+        portfolioFloatTwo
+        7s
+        ease-in-out
+        infinite;
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+
+/* =========================================================
+   PORTFOLIO FLOAT
+========================================================= */
+
+@keyframes portfolioFloat {
+
+    0%,
+    100% {
+        transform:
+            translate(0, 0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translate(-20px, 20px)
+            scale(1.08);
+    }
+
+}
+
+
+/* =========================================================
+   PORTFOLIO FLOAT TWO
+========================================================= */
+
+@keyframes portfolioFloatTwo {
+
+    0%,
+    100% {
+        transform:
+            translate(0, 0);
+    }
+
+    50% {
+        transform:
+            translate(30px, -15px);
+    }
+
+}
+
+
+/* =========================================================
+   PORTFOLIO GLOW
+========================================================= */
+
+.portfolio-glow {
+    position: absolute;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.07);
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    filter: blur(1px);
+}
+
+
+/* =========================================================
+   GLOW ONE
+========================================================= */
+
+.glow-one {
+    width: 160px;
+    height: 160px;
+
+    right: -60px;
+    top: 30px;
+}
+
+
+/* =========================================================
+   GLOW TWO
+========================================================= */
+
+.glow-two {
+    width: 120px;
+    height: 120px;
+
+    left: 48%;
+    bottom: -80px;
+}
+
+
+/* =========================================================
+   PORTFOLIO TOP
+========================================================= */
+
+.portfolio-top {
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   PORTFOLIO LABEL
+========================================================= */
+
+.portfolio-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        rgba(255, 255, 255, 0.72);
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* =========================================================
+   TOTAL INVESTED
+========================================================= */
+
+.portfolio-top h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size:
+        clamp(
+            32px,
+            5vw,
+            48px
+        );
+
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    text-shadow:
+        0 5px 20px
+        rgba(0, 0, 0, 0.12);
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   PORTFOLIO ICON
+========================================================= */
+
+.portfolio-icon {
+    width: 60px;
+    height: 60px;
+
+    flex-shrink: 0;
+
+    border-radius: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(255, 255, 255, 0.15);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.15);
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    color: #ffffff;
+
+    font-size: 23px;
+
+    box-shadow:
+        0 10px 25px
+        rgba(45, 32, 130, 0.15);
+
+    animation:
+        iconFloat
+        3s
+        ease-in-out
+        infinite;
+}
+
+
+/* =========================================================
+   ICON FLOAT
+========================================================= */
+
+@keyframes iconFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-5px);
+    }
+
+}
+
+
+/* =========================================================
+   PORTFOLIO BOTTOM
+========================================================= */
+
+.portfolio-bottom {
+    position: absolute;
+
+    left: 30px;
+    right: 30px;
+
+    bottom: 25px;
+
+    z-index: 3;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    padding-top: 16px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.14);
+}
+
+
+/* =========================================================
+   PORTFOLIO STAT
+========================================================= */
+
+.portfolio-stat {
+    min-width: 0;
+
+    padding-right: 10px;
+}
+
+
+/* =========================================================
+   STAT LABEL
+========================================================= */
+
+.portfolio-stat span {
+    display: block;
+
+    color:
+        rgba(255, 255, 255, 0.68);
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    line-height: 1.4;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   STAT VALUE
+========================================================= */
+
+.portfolio-stat strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    line-height: 1.3;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   STAT HOVER EFFECT
+========================================================= */
+
+.portfolio-stat {
+    transition:
+        transform 0.25s ease;
+}
+
+
+.portfolio-stat:hover {
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (
+    max-width: 600px
+) {
+
+    .portfolio-card {
+        min-height: 215px;
+
+        padding: 22px;
+
+        border-radius: 24px;
+
+        box-shadow:
+            0 20px 45px
+            rgba(88, 70, 220, 0.24);
+    }
+
+
+    .portfolio-label {
+        font-size: 10px;
+
+        margin-bottom: 4px;
+    }
+
+
+    .portfolio-top h2 {
+        font-size: 29px;
+
+        letter-spacing:
+            -0.6px;
+    }
+
+
+    .portfolio-icon {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 16px;
+
+        font-size: 19px;
+    }
+
+
+    .portfolio-bottom {
+        left: 22px;
+        right: 22px;
+
+        bottom: 19px;
+
+        gap: 8px;
+
+        padding-top: 13px;
+    }
+
+
+    .portfolio-stat {
+        padding-right: 5px;
+    }
+
+
+    .portfolio-stat span {
+        font-size: 8px;
+    }
+
+
+    .portfolio-stat strong {
+        font-size: 13px;
+
+        margin-top: 2px;
+    }
+
+
+    .glow-one {
+        width: 130px;
+        height: 130px;
+
+        right: -55px;
+
+        top: 25px;
+    }
+
+
+    .glow-two {
+        width: 100px;
+        height: 100px;
+
+        left: 45%;
+
+        bottom: -70px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (
+    max-width: 380px
+) {
+
+    .portfolio-card {
+        min-height: 205px;
+
+        padding: 19px;
+
+        border-radius: 22px;
+    }
+
+
+    .portfolio-top {
+        gap: 10px;
+    }
+
+
+    .portfolio-top h2 {
+        font-size: 25px;
+    }
+
+
+    .portfolio-icon {
+        width: 44px;
+        height: 44px;
+
+        border-radius: 14px;
+
+        font-size: 17px;
+    }
+
+
+    .portfolio-bottom {
+        left: 19px;
+        right: 19px;
+
+        bottom: 17px;
+
+        gap: 5px;
+
+        padding-top: 11px;
+    }
+
+
+    .portfolio-stat span {
+        font-size: 7px;
+    }
+
+
+    .portfolio-stat strong {
+        font-size: 12px;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (
+    prefers-reduced-motion: reduce
+) {
+
+    .portfolio-card,
+    .portfolio-card::before,
+    .portfolio-card::after,
+    .portfolio-icon {
+        animation: none !important;
+    }
+
+}
+
+/* =========================================================
+   FILTER SECTION
+   ========================================================= */
+
+.filter-section {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    margin-top: 20px;
+
+    padding: 6px;
+
+    width: fit-content;
+
+    border-radius: 17px;
+
+    background: rgba(255, 255, 255, 0.65);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.9);
+
+    box-shadow:
+        0 10px 30px rgba(50, 50, 100, 0.05);
+
+    backdrop-filter: blur(18px);
+}
+
+.filter-button {
+    height: 38px;
+
+    padding:
+        0 15px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: transparent;
+
+    color: #8c91a4;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.filter-button:hover {
+    color: #6654e8;
+}
+
+.filter-button:active {
+    transform: scale(0.96);
+}
+
+.filter-button.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7666f5,
+            #5745d4
+        );
+
+    box-shadow:
+        0 7px 18px rgba(102, 84, 232, 0.20);
+}
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.section-header {
+    margin-top: 30px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.section-header h2 {
+    color: #172039;
+
+    font-size: 20px;
+
+    font-weight: 800;
+}
+
+.section-header p {
+    margin-top: 3px;
+
+    color: #9398aa;
+
+    font-size: 10px;
+}
+
+/* =========================================================
+   INVESTMENTS CONTAINER
+   ========================================================= */
+
+.investments-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 18px;
+
+    margin-top: 18px;
+}
+
+/* =========================================================
+   INVESTMENT CARD
+   ========================================================= */
+
+.investment-card {
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        rgba(255, 255, 255, 0.78);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.9);
+
+    box-shadow:
+        0 12px 35px rgba(50, 50, 100, 0.07);
+
+    backdrop-filter: blur(18px);
+
+    opacity: 0;
+
+    transform: translateY(18px);
+
+    animation:
+        cardEntrance
+        0.55s
+        cubic-bezier(.2, .8, .2, 1)
+        forwards;
+
+    transition:
+        transform 0.35s cubic-bezier(.2, .8, .2, 1),
+        box-shadow 0.35s ease;
+}
+
+.investment-card:hover {
+    transform: translateY(-7px);
+
+    box-shadow:
+        0 25px 55px rgba(50, 50, 100, 0.13);
+}
+
+@keyframes cardEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   CARD TOP
+   ========================================================= */
+
+.investment-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 20px 20px 12px;
+}
+
+.investment-title {
+    min-width: 0;
+}
+
+.investment-title h3 {
+    color: #1c253d;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.investment-title span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #999dae;
+
+    font-size: 9px;
+}
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.investment-status {
+    flex-shrink: 0;
+
+    padding:
+        6px 9px;
+
+    border-radius: 10px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+.investment-status.active {
+    color: #129c66;
+
+    background: #e8fff3;
+}
+
+.investment-status.completed {
+    color: #6654e8;
+
+    background: #eeebff;
+}
+
+.investment-status.pending {
+    color: #d98a18;
+
+    background: #fff5df;
+}
+
+.investment-status.cancelled {
+    color: #df526e;
+
+    background: #fff0f3;
+}
+
+/* =========================================================
+   CARD DETAILS
+   ========================================================= */
+
+.investment-details {
+    padding:
+        8px 20px 18px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 9px;
+}
+
+.investment-detail {
+    padding: 11px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(248, 248, 252, 0.90);
+
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.investment-card:hover .investment-detail {
+    background: #f5f3ff;
+}
+
+.investment-detail span {
+    display: block;
+
+    color: #999dae;
+
+    font-size: 8px;
+}
+
+.investment-detail strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #202840;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+/* =========================================================
+   PROFIT
+   ========================================================= */
+
+.investment-profit {
+    color: #13a568 !important;
+}
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+.investment-progress {
+    padding:
+        0 20px 18px;
+}
+
+.progress-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+}
+
+.progress-header span {
+    color: #999dae;
+
+    font-size: 8px;
+}
+
+.progress-header strong {
+    color: #6654e8;
+
+    font-size: 9px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 7px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #ecebf4;
+}
+
+.progress-fill {
+    width: 0;
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #7666f5,
+            #5745d4
+        );
+
+    transition:
+        width 1s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* =========================================================
+   CARD FOOTER
+   ========================================================= */
+
+.investment-footer {
+    min-height: 45px;
+
+    padding:
+        0 20px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.investment-footer span {
+    color: #a0a4b2;
+
+    font-size: 8px;
+}
+
+.investment-footer strong {
+    color: #555c72;
+
+    font-size: 9px;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+    grid-column: 1 / -1;
+
+    min-height: 280px;
+
+    padding: 40px 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    border-radius: 24px;
+
+    background:
+        rgba(255, 255, 255, 0.75);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.9);
+
+    box-shadow:
+        0 12px 35px rgba(50, 50, 100, 0.06);
+
+    backdrop-filter: blur(18px);
+
+    color: #999dae;
+}
+
+.empty-state > i {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eeebff;
+
+    color: #6654e8;
+
+    font-size: 20px;
+
+    margin-bottom: 13px;
+}
+
+.empty-state h3 {
+    color: #252d45;
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+.empty-state p {
+    max-width: 360px;
+
+    margin-top: 5px;
+
+    color: #999dae;
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading-card {
+    grid-column: 1 / -1;
+
+    min-height: 280px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #999dae;
+
+    background:
+        rgba(255, 255, 255, 0.75);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.9);
+
+    border-radius: 24px;
+
+    backdrop-filter: blur(18px);
+}
+
+.loading-card strong {
+    color: #444b60;
+
+    font-size: 12px;
+}
+
+.loading-card span {
+    font-size: 9px;
+}
+
+.loader {
+    width: 36px;
+    height: 36px;
+
+    border:
+        3px solid #e6e4ff;
+
+    border-top-color: #6654e8;
+
+    border-radius: 50%;
+
+    animation:
+        spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================================
+   BOTTOM NAVIGATION
+   ========================================================= */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 50%;
+    bottom: 15px;
+
+    transform: translateX(-50%);
+
+    width:
+        min(
+            650px,
+            calc(100% - 24px)
+        );
+
+    height: 72px;
+
+    padding:
+        7px 10px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    align-items: center;
+
+    background:
+        rgba(255, 255, 255, 0.90);
+
+    backdrop-filter:
+        blur(22px)
+        saturate(160%);
+
+    -webkit-backdrop-filter:
+        blur(22px)
+        saturate(160%);
+
+    border:
+        1px solid rgba(220, 220, 235, 0.9);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(40, 40, 90, 0.18);
+
+    z-index: 10000;
+}
+
+/* =========================================================
+   NAV ITEM
+   ========================================================= */
+
+.nav-item {
+    height: 100%;
+
+    border: none;
+
+    background: transparent;
+
+    color: #9a9eae;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    position: relative;
+
+    transition:
+        color 0.3s ease;
+}
+
+.nav-icon {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 15px;
+
+    transition:
+        transform 0.3s ease,
+        background 0.3s ease;
+}
+
+.nav-item.active {
+    color: #6654e8;
+}
+
+.nav-item.active .nav-icon {
+    background: #eeeaff;
+
+    transform: translateY(-2px);
+}
+
+.nav-item:not(.nav-center):hover {
+    color: #6654e8;
+}
+
+.nav-item:not(.nav-center):hover .nav-icon {
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   CENTER NAV BUTTON
+   ========================================================= */
+
+.nav-center {
+    position: relative;
+
+    justify-content: flex-end;
+
+    padding-bottom: 3px;
+}
+
+.center-nav-button {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 17px;
+
+    margin-top: -22px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-size: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7666f5,
+            #5141c9
+        );
+
+    border:
+        5px solid #f8f8ff;
+
+    box-shadow:
+        0 12px 28px rgba(102, 84, 232, 0.32);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.nav-center:hover .center-nav-button {
+    transform:
+        translateY(-5px)
+        rotate(5deg);
+
+    box-shadow:
+        0 16px 35px rgba(102, 84, 232, 0.42);
+}
+
+.nav-center span {
+    margin-top: 2px;
+}
+
+/* =========================================================
+   BOTTOM SPACE
+   ========================================================= */
+
+.bottom-space {
+    width: 100%;
+
+    height: 115px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .investments-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    .top-header {
+        width: calc(100% - 24px);
+
+        height: 78px;
+    }
+
+    .main-content {
+        width: calc(100% - 24px);
+
+        padding-bottom: 20px;
+    }
+
+    .page-heading h1 {
+        font-size: 18px;
+    }
+
+    .back-button,
+    .refresh-button {
+        width: 44px;
+        height: 44px;
+
+        border-radius: 14px;
+    }
+
+    .portfolio-card {
+        min-height: 205px;
+
+        padding: 24px;
+
+        border-radius: 25px;
+    }
+
+    .portfolio-top h2 {
+        font-size: 31px;
+    }
+
+    .portfolio-icon {
+        width: 50px;
+        height: 50px;
+
+        border-radius: 16px;
+    }
+
+    .portfolio-bottom {
+        left: 24px;
+        right: 24px;
+        bottom: 20px;
+
+        gap: 10px;
+    }
+
+    .portfolio-stat span {
+        font-size: 8px;
+    }
+
+    .portfolio-stat strong {
+        font-size: 14px;
+    }
+
+    .filter-section {
+        width: 100%;
+
+        justify-content: space-between;
+
+        gap: 5px;
+    }
+
+    .filter-button {
+        flex: 1;
+
+        padding:
+            0 8px;
+
+        font-size: 9px;
+    }
+
+    .section-header h2 {
+        font-size: 18px;
+    }
+
+    .investments-container {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+    .investment-card {
+        border-radius: 21px;
+    }
+
+    .bottom-nav {
+        width:
+            calc(100% - 20px);
+
+        bottom: 10px;
+
+        height: 70px;
+
+        border-radius: 22px;
+    }
+
+    .bottom-space {
+        height: 105px;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .portfolio-card {
+        padding: 21px;
+    }
+
+    .portfolio-bottom {
+        left: 21px;
+        right: 21px;
+    }
+
+    .portfolio-stat strong {
+        font-size: 13px;
+    }
+
+    .investment-top,
+    .investment-details,
+    .investment-progress,
+    .investment-footer {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .investment-title h3 {
+        font-size: 14px;
+    }
+
+    .bottom-nav {
+        height: 68px;
+
+        bottom: 8px;
+
+        border-radius: 21px;
+
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .nav-icon {
+        width: 31px;
+        height: 31px;
+    }
+
+    .nav-item {
+        font-size: 8px;
+    }
+
+    .center-nav-button {
+        width: 46px;
+        height: 46px;
+    }
+}
+
+/* =========================================================
+   VERY SMALL DEVICES
+   ========================================================= */
+
+@media (max-width: 340px) {
+
+    .main-content,
+    .top-header {
+        width: calc(100% - 18px);
+    }
+
+    .portfolio-bottom {
+        gap: 6px;
+    }
+
+    .portfolio-stat span {
+        font-size: 7px;
+    }
+
+    .portfolio-stat strong {
+        font-size: 12px;
+    }
+
+    .nav-item {
+        font-size: 7px;
+    }
+}
+
+/* =========================================================
+   REDUCE MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

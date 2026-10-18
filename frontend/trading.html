@@ -1,0 +1,4453 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>BTC Trading</title>
+
+
+    <!-- ==========================================
+         GOOGLE FONT
+    =========================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- ==========================================
+         FONT AWESOME
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+
+    <!-- ==========================================
+         LIGHTWEIGHT CHARTS
+    =========================================== -->
+
+    <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+
+
+    <style>
+
+        /* ==========================================
+           RESET
+        =========================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        :root {
+
+            --bg:
+                #080b14;
+
+            --card:
+                #111827;
+
+            --card-light:
+                #182235;
+
+            --border:
+                rgba(255,255,255,0.08);
+
+            --text:
+                #ffffff;
+
+            --muted:
+                #8f9aad;
+
+            --primary:
+                #635bdb;
+
+            --primary-light:
+                #8178ff;
+
+            --green:
+                #22c55e;
+
+            --red:
+                #ef4444;
+
+            --yellow:
+                #facc15;
+
+        }
+
+
+        html {
+
+            scroll-behavior:
+                smooth;
+
+        }
+
+
+        body {
+
+            font-family:
+                "Poppins",
+                Arial,
+                sans-serif;
+
+            background:
+                var(--bg);
+
+            color:
+                var(--text);
+
+            min-height:
+                100vh;
+
+            padding-bottom:
+                115px;
+
+        }
+
+
+        button {
+
+            font-family:
+                inherit;
+
+        }
+
+
+        /* ==========================================
+           PAGE
+        =========================================== */
+
+        .page {
+
+            width:
+                100%;
+
+            max-width:
+                650px;
+
+            margin:
+                auto;
+
+        }
+
+
+        /* ==========================================
+           HEADER
+        =========================================== */
+
+        .top-header {
+
+            position:
+                sticky;
+
+            top:
+                0;
+
+            z-index:
+                50;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            padding:
+                16px 18px;
+
+            background:
+                rgba(8,11,20,0.95);
+
+            backdrop-filter:
+                blur(20px);
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        .header-left {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+        }
+
+
+        .back-button {
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            border:
+                none;
+
+            border-radius:
+                13px;
+
+            background:
+                var(--card);
+
+            color:
+                white;
+
+            font-size:
+                16px;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        .header-title {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+        }
+
+
+        .header-title span {
+
+            font-size:
+                11px;
+
+            color:
+                var(--muted);
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                1px;
+
+        }
+
+
+        .header-title h2 {
+
+            font-size:
+                18px;
+
+            margin-top:
+                2px;
+
+        }
+
+
+        .wallet-header {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                9px;
+
+            padding:
+                9px 13px;
+
+            border:
+                1px solid var(--border);
+
+            background:
+                var(--card);
+
+            border-radius:
+                14px;
+
+        }
+
+
+        .wallet-header i {
+
+            color:
+                var(--primary-light);
+
+        }
+
+
+        .wallet-header div {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+        }
+
+
+        .wallet-header small {
+
+            font-size:
+                9px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .wallet-header strong {
+
+            font-size:
+                13px;
+
+        }
+
+
+        /* ==========================================
+           MARKET HERO
+        =========================================== */
+
+        .market-section {
+
+            padding:
+                18px;
+
+        }
+
+
+        .market-card {
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            border-radius:
+                24px;
+
+            padding:
+                22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #17143b,
+                    #111827
+                );
+
+            border:
+                1px solid var(--border);
+
+        }
+
+
+        .market-glow {
+
+            position:
+                absolute;
+
+            width:
+                180px;
+
+            height:
+                180px;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(99,91,219,0.25);
+
+            filter:
+                blur(50px);
+
+            right:
+                -70px;
+
+            top:
+                -80px;
+
+        }
+
+
+        .market-top {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+        }
+
+
+        .pair-info {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+        }
+
+
+        .btc-icon {
+
+            width:
+                48px;
+
+            height:
+                48px;
+
+            border-radius:
+                16px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                25px;
+
+            color:
+                #f7931a;
+
+            background:
+                rgba(247,147,26,0.12);
+
+        }
+
+
+        .pair-info h2 {
+
+            font-size:
+                19px;
+
+        }
+
+
+        .pair-info span {
+
+            font-size:
+                11px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .live-status {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            padding:
+                7px 11px;
+
+            border-radius:
+                30px;
+
+            background:
+                rgba(34,197,94,0.12);
+
+            color:
+                var(--green);
+
+            font-size:
+                11px;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .live-dot {
+
+            width:
+                7px;
+
+            height:
+                7px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--green);
+
+            animation:
+                pulse 1.5s infinite;
+
+        }
+
+
+        @keyframes pulse {
+
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 1;
+            }
+
+        }
+
+
+        .price-area {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            margin-top:
+                25px;
+
+        }
+
+
+        .price-label {
+
+            color:
+                var(--muted);
+
+            font-size:
+                11px;
+
+        }
+
+
+        .price-value {
+
+            margin-top:
+                4px;
+
+            font-size:
+                32px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .price-change {
+
+            margin-top:
+                8px;
+
+            display:
+                flex;
+
+            gap:
+                8px;
+
+            align-items:
+                center;
+
+            font-size:
+                12px;
+
+        }
+
+
+        .price-change.up {
+
+            color:
+                var(--green);
+
+        }
+
+
+        .price-change.down {
+
+            color:
+                var(--red);
+
+        }
+
+
+        /* ==========================================
+           CHART
+        =========================================== */
+
+        .chart-section {
+
+            padding:
+                0 18px;
+
+        }
+
+
+        .chart-card {
+
+            background:
+                var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                22px;
+
+            overflow:
+                hidden;
+
+        }
+
+
+        .chart-header {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            padding:
+                16px;
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        .chart-header h3 {
+
+            font-size:
+                14px;
+
+        }
+
+
+        .chart-badge {
+
+            padding:
+                6px 10px;
+
+            border-radius:
+                8px;
+
+            background:
+                rgba(99,91,219,0.15);
+
+            color:
+                var(--primary-light);
+
+            font-size:
+                10px;
+
+            font-weight:
+                600;
+
+        }
+
+
+        #chart {
+
+            width:
+                100%;
+
+            height:
+                360px;
+
+        }
+
+
+        /* ==========================================
+           TRADING PANEL
+        =========================================== */
+
+        .trading-panel {
+
+            margin:
+                18px;
+
+            padding:
+                20px;
+
+            background:
+                var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                22px;
+
+        }
+
+
+        .panel-heading {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            margin-bottom:
+                18px;
+
+        }
+
+
+        .panel-heading h3 {
+
+            font-size:
+                16px;
+
+        }
+
+
+        .demo-badge {
+
+            font-size:
+                10px;
+
+            padding:
+                6px 10px;
+
+            border-radius:
+                20px;
+
+            background:
+                rgba(250,204,21,0.12);
+
+            color:
+                var(--yellow);
+
+        }
+
+
+        .section-title {
+
+            font-size:
+                11px;
+
+            color:
+                var(--muted);
+
+            margin-bottom:
+                10px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.7px;
+
+        }
+
+
+        /* ==========================================
+           DURATION
+        =========================================== */
+
+        .duration-buttons {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap:
+                8px;
+
+        }
+
+
+        .duration-btn {
+
+            border:
+                1px solid var(--border);
+
+            background:
+                var(--card-light);
+
+            color:
+                var(--muted);
+
+            padding:
+                12px 5px;
+
+            border-radius:
+                12px;
+
+            cursor:
+                pointer;
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+
+            transition:
+                0.25s;
+
+        }
+
+
+        .duration-btn.active {
+
+            color:
+                white;
+
+            background:
+                var(--primary);
+
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                0 8px 25px
+                rgba(99,91,219,0.3);
+
+        }
+
+
+        /* ==========================================
+           AMOUNT
+        =========================================== */
+
+        .amount-section {
+
+            margin-top:
+                20px;
+
+        }
+
+
+        .amount-box {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            padding:
+                8px;
+
+            background:
+                var(--card-light);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                16px;
+
+        }
+
+
+        .amount-btn {
+
+            width:
+                45px;
+
+            height:
+                45px;
+
+            border:
+                none;
+
+            border-radius:
+                12px;
+
+            background:
+                #273246;
+
+            color:
+                white;
+
+            font-size:
+                20px;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        .amount-value {
+
+            text-align:
+                center;
+
+        }
+
+
+        .amount-value small {
+
+            display:
+                block;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+        }
+
+
+        .amount-value strong {
+
+            font-size:
+                22px;
+
+        }
+
+
+        /* ==========================================
+           BUY SELL
+        =========================================== */
+
+        .trade-buttons {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                12px;
+
+            margin-top:
+                22px;
+
+        }
+
+
+        .buy-btn,
+        .sell-btn {
+
+            border:
+                none;
+
+            padding:
+                17px 10px;
+
+            border-radius:
+                15px;
+
+            color:
+                white;
+
+            font-size:
+                14px;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.2s;
+
+        }
+
+
+        .buy-btn {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #16a34a,
+                    #22c55e
+                );
+
+        }
+
+
+        .sell-btn {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dc2626,
+                    #ef4444
+                );
+
+        }
+
+
+        .buy-btn:disabled,
+        .sell-btn:disabled {
+
+            opacity:
+                0.45;
+
+            cursor:
+                not-allowed;
+
+        }
+
+
+        /* ==========================================
+           ACTIVE TRADE
+        =========================================== */
+
+        .active-section {
+
+            padding:
+                0 18px;
+
+        }
+
+
+        .section-header {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            margin:
+                22px 0 12px;
+
+        }
+
+
+        .section-header h3 {
+
+            font-size:
+                16px;
+
+        }
+
+
+        .section-header span {
+
+            font-size:
+                11px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .active-card {
+
+            background:
+                var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                20px;
+
+            padding:
+                18px;
+
+        }
+
+
+        .active-card.hidden {
+
+            display:
+                none;
+
+        }
+
+
+        .active-top {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+        }
+
+
+        .direction-box {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+        }
+
+
+        .direction-icon {
+
+            width:
+                44px;
+
+            height:
+                44px;
+
+            border-radius:
+                13px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+        }
+
+
+        .direction-icon.buy {
+
+            color:
+                var(--green);
+
+            background:
+                rgba(34,197,94,0.12);
+
+        }
+
+
+        .direction-icon.sell {
+
+            color:
+                var(--red);
+
+            background:
+                rgba(239,68,68,0.12);
+
+        }
+
+
+        .direction-box strong {
+
+            display:
+                block;
+
+            font-size:
+                14px;
+
+        }
+
+
+        .direction-box small {
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+        }
+
+
+        .active-status {
+
+            padding:
+                7px 11px;
+
+            border-radius:
+                20px;
+
+            color:
+                var(--yellow);
+
+            background:
+                rgba(250,204,21,0.1);
+
+            font-size:
+                10px;
+
+            font-weight:
+                600;
+
+        }
+
+
+        .timer-box {
+
+            margin-top:
+                20px;
+
+            padding:
+                16px;
+
+            border-radius:
+                16px;
+
+            background:
+                var(--card-light);
+
+            text-align:
+                center;
+
+        }
+
+
+        .timer-box span {
+
+            display:
+                block;
+
+            font-size:
+                10px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        #timer {
+
+            margin-top:
+                4px;
+
+            font-size:
+                30px;
+
+            font-weight:
+                800;
+
+            color:
+                var(--yellow);
+
+        }
+
+
+        .progress-track {
+
+            width:
+                100%;
+
+            height:
+                7px;
+
+            margin-top:
+                16px;
+
+            border-radius:
+                20px;
+
+            background:
+                #263044;
+
+            overflow:
+                hidden;
+
+        }
+
+
+        .progress-fill {
+
+            width:
+                0%;
+
+            height:
+                100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--primary),
+                    var(--primary-light)
+                );
+
+            transition:
+                0.5s;
+
+        }
+
+
+        .trade-details {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                10px;
+
+            margin-top:
+                18px;
+
+        }
+
+
+        .trade-detail {
+
+            padding:
+                10px;
+
+            border-radius:
+                12px;
+
+            background:
+                var(--card-light);
+
+        }
+
+
+        .trade-detail span {
+
+            display:
+                display;
+
+            font-size:
+                9px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .trade-detail strong {
+
+            display:
+                block;
+
+            margin-top:
+                4px;
+
+            font-size:
+                11px;
+
+        }
+
+
+        .no-trade {
+
+            text-align:
+                center;
+
+            padding:
+                25px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .no-trade i {
+
+            font-size:
+                28px;
+
+            margin-bottom:
+                10px;
+
+            display:
+                block;
+
+            color:
+                var(--primary-light);
+
+        }
+
+
+        /* ==========================================
+           FILTER TABS
+        =========================================== */
+
+        .filter-tabs {
+
+            margin:
+                18px;
+
+            padding:
+                7px;
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                6px;
+
+            border-radius:
+                18px;
+
+            background:
+                #1b2334;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.12);
+
+        }
+
+
+        .filter-btn {
+
+            border:
+                none;
+
+            background:
+                transparent;
+
+            color:
+                #8d98aa;
+
+            padding:
+                13px 5px;
+
+            border-radius:
+                13px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                600;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.25s;
+
+        }
+
+
+        .filter-btn i {
+
+            margin-right:
+                6px;
+
+        }
+
+
+        .filter-btn.active {
+
+            color:
+                white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6a62df,
+                    #4f46c8
+                );
+
+            box-shadow:
+                0 8px 20px
+                rgba(79,70,200,0.35);
+
+        }
+
+
+        /* ==========================================
+           HISTORY
+        =========================================== */
+
+        .history-section {
+
+            padding:
+                0 18px;
+
+        }
+
+
+        .history-list {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                12px;
+
+        }
+
+
+        .history-item {
+
+            background:
+                var(--card);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                18px;
+
+            padding:
+                16px;
+
+        }
+
+
+        .history-top {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+        }
+
+
+        .history-direction {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+        }
+
+
+        .history-icon {
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            border-radius:
+                12px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+        }
+
+
+        .history-icon.buy {
+
+            background:
+                rgba(34,197,94,0.12);
+
+            color:
+                var(--green);
+
+        }
+
+
+        .history-icon.sell {
+
+            background:
+                rgba(239,68,68,0.12);
+
+            color:
+                var(--red);
+
+        }
+
+
+        .history-direction strong {
+
+            display:
+                block;
+
+            font-size:
+                13px;
+
+        }
+
+
+        .history-direction small {
+
+            font-size:
+                10px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .result-badge {
+
+            padding:
+                6px 10px;
+
+            border-radius:
+                20px;
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .result-badge.win {
+
+            color:
+                var(--green);
+
+            background:
+                rgba(34,197,94,0.12);
+
+        }
+
+
+        .result-badge.loss {
+
+            color:
+                var(--red);
+
+            background:
+                rgba(239,68,68,0.12);
+
+        }
+
+
+        .history-data {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                8px;
+
+            margin-top:
+                15px;
+
+        }
+
+
+        .history-data div {
+
+            background:
+                var(--card-light);
+
+            border-radius:
+                10px;
+
+            padding:
+                9px;
+
+        }
+
+
+        .history-data span {
+
+            display:
+                block;
+
+            font-size:
+                8px;
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .history-data strong {
+
+            display:
+                block;
+
+            margin-top:
+                3px;
+
+            font-size:
+                10px;
+
+        }
+
+
+        .empty-history {
+
+            text-align:
+                center;
+
+            padding:
+                35px 20px;
+
+            border-radius:
+                18px;
+
+            background:
+                var(--card);
+
+            border:
+                1px solid var(--border);
+
+            color:
+                var(--muted);
+
+        }
+
+
+        .empty-history i {
+
+            display:
+                block;
+
+            margin-bottom:
+                10px;
+
+            font-size:
+                30px;
+
+            color:
+                var(--primary-light);
+
+        }
+
+
+        /* ==========================================
+           MESSAGE
+        =========================================== */
+
+        #message {
+
+            position:
+                fixed;
+
+            left:
+                50%;
+
+            bottom:
+                110px;
+
+            transform:
+                translateX(-50%)
+                translateY(30px);
+
+            width:
+                calc(100% - 40px);
+
+            max-width:
+                450px;
+
+            padding:
+                14px 18px;
+
+            border-radius:
+                14px;
+
+            background:
+                white;
+
+            color:
+                #111827;
+
+            text-align:
+                center;
+
+            font-size:
+                12px;
+
+            font-weight:
+                600;
+
+            opacity:
+                0;
+
+            pointer-events:
+                none;
+
+            transition:
+                0.3s;
+
+            z-index:
+                200;
+
+        }
+
+
+        #message.show {
+
+            opacity:
+                1;
+
+            transform:
+                translateX(-50%)
+                translateY(0);
+
+        }
+
+
+        /* ==========================================
+           BOTTOM NAVIGATION
+        =========================================== */
+
+        .bottom-nav {
+
+            position:
+                fixed;
+
+            bottom:
+                0;
+
+            left:
+                50%;
+
+            transform:
+                translateX(-50%);
+
+            width:
+                100%;
+
+            max-width:
+                650px;
+
+            height:
+                82px;
+
+            z-index:
+                100;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-around;
+
+            background:
+                rgba(15,20,32,0.97);
+
+            border-top:
+                1px solid var(--border);
+
+            backdrop-filter:
+                blur(20px);
+
+        }
+
+
+        .nav-item {
+
+            border:
+                none;
+
+            background:
+                transparent;
+
+            color:
+                var(--muted);
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            align-items:
+                center;
+
+            gap:
+                6px;
+
+            font-size:
+                10px;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        .nav-item i {
+
+            font-size:
+                17px;
+
+        }
+
+
+        .nav-item.active {
+
+            color:
+                var(--primary-light);
+
+        }
+
+
+        .nav-center .center-button {
+
+            width:
+                48px;
+
+            height:
+                48px;
+
+            margin-top:
+                -24px;
+
+            border-radius:
+                16px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary-light),
+                    var(--primary)
+                );
+
+            color:
+                white;
+
+            box-shadow:
+                0 10px 30px
+                rgba(99,91,219,0.45);
+
+        }
+
+
+        /* ==========================================
+           MOBILE
+        =========================================== */
+
+        @media (max-width: 380px) {
+
+            .price-value {
+
+                font-size:
+                    27px;
+
+            }
+
+
+            .trade-details,
+            .history-data {
+
+                grid-template-columns:
+                    1fr 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- ==========================================
+         HEADER
+    =========================================== -->
+
+    <header class="top-header">
+
+
+        <div class="header-left">
+
+            <button
+                class="back-button"
+                onclick="history.back()"
+                type="button"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </button>
+
+
+            <div class="header-title">
+
+                <span>
+                    MARKET
+                </span>
+
+                <h2>
+                    BTC Trading
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="wallet-header">
+
+            <i class="fa-solid fa-wallet"></i>
+
+
+            <div>
+
+                <small>
+                    Balance
+                </small>
+
+                <strong>
+                    ₹<span id="walletBalance">
+                        0.00
+                    </span>
+                </strong>
+
+            </div>
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- ==========================================
+         MARKET
+    =========================================== -->
+
+    <section class="market-section">
+
+
+        <div class="market-card">
+
+            <div class="market-glow"></div>
+
+
+            <div class="market-top">
+
+
+                <div class="pair-info">
+
+                    <div class="btc-icon">
+
+                        <i class="fa-brands fa-bitcoin"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h2>
+                            BTC / USDT
+                        </h2>
+
+                        <span>
+                            Bitcoin Market
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="live-status">
+
+                    <span class="live-dot"></span>
+
+                    LIVE
+
+                </div>
+
+
+            </div>
+
+
+            <div class="price-area">
+
+                <div class="price-label">
+
+                    Current Market Price
+
+                </div>
+
+
+                <div class="price-value">
+
+                    $<span id="currentPrice">
+                        Loading...
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="priceChange"
+                    class="price-change"
+                >
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    <span>
+                        Live market data
+                    </span>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==========================================
+         REAL CHART
+    =========================================== -->
+
+    <section class="chart-section">
+
+
+        <div class="chart-card">
+
+
+            <div class="chart-header">
+
+                <h3>
+
+                    <i class="fa-solid fa-chart-candlestick"></i>
+
+                    Real BTC Chart
+
+                </h3>
+
+
+                <span class="chart-badge">
+
+                    1 MINUTE
+
+                </span>
+
+
+            </div>
+
+
+            <div id="chart"></div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==========================================
+         TRADING PANEL
+    =========================================== -->
+
+    <section class="trading-panel">
+
+
+        <div class="panel-heading">
+
+            <h3>
+                Place Demo Trade
+            </h3>
+
+
+            <span class="demo-badge">
+
+                DEMO MODE
+
+            </span>
+
+        </div>
+
+
+
+        <!-- DURATION -->
+
+        <div class="section-title">
+
+            Select Duration
+
+        </div>
+
+
+        <div class="duration-buttons">
+
+
+            <button
+                class="duration-btn active"
+                data-duration="30"
+                type="button"
+            >
+
+                30s
+
+            </button>
+
+
+            <button
+                class="duration-btn"
+                data-duration="60"
+                type="button"
+            >
+
+                1m
+
+            </button>
+
+
+            <button
+                class="duration-btn"
+                data-duration="180"
+                type="button"
+            >
+
+                3m
+
+            </button>
+
+
+            <button
+                class="duration-btn"
+                data-duration="300"
+                type="button"
+            >
+
+                5m
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- AMOUNT -->
+
+        <div class="amount-section">
+
+
+            <div class="section-title">
+
+                Demo Trade Amount
+
+            </div>
+
+
+            <div class="amount-box">
+
+
+                <button
+                    class="amount-btn"
+                    onclick="changeAmount(-100)"
+                    type="button"
+                >
+
+                    −
+
+                </button>
+
+
+                <div class="amount-value">
+
+                    <small>
+                        TRADE AMOUNT
+                    </small>
+
+                    <strong>
+
+                        ₹<span id="amount">
+                            500
+                        </span>
+
+                    </strong>
+
+                </div>
+
+
+                <button
+                    class="amount-btn"
+                    onclick="changeAmount(100)"
+                    type="button"
+                >
+
+                    +
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- BUY SELL -->
+
+        <div class="trade-buttons">
+
+
+            <button
+                id="buyBtn"
+                class="buy-btn"
+                onclick="startTrade('BUY')"
+                type="button"
+            >
+
+                <i class="fa-solid fa-arrow-trend-up"></i>
+
+                BUY
+
+            </button>
+
+
+            <button
+                id="sellBtn"
+                class="sell-btn"
+                onclick="startTrade('SELL')"
+                type="button"
+            >
+
+                <i class="fa-solid fa-arrow-trend-down"></i>
+
+                SELL
+
+            </button>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==========================================
+         ACTIVE TRADE
+    =========================================== -->
+
+    <section class="active-section">
+
+
+        <div class="section-header">
+
+            <h3>
+                Active Trade
+            </h3>
+
+
+            <span id="activeTradeText">
+
+                No active trade
+
+            </span>
+
+        </div>
+
+
+        <div
+            id="noActiveTrade"
+            class="active-card"
+        >
+
+            <div class="no-trade">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                No active demo trade
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="activeTradeCard"
+            class="active-card hidden"
+        >
+
+
+            <div class="active-top">
+
+
+                <div class="direction-box">
+
+
+                    <div
+                        id="activeDirectionIcon"
+                        class="direction-icon buy"
+                    >
+
+                        <i
+                            id="activeDirectionArrow"
+                            class="fa-solid fa-arrow-up"
+                        ></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong
+                            id="activeDirection"
+                        >
+                            BUY
+                        </strong>
+
+                        <small>
+                            BTC / USDT
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="active-status">
+
+                    ACTIVE
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="timer-box">
+
+                <span>
+                    TIME REMAINING
+                </span>
+
+                <strong id="timer">
+
+                    00:00
+
+                </strong>
+
+            </div>
+
+
+
+            <div class="progress-track">
+
+                <div
+                    id="progressFill"
+                    class="progress-fill"
+                ></div>
+
+            </div>
+
+
+
+            <div class="trade-details">
+
+
+                <div class="trade-detail">
+
+                    <span>
+                        ENTRY
+                    </span>
+
+                    <strong
+                        id="entryPrice"
+                    >
+                        $0
+                    </strong>
+
+                </div>
+
+
+                <div class="trade-detail">
+
+                    <span>
+                        CURRENT
+                    </span>
+
+                    <strong
+                        id="activeCurrentPrice"
+                    >
+                        $0
+                    </strong>
+
+                </div>
+
+
+                <div class="trade-detail">
+
+                    <span>
+                        AMOUNT
+                    </span>
+
+                    <strong
+                        id="activeAmount"
+                    >
+                        ₹0
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==========================================
+         HISTORY FILTER
+    =========================================== -->
+
+    <div class="filter-tabs">
+
+
+        <button
+            class="filter-btn active"
+            data-filter="all"
+            type="button"
+        >
+
+            <i class="fa-solid fa-layer-group"></i>
+
+            All
+
+        </button>
+
+
+        <button
+            class="filter-btn"
+            data-filter="active"
+            type="button"
+        >
+
+            <i class="fa-solid fa-bolt"></i>
+
+            Active
+
+        </button>
+
+
+        <button
+            class="filter-btn"
+            data-filter="completed"
+            type="button"
+        >
+
+            <i class="fa-solid fa-circle-check"></i>
+
+            Completed
+
+        </button>
+
+
+    </div>
+
+
+
+    <!-- ==========================================
+         TRADE HISTORY
+    =========================================== -->
+
+    <section class="history-section">
+
+
+        <div class="section-header">
+
+            <h3>
+                Trade History
+            </h3>
+
+
+            <span id="historyCount">
+
+                0 Trades
+
+            </span>
+
+        </div>
+
+
+        <div
+            id="historyList"
+            class="history-list"
+        >
+
+            <div class="empty-history">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                No trades yet
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- ==========================================
+     MESSAGE
+========================================== -->
+
+<div id="message"></div>
+
+
+
+<!-- ==========================================
+     BOTTOM NAVIGATION
+========================================== -->
+
+<nav class="bottom-nav">
+
+
+    <button
+        class="nav-item"
+        onclick="navigate('home')"
+        type="button"
+    >
+
+        <i class="fa-solid fa-house"></i>
+
+        <span>
+            Home
+        </span>
+
+    </button>
+
+
+    <button
+        class="nav-item active"
+        type="button"
+    >
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>
+            Trading
+        </span>
+
+    </button>
+
+
+    <button
+        class="nav-item nav-center"
+        onclick="navigate('deposit')"
+        type="button"
+    >
+
+        <div class="center-button">
+
+            <i class="fa-solid fa-plus"></i>
+
+        </div>
+
+        <span>
+            Deposit
+        </span>
+
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="navigate('invite')"
+        type="button"
+    >
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        <span>
+            Invite
+        </span>
+
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="navigate('profile')"
+        type="button"
+    >
+
+        <i class="fa-solid fa-user"></i>
+
+        <span>
+            Profile
+        </span>
+
+    </button>
+
+
+</nav>
+
+
+
+<script>
+
+
+    // =====================================================
+    // CONFIG
+    // =====================================================
+
+    const API_URL =
+        "https://bitcoin-m7kz.onrender.com/api";
+
+
+    const token =
+        localStorage.getItem("ki_token") ||
+        localStorage.getItem("token");
+
+
+    // =====================================================
+    // GLOBAL VARIABLES
+    // =====================================================
+
+    let walletBalance = 0;
+
+    let tradeAmount = 500;
+
+    let selectedDuration = 30;
+
+    let currentPrice = 0;
+
+    let previousPrice = 0;
+
+    let activeTrade = null;
+
+    let timerInterval = null;
+
+    let chart = null;
+
+    let candleSeries = null;
+
+    let marketSocket = null;
+
+    let tradeHistory = [];
+
+    let selectedFilter = "all";
+
+
+    // =====================================================
+    // MONEY FORMAT
+    // =====================================================
+
+    function money(value) {
+
+        return "₹" +
+            Number(value || 0)
+                .toLocaleString(
+                    "en-IN",
+                    {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+    }
+
+
+    // =====================================================
+    // MESSAGE
+    // =====================================================
+
+    function showMessage(text) {
+
+        const message =
+            document.getElementById("message");
+
+
+        message.textContent =
+            text;
+
+
+        message.classList.add("show");
+
+
+        clearTimeout(
+            window.messageTimeout
+        );
+
+
+        window.messageTimeout =
+            setTimeout(
+                () => {
+
+                    message.classList.remove("show");
+
+                },
+                3000
+            );
+
+    }
+
+
+    // =====================================================
+    // LOAD PROFILE
+    // =====================================================
+
+    async function loadProfile() {
+
+        if (!token) {
+
+            showMessage(
+                "Please login first"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/auth/profile`,
+                    {
+                        headers: {
+                            "Authorization":
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (data.success) {
+
+                const user =
+                    data.user ||
+                    data.data?.user ||
+                    data.data ||
+                    {};
+
+
+                walletBalance =
+                    Number(
+                        user.balance ??
+                        user.wallet ??
+                        0
+                    );
+
+
+                document
+                    .getElementById(
+                        "walletBalance"
+                    )
+                    .textContent =
+                    walletBalance
+                        .toLocaleString(
+                            "en-IN",
+                            {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }
+                        );
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "PROFILE ERROR:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // CREATE REAL CHART
+    // =====================================================
+
+    function createChart() {
+
+        const chartElement =
+            document.getElementById("chart");
+
+
+        chart =
+            LightweightCharts.createChart(
+                chartElement,
+                {
+
+                    width:
+                        chartElement.clientWidth,
+
+                    height:
+                        360,
+
+
+                    layout: {
+
+                        background: {
+                            color: "#111827"
+                        },
+
+                        textColor:
+                            "#8f9aad"
+
+                    },
+
+
+                    grid: {
+
+                        vertLines: {
+                            color:
+                                "rgba(255,255,255,0.04)"
+                        },
+
+                        horzLines: {
+                            color:
+                                "rgba(255,255,255,0.04)"
+                        }
+
+                    },
+
+
+                    rightPriceScale: {
+
+                        borderColor:
+                            "rgba(255,255,255,0.08)"
+
+                    },
+
+
+                    timeScale: {
+
+                        borderColor:
+                            "rgba(255,255,255,0.08)",
+
+                        timeVisible:
+                            true,
+
+                        secondsVisible:
+                            false
+
+                    },
+
+
+                    crosshair: {
+
+                        mode:
+                            LightweightCharts.CrosshairMode.Normal
+
+                    }
+
+                }
+            );
+
+
+        candleSeries =
+            chart.addCandlestickSeries(
+                {
+
+                    upColor:
+                        "#22c55e",
+
+                    downColor:
+                        "#ef4444",
+
+                    borderUpColor:
+                        "#22c55e",
+
+                    borderDownColor:
+                        "#ef4444",
+
+                    wickUpColor:
+                        "#22c55e",
+
+                    wickDownColor:
+                        "#ef4444"
+
+                }
+            );
+
+
+        window.addEventListener(
+            "resize",
+            () => {
+
+                if (!chart) {
+                    return;
+                }
+
+
+                chart.applyOptions(
+                    {
+
+                        width:
+                            chartElement.clientWidth
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // LOAD REAL BTC CANDLES
+    // =====================================================
+
+    async function loadRealCandles() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=100"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load market candles"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const candles =
+                data.map(
+                    item => {
+
+                        return {
+
+                            time:
+                                Math.floor(
+                                    item[0] / 1000
+                                ),
+
+                            open:
+                                Number(item[1]),
+
+                            high:
+                                Number(item[2]),
+
+                            low:
+                                Number(item[3]),
+
+                            close:
+                                Number(item[4])
+
+                        };
+
+                    }
+                );
+
+
+            candleSeries.setData(
+                candles
+            );
+
+
+            const latest =
+                candles[
+                    candles.length - 1
+                ];
+
+
+            currentPrice =
+                latest.close;
+
+
+            previousPrice =
+                latest.open;
+
+
+            updatePriceDisplay();
+
+
+            chart.timeScale().fitContent();
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "CANDLE ERROR:",
+                error
+            );
+
+
+            showMessage(
+                "Unable to load real market data"
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // LIVE MARKET WEBSOCKET
+    // =====================================================
+
+    function connectLiveMarket() {
+
+        if (marketSocket) {
+
+            marketSocket.close();
+
+        }
+
+
+        marketSocket =
+            new WebSocket(
+                "wss://stream.binance.com:9443/ws/btcusdt@kline_1m"
+            );
+
+
+        marketSocket.onopen =
+            function() {
+
+                console.log(
+                    "LIVE BTC MARKET CONNECTED"
+                );
+
+            };
+
+
+        marketSocket.onmessage =
+            function(event) {
+
+                try {
+
+                    const data =
+                        JSON.parse(
+                            event.data
+                        );
+
+
+                    const kline =
+                        data.k;
+
+
+                    if (!kline) {
+                        return;
+                    }
+
+
+                    const candle = {
+
+                        time:
+                            Math.floor(
+                                kline.t / 1000
+                            ),
+
+                        open:
+                            Number(
+                                kline.o
+                            ),
+
+                        high:
+                            Number(
+                                kline.h
+                            ),
+
+                        low:
+                            Number(
+                                kline.l
+                            ),
+
+                        close:
+                            Number(
+                                kline.c
+                            )
+
+                    };
+
+
+                    previousPrice =
+                        currentPrice ||
+                        candle.open;
+
+
+                    currentPrice =
+                        candle.close;
+
+
+                    candleSeries.update(
+                        candle
+                    );
+
+
+                    updatePriceDisplay();
+
+
+                    updateActiveTradePrice();
+
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "MARKET DATA ERROR:",
+                        error
+                    );
+
+                }
+
+            };
+
+
+        marketSocket.onerror =
+            function(error) {
+
+                console.error(
+                    "WEBSOCKET ERROR:",
+                    error
+                );
+
+            };
+
+
+        marketSocket.onclose =
+            function() {
+
+                console.log(
+                    "MARKET CONNECTION CLOSED"
+                );
+
+
+                setTimeout(
+                    () => {
+
+                        connectLiveMarket();
+
+                    },
+                    3000
+                );
+
+            };
+
+    }
+
+
+    // =====================================================
+    // UPDATE PRICE DISPLAY
+    // =====================================================
+
+    function updatePriceDisplay() {
+
+        const priceElement =
+            document.getElementById(
+                "currentPrice"
+            );
+
+
+        priceElement.textContent =
+            Number(currentPrice)
+                .toLocaleString(
+                    "en-US",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+
+        const changeElement =
+            document.getElementById(
+                "priceChange"
+            );
+
+
+        if (
+            previousPrice > 0 &&
+            currentPrice > previousPrice
+        ) {
+
+            changeElement.className =
+                "price-change up";
+
+
+            changeElement.innerHTML = `
+
+                <i class="fa-solid fa-arrow-trend-up"></i>
+
+                <span>
+                    Market moving upward
+                </span>
+
+            `;
+
+        }
+
+        else if (
+            previousPrice > 0 &&
+            currentPrice < previousPrice
+        ) {
+
+            changeElement.className =
+                "price-change down";
+
+
+            changeElement.innerHTML = `
+
+                <i class="fa-solid fa-arrow-trend-down"></i>
+
+                <span>
+                    Market moving downward
+                </span>
+
+            `;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // DURATION BUTTONS
+    // =====================================================
+
+    document
+        .querySelectorAll(".duration-btn")
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        if (activeTrade) {
+
+                            showMessage(
+                                "A trade is already active"
+                            );
+
+                            return;
+
+                        }
+
+
+                        document
+                            .querySelectorAll(
+                                ".duration-btn"
+                            )
+                            .forEach(
+                                btn => {
+
+                                    btn.classList.remove(
+                                        "active"
+                                    );
+
+                                }
+                            );
+
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        selectedDuration =
+                            Number(
+                                button.dataset.duration
+                            );
+
+                    }
+                );
+
+            }
+        );
+
+
+    // =====================================================
+    // CHANGE AMOUNT
+    // =====================================================
+
+    function changeAmount(change) {
+
+        if (activeTrade) {
+
+            showMessage(
+                "Cannot change amount during a trade"
+            );
+
+            return;
+
+        }
+
+
+        tradeAmount += change;
+
+
+        if (tradeAmount < 100) {
+
+            tradeAmount = 100;
+
+        }
+
+
+        document
+            .getElementById("amount")
+            .textContent =
+            tradeAmount;
+
+    }
+
+
+    // =====================================================
+    // START DEMO TRADE
+    // =====================================================
+
+    function startTrade(direction) {
+
+        if (activeTrade) {
+
+            showMessage(
+                "You already have an active trade"
+            );
+
+            return;
+
+        }
+
+
+        if (currentPrice <= 0) {
+
+            showMessage(
+                "Waiting for real market price"
+            );
+
+            return;
+
+        }
+
+
+        if (walletBalance < tradeAmount) {
+
+            showMessage(
+                "Insufficient displayed balance"
+            );
+
+            return;
+
+        }
+
+
+        activeTrade = {
+
+            id:
+                Date.now(),
+
+            direction:
+                direction,
+
+            amount:
+                tradeAmount,
+
+            entryPrice:
+                currentPrice,
+
+            duration:
+                selectedDuration,
+
+            remainingTime:
+                selectedDuration,
+
+            startedAt:
+                new Date()
+
+        };
+
+
+        updateActiveTradeUI();
+
+
+        disableTradeButtons();
+
+
+        startTimer();
+
+
+        renderHistory();
+
+
+        showMessage(
+            `${direction} demo trade started`
+        );
+
+    }
+
+
+    // =====================================================
+    // UPDATE ACTIVE TRADE UI
+    // =====================================================
+
+    function updateActiveTradeUI() {
+
+        const noTrade =
+            document.getElementById(
+                "noActiveTrade"
+            );
+
+
+        const activeCard =
+            document.getElementById(
+                "activeTradeCard"
+            );
+
+
+        if (!activeTrade) {
+
+            noTrade.classList.remove(
+                "hidden"
+            );
+
+
+            activeCard.classList.add(
+                "hidden"
+            );
+
+
+            document
+                .getElementById(
+                    "activeTradeText"
+                )
+                .textContent =
+                "No active trade";
+
+
+            return;
+
+        }
+
+
+        noTrade.classList.add(
+            "hidden"
+        );
+
+
+        activeCard.classList.remove(
+            "hidden"
+        );
+
+
+        document
+            .getElementById(
+                "activeTradeText"
+            )
+            .textContent =
+            "Trade running";
+
+
+        const icon =
+            document.getElementById(
+                "activeDirectionIcon"
+            );
+
+
+        const arrow =
+            document.getElementById(
+                "activeDirectionArrow"
+            );
+
+
+        icon.className =
+            "direction-icon " +
+            (
+                activeTrade.direction === "BUY"
+                    ? "buy"
+                    : "sell"
+            );
+
+
+        arrow.className =
+            activeTrade.direction === "BUY"
+                ? "fa-solid fa-arrow-up"
+                : "fa-solid fa-arrow-down";
+
+
+        document
+            .getElementById(
+                "activeDirection"
+            )
+            .textContent =
+            activeTrade.direction;
+
+
+        document
+            .getElementById(
+                "entryPrice"
+            )
+            .textContent =
+            "$" +
+            activeTrade.entryPrice
+                .toLocaleString(
+                    "en-US",
+                    {
+                        maximumFractionDigits: 2
+                    }
+                );
+
+
+        document
+            .getElementById(
+                "activeAmount"
+            )
+            .textContent =
+            money(
+                activeTrade.amount
+            );
+
+
+        updateActiveTradePrice();
+
+        updateTimerDisplay();
+
+    }
+
+
+    // =====================================================
+    // UPDATE ACTIVE PRICE
+    // =====================================================
+
+    function updateActiveTradePrice() {
+
+        const element =
+            document.getElementById(
+                "activeCurrentPrice"
+            );
+
+
+        if (!element) {
+            return;
+        }
+
+
+        element.textContent =
+            "$" +
+            Number(currentPrice)
+                .toLocaleString(
+                    "en-US",
+                    {
+                        maximumFractionDigits: 2
+                    }
+                );
+
+    }
+
+
+    // =====================================================
+    // TIMER
+    // =====================================================
+
+    function startTimer() {
+
+        clearInterval(
+            timerInterval
+        );
+
+
+        timerInterval =
+            setInterval(
+                () => {
+
+                    if (!activeTrade) {
+
+                        clearInterval(
+                            timerInterval
+                        );
+
+                        return;
+
+                    }
+
+
+                    activeTrade.remainingTime--;
+
+
+                    updateTimerDisplay();
+
+
+                    if (
+                        activeTrade.remainingTime <= 0
+                    ) {
+
+                        clearInterval(
+                            timerInterval
+                        );
+
+
+                        finishTrade();
+
+                    }
+
+                },
+                1000
+            );
+
+    }
+
+
+    // =====================================================
+    // TIMER DISPLAY
+    // =====================================================
+
+    function updateTimerDisplay() {
+
+        if (!activeTrade) {
+            return;
+        }
+
+
+        const minutes =
+            Math.floor(
+                activeTrade.remainingTime / 60
+            );
+
+
+        const seconds =
+            activeTrade.remainingTime % 60;
+
+
+        document
+            .getElementById("timer")
+            .textContent =
+            `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+
+        const progress =
+            (
+                (
+                    activeTrade.duration -
+                    activeTrade.remainingTime
+                )
+                /
+                activeTrade.duration
+            )
+            *
+            100;
+
+
+        document
+            .getElementById(
+                "progressFill"
+            )
+            .style.width =
+            `${Math.min(100, progress)}%`;
+
+    }
+
+
+    // =====================================================
+    // FINISH DEMO TRADE
+    // =====================================================
+
+    function finishTrade() {
+
+        if (!activeTrade) {
+            return;
+        }
+
+
+        const finishedTrade =
+            {
+                ...activeTrade
+            };
+
+
+        const exitPrice =
+            currentPrice;
+
+
+        let isWin =
+            false;
+
+
+        if (
+            finishedTrade.direction === "BUY" &&
+            exitPrice > finishedTrade.entryPrice
+        ) {
+
+            isWin = true;
+
+        }
+
+
+        if (
+            finishedTrade.direction === "SELL" &&
+            exitPrice < finishedTrade.entryPrice
+        ) {
+
+            isWin = true;
+
+        }
+
+
+        finishedTrade.exitPrice =
+            exitPrice;
+
+
+        finishedTrade.isWin =
+            isWin;
+
+
+        finishedTrade.status =
+            "completed";
+
+
+        finishedTrade.completedAt =
+            new Date();
+
+
+        tradeHistory.unshift(
+            finishedTrade
+        );
+
+
+        activeTrade =
+            null;
+
+
+        updateActiveTradeUI();
+
+
+        enableTradeButtons();
+
+
+        renderHistory();
+
+
+        showMessage(
+            isWin
+                ? "Demo trade completed: WIN"
+                : "Demo trade completed: LOSS"
+        );
+
+    }
+
+
+    // =====================================================
+    // DISABLE BUTTONS
+    // =====================================================
+
+    function disableTradeButtons() {
+
+        document
+            .getElementById("buyBtn")
+            .disabled = true;
+
+
+        document
+            .getElementById("sellBtn")
+            .disabled = true;
+
+    }
+
+
+    // =====================================================
+    // ENABLE BUTTONS
+    // =====================================================
+
+    function enableTradeButtons() {
+
+        document
+            .getElementById("buyBtn")
+            .disabled = false;
+
+
+        document
+            .getElementById("sellBtn")
+            .disabled = false;
+
+    }
+
+
+    // =====================================================
+    // FILTER BUTTONS
+    // =====================================================
+
+    document
+        .querySelectorAll(".filter-btn")
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        document
+                            .querySelectorAll(
+                                ".filter-btn"
+                            )
+                            .forEach(
+                                btn =>
+                                    btn.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        selectedFilter =
+                            button.dataset.filter;
+
+
+                        renderHistory();
+
+                    }
+                );
+
+            }
+        );
+
+
+    // =====================================================
+    // RENDER HISTORY
+    // =====================================================
+
+    function renderHistory() {
+
+        const historyList =
+            document.getElementById(
+                "historyList"
+            );
+
+
+        let items = [];
+
+
+        if (
+            selectedFilter === "active"
+        ) {
+
+            if (activeTrade) {
+
+                items = [
+                    {
+                        ...activeTrade,
+                        status:
+                            "active"
+                    }
+                ];
+
+            }
+
+        }
+
+        else if (
+            selectedFilter === "completed"
+        ) {
+
+            items =
+                [...tradeHistory];
+
+        }
+
+        else {
+
+            items =
+                activeTrade
+                    ? [
+                        {
+                            ...activeTrade,
+                            status:
+                                "active"
+                        },
+                        ...tradeHistory
+                    ]
+                    : [...tradeHistory];
+
+        }
+
+
+        document
+            .getElementById(
+                "historyCount"
+            )
+            .textContent =
+            `${items.length} Trade${items.length !== 1 ? "s" : ""}`;
+
+
+        if (items.length === 0) {
+
+            historyList.innerHTML = `
+
+                <div class="empty-history">
+
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    No trades found
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        historyList.innerHTML =
+            items
+                .map(
+                    trade => {
+
+                        const isActive =
+                            trade.status === "active";
+
+
+                        const directionClass =
+                            trade.direction === "BUY"
+                                ? "buy"
+                                : "sell";
+
+
+                        const icon =
+                            trade.direction === "BUY"
+                                ? "fa-arrow-up"
+                                : "fa-arrow-down";
+
+
+                        let resultHTML =
+                            "";
+
+
+                        if (isActive) {
+
+                            resultHTML = `
+
+                                <span class="result-badge">
+
+                                    ACTIVE
+
+                                </span>
+
+                            `;
+
+                        }
+
+                        else {
+
+                            resultHTML = `
+
+                                <span
+                                    class="
+                                        result-badge
+                                        ${trade.isWin ? "win" : "loss"}
+                                    "
+                                >
+
+                                    ${trade.isWin ? "WIN" : "LOSS"}
+
+                                </span>
+
+                            `;
+
+                        }
+
+
+                        return `
+
+                            <article class="history-item">
+
+
+                                <div class="history-top">
+
+
+                                    <div class="history-direction">
+
+
+                                        <div
+                                            class="
+                                                history-icon
+                                                ${directionClass}
+                                            "
+                                        >
+
+                                            <i
+                                                class="
+                                                    fa-solid
+                                                    ${icon}
+                                                "
+                                            ></i>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <strong>
+
+                                                ${trade.direction}
+                                                BTC
+
+                                            </strong>
+
+
+                                            <small>
+
+                                                BTC / USDT
+
+                                            </small>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                    ${resultHTML}
+
+
+                                </div>
+
+
+                                <div class="history-data">
+
+
+                                    <div>
+
+                                        <span>
+                                            ENTRY
+                                        </span>
+
+                                        <strong>
+
+                                            $${Number(
+                                                trade.entryPrice
+                                            ).toLocaleString(
+                                                "en-US",
+                                                {
+                                                    maximumFractionDigits: 2
+                                                }
+                                            )}
+
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            ${isActive ? "CURRENT" : "EXIT"}
+                                        </span>
+
+                                        <strong>
+
+                                            $${Number(
+                                                isActive
+                                                    ? currentPrice
+                                                    : trade.exitPrice
+                                            ).toLocaleString(
+                                                "en-US",
+                                                {
+                                                    maximumFractionDigits: 2
+                                                }
+                                            )}
+
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            AMOUNT
+                                        </span>
+
+                                        <strong>
+
+                                            ${money(
+                                                trade.amount
+                                            )}
+
+                                        </strong>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </article>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+
+    // =====================================================
+    // NAVIGATION
+    // =====================================================
+
+    function navigate(page) {
+
+        switch (page) {
+
+            case "home":
+
+                window.location.href =
+                    "home.html";
+
+                break;
+
+
+            case "deposit":
+
+                window.location.href =
+                    "deposite.html";
+
+                break;
+
+
+            case "invite":
+
+                window.location.href =
+                    "reer.html";
+
+                break;
+
+
+            case "profile":
+
+                window.location.href =
+                    "profile.html";
+
+                break;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // INITIALIZE CHART
+    // =====================================================
+
+    async function initializeChart() {
+
+        try {
+
+            createChart();
+
+
+            await loadRealCandles();
+
+
+            connectLiveMarket();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "CHART INITIALIZATION ERROR:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // PAGE LOAD
+    // =====================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            await loadProfile();
+
+
+            await initializeChart();
+
+
+            updateActiveTradeUI();
+
+
+            renderHistory();
+
+
+            console.log(
+                "TRADING PAGE READY"
+            );
+
+        }
+    );
+
+
+    // =====================================================
+    // CLEANUP
+    // =====================================================
+
+    window.addEventListener(
+        "beforeunload",
+        () => {
+
+            if (marketSocket) {
+
+                marketSocket.close();
+
+            }
+
+
+            clearInterval(
+                timerInterval
+            );
+
+        }
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

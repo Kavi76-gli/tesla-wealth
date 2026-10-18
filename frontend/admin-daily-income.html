@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Daily Income | Admin</title>
+
+    <link
+        rel="stylesheet"
+        href="css/admin-daily-income.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="admin-income-page">
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <header class="page-header">
+
+            <button
+                type="button"
+                class="back-btn"
+                onclick="history.back()"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </button>
+
+            <div class="header-content">
+
+                <span class="header-label">
+                    ADMIN PANEL
+                </span>
+
+                <h1>
+                    Daily Income
+                </h1>
+
+                <p>
+                    Manage and manually process daily investment income.
+                </p>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================
+             MAIN CARD
+        ====================================== -->
+
+        <section class="income-card">
+
+            <div class="income-icon">
+
+                <i class="fa-solid fa-coins"></i>
+
+            </div>
+
+
+            <div class="income-info">
+
+                <span class="card-label">
+                    DAILY INCOME PROCESSOR
+                </span>
+
+                <h2>
+                    Distribute Daily Income
+                </h2>
+
+                <p>
+                    Run the daily income processor for eligible active
+                    investments.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="distributeIncomeBtn"
+                class="distribute-btn"
+            >
+
+                <span class="btn-icon">
+
+                    <i class="fa-solid fa-bolt"></i>
+
+                </span>
+
+                <span>
+                    Distribute Income
+                </span>
+
+            </button>
+
+        </section>
+
+
+        <!-- =====================================
+             RESULT
+        ====================================== -->
+
+        <section
+            id="incomeResult"
+            class="result-card"
+            hidden
+        >
+
+            <div
+                id="resultIcon"
+                class="result-icon"
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+            </div>
+
+
+            <div class="result-content">
+
+                <span
+                    id="resultTitle"
+                    class="result-title"
+                >
+                    Completed
+                </span>
+
+                <p
+                    id="resultMessage"
+                >
+                    Daily income processing completed.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             STATISTICS
+        ====================================== -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-icon processed">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Processed
+                    </span>
+
+                    <strong id="processedCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon skipped">
+
+                    <i class="fa-solid fa-circle-minus"></i>
+
+                </div>
+
+                <div>
+
+                    <span>
+                        Skipped
+                    </span>
+
+                    <strong id="skippedCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             WARNING
+        ====================================== -->
+
+        <div class="warning-box">
+
+            <i class="fa-solid fa-triangle-exclamation"></i>
+
+            <div>
+
+                <strong>
+                    Admin Action
+                </strong>
+
+                <p>
+                    Only run this action when you intend to process
+                    the daily income. The backend should prevent
+                    duplicate processing where applicable.
+                </p>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script src="js/admin-daily-income.js"></script>
+
+</body>
+
+</html>

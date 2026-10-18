@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta
+        name="theme-color"
+        content="#ffffff"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="default"
+    >
+
+    <title>Bitcoin Investment</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #ffffff;
+            color: #111111;
+            overflow: hidden;
+        }
+
+        /* ==========================================
+           MAIN SPLASH
+        ========================================== */
+
+        .splash {
+            position: fixed;
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+
+            overflow: hidden;
+        }
+
+        /* ==========================================
+           SOFT BACKGROUND GLOW
+        ========================================== */
+
+        .glow {
+            position: absolute;
+
+            width: 320px;
+            height: 320px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0, 0, 0, 0.045) 0%,
+                    rgba(0, 0, 0, 0.018) 45%,
+                    transparent 72%
+                );
+
+            filter: blur(5px);
+
+            animation: glowPulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+
+            0% {
+                transform: scale(0.88);
+                opacity: 0.45;
+            }
+
+            50% {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.88);
+                opacity: 0.45;
+            }
+        }
+
+        /* ==========================================
+           LOGO
+        ========================================== */
+
+        .logo-wrapper {
+            position: relative;
+            z-index: 2;
+
+            width: 92px;
+            height: 92px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ffffff;
+
+            border-radius: 28px;
+
+            box-shadow:
+                0 18px 45px rgba(0, 0, 0, 0.08),
+                0 4px 12px rgba(0, 0, 0, 0.04);
+
+            animation:
+                logoAppear 0.8s cubic-bezier(.2,.8,.2,1) forwards,
+                logoFloat 2.4s ease-in-out 0.8s infinite;
+
+            opacity: 0;
+            transform: translateY(18px) scale(0.88);
+        }
+
+        @keyframes logoAppear {
+
+            0% {
+                opacity: 0;
+                transform: translateY(18px) scale(0.88);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes logoFloat {
+
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* ==========================================
+           BITCOIN SYMBOL
+        ========================================== */
+
+        .bitcoin-logo {
+
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #111111;
+            color: #ffffff;
+
+            font-size: 37px;
+            font-weight: 800;
+
+            line-height: 1;
+
+            box-shadow:
+                0 10px 24px rgba(0, 0, 0, 0.14);
+
+            position: relative;
+        }
+
+        .bitcoin-logo::before {
+            content: "";
+            position: absolute;
+
+            inset: -5px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        /* ==========================================
+           BRAND NAME
+        ========================================== */
+
+        .brand {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 27px;
+
+            text-align: center;
+
+            opacity: 0;
+
+            animation:
+                textAppear 0.8s ease 0.35s forwards;
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+
+            letter-spacing: 2.5px;
+
+            color: #111111;
+
+            line-height: 1.2;
+        }
+
+        .brand-subtitle {
+
+            margin-top: 9px;
+
+            font-size: 12px;
+            font-weight: 500;
+
+            letter-spacing: 1.8px;
+
+            color: #777777;
+
+            text-transform: uppercase;
+        }
+
+        @keyframes textAppear {
+
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==========================================
+           LOADING AREA
+        ========================================== */
+
+        .loading-wrapper {
+
+            position: absolute;
+
+            bottom: 54px;
+
+            width: 150px;
+
+            text-align: center;
+
+            z-index: 2;
+
+            opacity: 0;
+
+            animation:
+                loadingAppear 0.7s ease 0.8s forwards;
+        }
+
+        .loading-text {
+
+            font-size: 10px;
+
+            font-weight: 500;
+
+            letter-spacing: 1.5px;
+
+            color: #999999;
+
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+        }
+
+        .loading-track {
+
+            width: 100%;
+            height: 2px;
+
+            border-radius: 20px;
+
+            background: #eeeeee;
+
+            overflow: hidden;
+        }
+
+        .loading-bar {
+
+            width: 0%;
+            height: 100%;
+
+            background: #111111;
+
+            border-radius: 20px;
+
+            animation:
+                loadingProgress 2.2s
+                cubic-bezier(.4,0,.2,1)
+                forwards;
+        }
+
+        @keyframes loadingProgress {
+
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes loadingAppear {
+
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==========================================
+           SMALL SECURITY TEXT
+        ========================================== */
+
+        .secure-text {
+
+            position: absolute;
+
+            bottom: 22px;
+
+            font-size: 9px;
+
+            color: #b0b0b0;
+
+            letter-spacing: 0.7px;
+
+            z-index: 2;
+        }
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 480px) {
+
+            .logo-wrapper {
+                width: 86px;
+                height: 86px;
+
+                border-radius: 26px;
+            }
+
+            .bitcoin-logo {
+                width: 55px;
+                height: 55px;
+
+                font-size: 35px;
+            }
+
+            .brand-name {
+                font-size: 20px;
+                letter-spacing: 2.2px;
+            }
+
+            .brand-subtitle {
+                font-size: 10px;
+                letter-spacing: 1.5px;
+            }
+
+            .loading-wrapper {
+                bottom: 52px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <main class="splash">
+
+        <!-- Background glow -->
+        <div class="glow"></div>
+
+        <!-- Logo -->
+        <div class="logo-wrapper">
+
+            <div class="bitcoin-logo">
+                ₿
+            </div>
+
+        </div>
+
+        <!-- Brand -->
+        <div class="brand">
+
+            <div class="brand-name">
+                BITCOIN INVESTMENT
+            </div>
+
+            <div class="brand-subtitle">
+                Digital Investment Platform
+            </div>
+
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-wrapper">
+
+            <div class="loading-text">
+                Secure Access
+            </div>
+
+            <div class="loading-track">
+                <div class="loading-bar"></div>
+            </div>
+
+        </div>
+
+        <!-- Security text -->
+        <div class="secure-text">
+            Secure • Simple • Connected
+        </div>
+
+    </main>
+
+
+    <script>
+
+        // ==========================================
+        // BITCOIN INVESTMENT
+        // SMART SPLASH ROUTING
+        // ==========================================
+
+        const SPLASH_TIME = 2500;
+
+        setTimeout(() => {
+
+            // Registered mobile number saved after
+            // successful Firebase registration.
+            const registeredPhone =
+                localStorage.getItem("registered_phone") ||
+                localStorage.getItem("ki_phone") ||
+                localStorage.getItem("user_phone") ||
+                "";
+
+            // M-PIN setup status.
+            const mpinSet =
+                localStorage.getItem("mpin_set");
+
+            // ==========================================
+            // NO REGISTERED ACCOUNT
+            // ==========================================
+
+            if (!registeredPhone) {
+
+                window.location.replace("auth.html");
+
+                return;
+            }
+
+
+            // ==========================================
+            // ACCOUNT EXISTS
+            // BUT M-PIN HAS NOT BEEN SET
+            // ==========================================
+
+            if (mpinSet !== "true") {
+
+                window.location.replace("mpin-setup.html");
+
+                return;
+            }
+
+
+            // ==========================================
+            // ACCOUNT EXISTS
+            // M-PIN IS READY
+            // ==========================================
+
+            window.location.replace("m-pin.html");
+
+        }, SPLASH_TIME);
+
+    </script>
+
+</body>
+</html>
