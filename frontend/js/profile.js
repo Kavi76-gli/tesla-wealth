@@ -8,7 +8,7 @@
 // ======================================================
 
 const API_URL =
-    "https://bitcoin-m7kz.onrender.com/api";
+    "https://tesla-wealth.onrender.com/api";
 
 
 // ======================================================

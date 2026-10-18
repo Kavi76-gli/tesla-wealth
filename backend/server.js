@@ -70,7 +70,7 @@ const allowedOrigins = [
 
     "https://www.shakshiselkande.online",
 
-    "https://bitcoin-m7kz.onrender.com"
+    "https://tesla-wealth.onrender.com"
 
 ];
 

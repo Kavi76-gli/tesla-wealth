@@ -11,7 +11,7 @@
 // ============================================================
 
 const API_URL =
-    "https://bitcoin-m7kz.onrender.com/api/deposit";
+    "https://tesla-wealth.onrender.com/api/deposit";
 
 
 // ============================================================

@@ -57,7 +57,7 @@ const auth =
 // =====================================================
 
 const API_URL =
-    "https://bitcoin-m7kz.onrender.com/api/auth";
+    "https://tesla-wealth.onrender.com/api/auth";
 
 
 // =====================================================
