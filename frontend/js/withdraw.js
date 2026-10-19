@@ -13,7 +13,7 @@
 // ============================================================
 
 const API_BASE =
-    "http://localhost:5000/api";
+    "https://tesla-wealth.onrender.com/api";
 
 const WITHDRAW_API =
     `${API_BASE}/withdrawals`;
