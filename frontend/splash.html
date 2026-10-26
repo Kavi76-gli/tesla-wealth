@@ -1,37 +1,32 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
+    <meta name="theme-color" content="#07111f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <meta
-        name="theme-color"
-        content="#ffffff"
-    >
+    <title>Tesla Wealth</title>
 
-    <meta
-        name="apple-mobile-web-app-capable"
-        content="yes"
-    >
-
-    <meta
-        name="apple-mobile-web-app-status-bar-style"
-        content="default"
-    >
-
-    <title>Bitcoin Investment</title>
-
-    <!-- Google Font -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
 
     <style>
+        :root {
+            --background: #07111f;
+            --background-light: #0c1b30;
+            --blue: #3988ff;
+            --blue-light: #71b7ff;
+            --gold: #e8c778;
+            --white: #ffffff;
+            --muted: #9eafc5;
+        }
 
         * {
             margin: 0;
@@ -43,488 +38,488 @@
         html,
         body {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
+            overflow: hidden;
         }
 
         body {
             font-family: "Inter", sans-serif;
-            background: #ffffff;
-            color: #111111;
-            overflow: hidden;
+            color: var(--white);
+            background: var(--background);
         }
-
-        /* ==========================================
-           MAIN SPLASH
-        ========================================== */
 
         .splash {
             position: fixed;
             inset: 0;
-
-            width: 100%;
-            height: 100%;
-
+            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            isolation: isolate;
+            background:
+                radial-gradient(
+                    ellipse at 50% 40%,
+                    rgba(35, 101, 190, 0.20),
+                    transparent 43%
+                ),
+                linear-gradient(
+                    145deg,
+                    #07111f 0%,
+                    #0b1930 55%,
+                    #07111f 100%
+                );
+        }
 
-            background: #ffffff;
+        /* Decorative background lights */
 
+        .orb {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(75px);
+            opacity: 0.20;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb-blue {
+            top: 10%;
+            left: -160px;
+            background: #176bff;
+        }
+
+        .orb-gold {
+            right: -170px;
+            bottom: 8%;
+            background: #c89b42;
+            opacity: 0.12;
+        }
+
+        .grid {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.12;
+            pointer-events: none;
+            background-image:
+                linear-gradient(
+                    rgba(255, 255, 255, 0.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.035) 1px,
+                    transparent 1px
+                );
+            background-size: 38px 38px;
+            mask-image: linear-gradient(
+                to bottom,
+                transparent,
+                black 25%,
+                black 75%,
+                transparent
+            );
+        }
+
+        /* Brand composition */
+
+        .brand-container {
+            width: 100%;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transform: translateY(-12px);
+        }
+
+        .logo-shell {
+            position: relative;
+            width: 112px;
+            height: 112px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 30px;
+            border-radius: 34px;
+            border: 1px solid rgba(113, 183, 255, 0.32);
+            background: linear-gradient(
+                145deg,
+                rgba(27, 56, 94, 0.96),
+                rgba(9, 22, 40, 0.98)
+            );
+            box-shadow:
+                0 0 0 8px rgba(57, 136, 255, 0.035),
+                0 0 55px rgba(57, 136, 255, 0.17),
+                0 24px 65px rgba(0, 0, 0, 0.32);
+            opacity: 0;
+            animation: logoEnter 0.8s ease-out forwards;
+        }
+
+        .logo-shell::before {
+            content: "";
+            position: absolute;
+            inset: -9px;
+            border-radius: 40px;
+            border: 1px solid rgba(232, 199, 120, 0.16);
+        }
+
+        .logo-mark {
+            width: 72px;
+            height: 72px;
+            display: grid;
+            place-items: center;
+            border-radius: 23px;
+            color: var(--white);
+            font-size: 37px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(
+                145deg,
+                #3988ff,
+                #1752bd
+            );
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.24),
+                0 9px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .brand-name {
+            color: var(--white);
+            font-size: clamp(23px, 6vw, 30px);
+            font-weight: 800;
+            letter-spacing: 3.4px;
+            line-height: 1.25;
+            white-space: nowrap;
+            opacity: 0;
+            animation: textEnter 0.7s ease-out 0.25s forwards;
+        }
+
+        .brand-name span {
+            color: var(--gold);
+        }
+
+        .brand-subtitle {
+            margin-top: 13px;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: textEnter 0.7s ease-out 0.45s forwards;
+        }
+
+        .brand-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 26px;
+            opacity: 0;
+            animation: textEnter 0.7s ease-out 0.6s forwards;
+        }
+
+        .divider-line {
+            width: 29px;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(232, 199, 120, 0.75)
+            );
+        }
+
+        .divider-line:last-child {
+            transform: rotate(180deg);
+        }
+
+        .divider-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 12px rgba(232, 199, 120, 0.45);
+        }
+
+        /* Loading indicator */
+
+        .loading-wrapper {
+            position: absolute;
+            left: 50%;
+            bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+            width: min(220px, 68vw);
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0;
+            animation: textEnter 0.7s ease-out 0.65s forwards;
+        }
+
+        .loading-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .loading-label {
+            color: #9eafc5;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.7px;
+            text-transform: uppercase;
+        }
+
+        .loading-status {
+            color: var(--gold);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.7px;
+        }
+
+        .loading-track {
+            width: 100%;
+            height: 3px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.09);
             overflow: hidden;
         }
 
-        /* ==========================================
-           SOFT BACKGROUND GLOW
-        ========================================== */
+        .loading-bar {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(
+                90deg,
+                #2776f5,
+                #71b7ff,
+                #e8c778
+            );
+            box-shadow: 0 0 12px rgba(57, 136, 255, 0.5);
+            animation: loadProgress 2.3s ease-in-out forwards;
+        }
 
-        .glow {
+        .footer {
             position: absolute;
+            bottom: calc(23px + env(safe-area-inset-bottom, 0px));
+            left: 0;
+            width: 100%;
+            padding: 0 15px;
+            color: #6e819b;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-align: center;
+        }
 
-            width: 320px;
-            height: 320px;
-
+        .footer-dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            margin: 0 5px 1px;
             border-radius: 50%;
-
-            background:
-                radial-gradient(
-                    circle,
-                    rgba(0, 0, 0, 0.045) 0%,
-                    rgba(0, 0, 0, 0.018) 45%,
-                    transparent 72%
-                );
-
-            filter: blur(5px);
-
-            animation: glowPulse 2.5s ease-in-out infinite;
+            background: #55c99a;
         }
 
-        @keyframes glowPulse {
-
-            0% {
-                transform: scale(0.88);
-                opacity: 0.45;
-            }
-
-            50% {
-                transform: scale(1.08);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(0.88);
-                opacity: 0.45;
-            }
-        }
-
-        /* ==========================================
-           LOGO
-        ========================================== */
-
-        .logo-wrapper {
-            position: relative;
-            z-index: 2;
-
-            width: 92px;
-            height: 92px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #ffffff;
-
-            border-radius: 28px;
-
-            box-shadow:
-                0 18px 45px rgba(0, 0, 0, 0.08),
-                0 4px 12px rgba(0, 0, 0, 0.04);
-
-            animation:
-                logoAppear 0.8s cubic-bezier(.2,.8,.2,1) forwards,
-                logoFloat 2.4s ease-in-out 0.8s infinite;
-
-            opacity: 0;
-            transform: translateY(18px) scale(0.88);
-        }
-
-        @keyframes logoAppear {
-
-            0% {
+        @keyframes logoEnter {
+            from {
                 opacity: 0;
                 transform: translateY(18px) scale(0.88);
             }
-
-            100% {
+            to {
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
         }
 
-        @keyframes logoFloat {
-
-            0% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-5px);
-            }
-
-            100% {
-                transform: translateY(0);
-            }
-        }
-
-        /* ==========================================
-           BITCOIN SYMBOL
-        ========================================== */
-
-        .bitcoin-logo {
-
-            width: 58px;
-            height: 58px;
-
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #111111;
-            color: #ffffff;
-
-            font-size: 37px;
-            font-weight: 800;
-
-            line-height: 1;
-
-            box-shadow:
-                0 10px 24px rgba(0, 0, 0, 0.14);
-
-            position: relative;
-        }
-
-        .bitcoin-logo::before {
-            content: "";
-            position: absolute;
-
-            inset: -5px;
-
-            border-radius: 50%;
-
-            border: 1px solid rgba(0, 0, 0, 0.08);
-        }
-
-        /* ==========================================
-           BRAND NAME
-        ========================================== */
-
-        .brand {
-            position: relative;
-            z-index: 2;
-
-            margin-top: 27px;
-
-            text-align: center;
-
-            opacity: 0;
-
-            animation:
-                textAppear 0.8s ease 0.35s forwards;
-        }
-
-        .brand-name {
-            font-size: 22px;
-            font-weight: 800;
-
-            letter-spacing: 2.5px;
-
-            color: #111111;
-
-            line-height: 1.2;
-        }
-
-        .brand-subtitle {
-
-            margin-top: 9px;
-
-            font-size: 12px;
-            font-weight: 500;
-
-            letter-spacing: 1.8px;
-
-            color: #777777;
-
-            text-transform: uppercase;
-        }
-
-        @keyframes textAppear {
-
+        @keyframes textEnter {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                translate: 0 10px;
             }
-
             to {
                 opacity: 1;
-                transform: translateY(0);
+                translate: 0 0;
             }
         }
 
-        /* ==========================================
-           LOADING AREA
-        ========================================== */
-
-        .loading-wrapper {
-
-            position: absolute;
-
-            bottom: 54px;
-
-            width: 150px;
-
-            text-align: center;
-
-            z-index: 2;
-
-            opacity: 0;
-
-            animation:
-                loadingAppear 0.7s ease 0.8s forwards;
-        }
-
-        .loading-text {
-
-            font-size: 10px;
-
-            font-weight: 500;
-
-            letter-spacing: 1.5px;
-
-            color: #999999;
-
-            text-transform: uppercase;
-
-            margin-bottom: 10px;
-        }
-
-        .loading-track {
-
-            width: 100%;
-            height: 2px;
-
-            border-radius: 20px;
-
-            background: #eeeeee;
-
-            overflow: hidden;
-        }
-
-        .loading-bar {
-
-            width: 0%;
-            height: 100%;
-
-            background: #111111;
-
-            border-radius: 20px;
-
-            animation:
-                loadingProgress 2.2s
-                cubic-bezier(.4,0,.2,1)
-                forwards;
-        }
-
-        @keyframes loadingProgress {
-
-            0% {
-                width: 0%;
+        @keyframes loadProgress {
+            from {
+                width: 0;
             }
-
-            100% {
+            to {
                 width: 100%;
             }
         }
 
-        @keyframes loadingAppear {
-
-            from {
-                opacity: 0;
-                transform: translateY(8px);
+        @media (max-width: 380px) {
+            .logo-shell {
+                width: 96px;
+                height: 96px;
+                border-radius: 30px;
+                margin-bottom: 26px;
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ==========================================
-           SMALL SECURITY TEXT
-        ========================================== */
-
-        .secure-text {
-
-            position: absolute;
-
-            bottom: 22px;
-
-            font-size: 9px;
-
-            color: #b0b0b0;
-
-            letter-spacing: 0.7px;
-
-            z-index: 2;
-        }
-
-        /* ==========================================
-           MOBILE
-        ========================================== */
-
-        @media (max-width: 480px) {
-
-            .logo-wrapper {
-                width: 86px;
-                height: 86px;
-
-                border-radius: 26px;
-            }
-
-            .bitcoin-logo {
-                width: 55px;
-                height: 55px;
-
-                font-size: 35px;
+            .logo-mark {
+                width: 63px;
+                height: 63px;
+                border-radius: 20px;
+                font-size: 33px;
             }
 
             .brand-name {
-                font-size: 20px;
                 letter-spacing: 2.2px;
             }
 
             .brand-subtitle {
-                font-size: 10px;
-                letter-spacing: 1.5px;
+                letter-spacing: 2px;
             }
 
             .loading-wrapper {
-                bottom: 52px;
+                bottom: calc(58px + env(safe-area-inset-bottom, 0px));
             }
         }
 
+        @media (max-height: 500px) and (orientation: landscape) {
+            .brand-container {
+                transform: none;
+            }
+
+            .logo-shell {
+                width: 65px;
+                height: 65px;
+                margin-bottom: 12px;
+                border-radius: 21px;
+            }
+
+            .logo-mark {
+                width: 45px;
+                height: 45px;
+                border-radius: 15px;
+                font-size: 25px;
+            }
+
+            .brand-name {
+                font-size: 20px;
+            }
+
+            .brand-subtitle {
+                margin-top: 6px;
+            }
+
+            .brand-divider {
+                margin-top: 12px;
+            }
+
+            .loading-wrapper {
+                bottom: 34px;
+            }
+
+            .footer {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
+        }
     </style>
 </head>
 
 <body>
-
     <main class="splash">
+        <div class="grid" aria-hidden="true"></div>
+        <div class="orb orb-blue" aria-hidden="true"></div>
+        <div class="orb orb-gold" aria-hidden="true"></div>
 
-        <!-- Background glow -->
-        <div class="glow"></div>
-
-        <!-- Logo -->
-        <div class="logo-wrapper">
-
-            <div class="bitcoin-logo">
-                ₿
+        <section class="brand-container" aria-label="Tesla Wealth">
+            <div class="logo-shell" aria-hidden="true">
+                <div class="logo-mark">TW</div>
             </div>
 
-        </div>
+            <h1 class="brand-name">
+                TESLA <span>WEALTH</span>
+            </h1>
 
-        <!-- Brand -->
-        <div class="brand">
+            <p class="brand-subtitle">
+                Your Wealth. Your Future.
+            </p>
 
-            <div class="brand-name">
-                BITCOIN INVESTMENT
+            <div class="brand-divider" aria-hidden="true">
+                <span class="divider-line"></span>
+                <span class="divider-dot"></span>
+                <span class="divider-line"></span>
             </div>
+        </section>
 
-            <div class="brand-subtitle">
-                Digital Investment Platform
-            </div>
-
-        </div>
-
-        <!-- Loading -->
-        <div class="loading-wrapper">
-
-            <div class="loading-text">
-                Secure Access
+        <section class="loading-wrapper" aria-label="Loading application">
+            <div class="loading-row">
+                <span class="loading-label">Initializing</span>
+                <span class="loading-status">SECURE ACCESS</span>
             </div>
 
             <div class="loading-track">
                 <div class="loading-bar"></div>
             </div>
+        </section>
 
-        </div>
-
-        <!-- Security text -->
-        <div class="secure-text">
-            Secure • Simple • Connected
-        </div>
-
+        <footer class="footer">
+            <span class="footer-dot"></span>
+            YOUR ACCOUNT SECURITY MATTERS
+        </footer>
     </main>
 
-
     <script>
+        (() => {
+            "use strict";
 
-        // ==========================================
-        // BITCOIN INVESTMENT
-        // SMART SPLASH ROUTING
-        // ==========================================
+            const SPLASH_TIME = 2500;
+            let hasNavigated = false;
 
-        const SPLASH_TIME = 2500;
+            function navigateToNextPage() {
+                if (hasNavigated) return;
+                hasNavigated = true;
 
-        setTimeout(() => {
+                /*
+                 * Preserve the existing Tesla Wealth onboarding flow.
+                 *
+                 * This is a client-side convenience check only.
+                 * Authentication and account authorization must still
+                 * be verified by the backend.
+                 */
 
-            // Registered mobile number saved after
-            // successful Firebase registration.
-            const registeredPhone =
-                localStorage.getItem("registered_phone") ||
-                localStorage.getItem("ki_phone") ||
-                localStorage.getItem("user_phone") ||
-                "";
+                const registeredPhone =
+                    localStorage.getItem("registered_phone") ||
+                    localStorage.getItem("ki_phone") ||
+                    localStorage.getItem("user_phone") ||
+                    "";
 
-            // M-PIN setup status.
-            const mpinSet =
-                localStorage.getItem("mpin_set");
+                const mpinSet = localStorage.getItem("mpin_set");
 
-            // ==========================================
-            // NO REGISTERED ACCOUNT
-            // ==========================================
+                if (!registeredPhone) {
+                    window.location.replace("auth.html");
+                    return;
+                }
 
-            if (!registeredPhone) {
+                if (mpinSet !== "true") {
+                    window.location.replace("mpin-setup.html");
+                    return;
+                }
 
-                window.location.replace("auth.html");
-
-                return;
+                window.location.replace("m-pin.html");
             }
 
-
-            // ==========================================
-            // ACCOUNT EXISTS
-            // BUT M-PIN HAS NOT BEEN SET
-            // ==========================================
-
-            if (mpinSet !== "true") {
-
-                window.location.replace("mpin-setup.html");
-
-                return;
-            }
-
-
-            // ==========================================
-            // ACCOUNT EXISTS
-            // M-PIN IS READY
-            // ==========================================
-
-            window.location.replace("m-pin.html");
-
-        }, SPLASH_TIME);
-
+            window.setTimeout(navigateToNextPage, SPLASH_TIME);
+        })();
     </script>
-
 </body>
 </html>
+

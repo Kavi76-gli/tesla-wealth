@@ -207,7 +207,15 @@ const UserSchema =
 
         },
 
+// ======================================================
+// DEPOSIT FUNDS AVAILABLE FOR INVESTMENT ONLY
+// ======================================================
 
+investableDepositBalance: {
+    type: Number,
+    default: 0,
+    min: 0
+},
         earnings: {
 
             type: Number,
@@ -238,7 +246,42 @@ const UserSchema =
 
         },
 
+        // ==============================================
+        // ADMIN-CONTROLLED INVESTMENT SETTINGS
+        // ==============================================
 
+        // Controls whether this user may request new investments.
+        investmentPurchaseEnabled: {
+            type: Boolean,
+            default: true
+        },
+
+        // Automatic processing or manual admin approval.
+        investmentApprovalMode: {
+            type: String,
+            enum: ["automatic", "manual"],
+            default: "automatic"
+        },
+
+        // Maximum number of simultaneously running investments.
+        // Zero means no active investments are permitted.
+        maxActiveInvestments: {
+            type: Number,
+            default: 10,
+            min: 0,
+            validate: {
+                validator: Number.isInteger,
+                message: "Maximum active investments must be a whole number."
+            }
+        },
+
+        // Optional explanation shown when purchases are restricted.
+        investmentPurchaseNote: {
+            type: String,
+            default: "",
+            trim: true,
+            maxlength: 500
+        },
         // ==============================================
         // INVESTMENT
         // ==============================================

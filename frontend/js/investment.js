@@ -1,2613 +1,1608 @@
-// =====================================================
-// BITCOIN INVESTMENT PAGE
-// =====================================================
+"use strict";
 
-// =====================================================
-// API
-// =====================================================
+/* ============================================================
+   TESLA WEALTH — INVESTMENT PAGE
+   File: frontend/js/investment.js
 
-const API_URL =
-    "https://tesla-wealth.onrender.com/api";
+   API ENDPOINTS:
+   GET  /investment/dashboard
+   GET  /investment/plans
+   POST /investment/purchase
+   GET  /investment/my
+
+   FINANCIAL RULES:
+   1. balance:
+      Total wallet balance.
+
+   2. investableDepositBalance:
+      Remaining eligible deposit funds available for investment.
+
+   3. withdrawableEarnings:
+      Funds currently eligible for withdrawal.
+
+   SECURITY:
+   - Backend remains authoritative for all financial operations.
+   - Never trust frontend balances to authorize transactions.
+   - Require an authenticated session for investment requests.
+============================================================ */
 
 
-// =====================================================
-// TOKEN
-// =====================================================
+/* ============================================================
+   API CONFIGURATION
+============================================================ */
 
-const token =
-    localStorage.getItem("ki_token") ||
-    localStorage.getItem("token");
+// Local development uses localhost.
+// Other hosts use the deployed Tesla Wealth API.
+
+const IS_LOCAL_HOST = [
+    "localhost",
+    "127.0.0.1"
+].includes(window.location.hostname);
+
+const API_BASE = IS_LOCAL_HOST
+    ? "http://localhost:5000/api"
+    : "https://tesla-wealth.onrender.com/api";
 
 
-// =====================================================
-// LOGIN CHECK
-// =====================================================
+/* ============================================================
+   API ROUTES
+============================================================ */
 
-if (!token) {
+const API = Object.freeze({
+    dashboard: "/investment/dashboard",
+    plans: "/investment/plans",
+    purchase: "/investment/purchase",
+    investments: "/investment/my"
+});
 
-    window.location.href =
-        "auth.html";
 
+/* ============================================================
+   FALLBACK IMAGE
+============================================================ */
+
+const FALLBACK_IMAGE =
+    "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=500&q=80";
+
+
+/* ============================================================
+   APPLICATION STATE
+============================================================ */
+
+const state = {
+    dashboard: null,
+    plans: [],
+    investments: [],
+    selectedPlan: null,
+
+    loadingPurchase: false,
+    sessionExpired: false
+};
+
+
+/* ============================================================
+   DOM HELPERS
+============================================================ */
+
+function getElement(id) {
+    return document.getElementById(id);
 }
 
 
-// =====================================================
-// GLOBAL DATA
-// =====================================================
+function setText(id, value) {
+    const element = getElement(id);
 
-let plans = [];
+    if (!element) return;
 
-let selectedPlan = null;
-
-let selectedCategory = "normal";
-
-let currentUser = {};
-
-let currentDashboard = {};
+    element.textContent =
+        value === null || value === undefined
+            ? ""
+            : String(value);
+}
 
 
-// IMPORTANT:
-// Keep the current investments globally available
-// so countdowns can read the backend data.
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
 
-window.currentInvestments = [];
+        return entities[character];
+    });
+}
 
 
-// =====================================================
-// DOM ELEMENTS
-// =====================================================
+function numeric(value, fallback = 0) {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return fallback;
+    }
 
-const plansContainer =
-    document.getElementById(
-        "plansContainer"
+    const number = Number(value);
+
+    return Number.isFinite(number)
+        ? number
+        : fallback;
+}
+
+
+function formatMoney(value) {
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(numeric(value));
+}
+
+
+function formatDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "—";
+    }
+
+    return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+
+/* ============================================================
+   AUTHENTICATION
+============================================================ */
+
+function getToken() {
+    return (
+        localStorage.getItem("ki_token") ||
+        localStorage.getItem("token") ||
+        ""
     );
-
-const myInvestments =
-    document.getElementById(
-        "myInvestments"
-    );
-
-const purchaseModal =
-    document.getElementById(
-        "purchaseModal"
-    );
+}
 
 
-// =====================================================
-// API FETCH
-// =====================================================
+function redirectToLogin() {
+    if (state.sessionExpired) return;
 
-async function apiFetch(
-    url,
-    options = {}
-) {
+    state.sessionExpired = true;
+
+    localStorage.removeItem("ki_token");
+    localStorage.removeItem("token");
+
+    window.location.href = "auth.html";
+}
+
+
+function requireAuthToken() {
+    const token = getToken().trim();
+
+    if (!token) {
+        redirectToLogin();
+        return null;
+    }
+
+    return token;
+}
+
+
+/* ============================================================
+   NOTIFICATIONS
+============================================================ */
+
+function showMessage(message, type = "info") {
+    const region = getElement("toastRegion");
+
+    if (!region) {
+        console.log(`[${type.toUpperCase()}] ${message}`);
+        return;
+    }
+
+    const toast = document.createElement("div");
+
+    toast.className = `toast ${type}`;
+    toast.setAttribute("role", "status");
+    toast.textContent = String(message);
+
+    region.appendChild(toast);
+
+    window.setTimeout(() => {
+        toast.remove();
+    }, 4500);
+}
+
+
+function showModalError(message) {
+    const element = getElement("modalError");
+
+    if (!element) {
+        showMessage(message, "error");
+        return;
+    }
+
+    element.textContent = String(message);
+    element.classList.remove("hidden");
+}
+
+
+function clearModalError() {
+    const element = getElement("modalError");
+
+    if (!element) return;
+
+    element.textContent = "";
+    element.classList.add("hidden");
+}
+
+
+/* ============================================================
+   API REQUEST HELPER
+============================================================ */
+
+async function apiRequest(path, options = {}) {
+    if (state.sessionExpired) {
+        throw new Error(
+            "Your session has expired. Please log in again."
+        );
+    }
+
+    const token = getToken();
+
+    if (!token) {
+        redirectToLogin();
+
+        throw new Error("Please log in to continue.");
+    }
+
+    const headers = {
+        Accept: "application/json",
+        ...(options.headers || {})
+    };
+
+    headers.Authorization = `Bearer ${token}`;
+
+    if (options.body !== undefined) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    let response;
 
     try {
+        response = await fetch(`${API_BASE}${path}`, {
+            ...options,
+            headers
+        });
+    } catch (error) {
+        throw new Error(
+            "Unable to connect to Tesla Wealth. " +
+            "Check that the backend is running and try again."
+        );
+    }
 
-        const response =
-            await fetch(
-                API_URL + url,
-                {
+    if (response.status === 401) {
+        redirectToLogin();
 
-                    ...options,
+        throw new Error(
+            "Your session has expired. Please log in again."
+        );
+    }
 
-                    headers: {
+    let result;
 
-                        "Content-Type":
-                            "application/json",
+    try {
+        result = await response.json();
+    } catch {
+        result = {};
+    }
 
-                        "Authorization":
-                            `Bearer ${token}`,
+    if (!response.ok) {
+        throw new Error(
+            result.message ||
+            result.error ||
+            `Request failed with status ${response.status}.`
+        );
+    }
 
-                        ...(options.headers || {})
+    if (result && result.success === false) {
+        throw new Error(
+            result.message ||
+            "The request could not be completed."
+        );
+    }
 
-                    }
-
-                }
-            );
+    return result;
+}
 
 
-        // =================================================
-        // SESSION EXPIRED
-        // =================================================
+/* ============================================================
+   RESPONSE HELPERS
+============================================================ */
+
+function unwrapObject(result, possibleKeys = []) {
+    if (!result || typeof result !== "object") {
+        return {};
+    }
+
+    for (const key of possibleKeys) {
+        const value = result[key];
 
         if (
-            response.status === 401
+            value &&
+            typeof value === "object" &&
+            !Array.isArray(value)
         ) {
-
-            localStorage.removeItem(
-                "ki_token"
-            );
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            window.location.href =
-                "auth.html";
-
-            return null;
-
+            return value;
         }
-
-
-        const data =
-            await response
-                .json()
-                .catch(
-                    () => ({})
-                );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                data.msg ||
-                "Request failed."
-            );
-
-        }
-
-
-        return data;
-
-
-    } catch (error) {
-
-        console.error(
-            "API ERROR:",
-            error
-        );
-
-        throw error;
-
     }
 
+    return result;
 }
 
 
-// =====================================================
-// MONEY FORMAT
-// =====================================================
+function unwrapArray(result, possibleKeys = []) {
+    if (Array.isArray(result)) {
+        return result;
+    }
 
-function money(value) {
+    if (!result || typeof result !== "object") {
+        return [];
+    }
 
-    const amount =
-        Number(value || 0);
+    for (const key of possibleKeys) {
+        if (Array.isArray(result[key])) {
+            return result[key];
+        }
+    }
 
-
-    return "₹" +
-        amount.toLocaleString(
-            "en-IN",
-            {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }
-        );
-
+    return [];
 }
 
 
-// =====================================================
-// ESCAPE HTML
-// =====================================================
+/* ============================================================
+   PLAN HELPERS
+============================================================ */
 
-function escapeHtml(value) {
-
+function getPlanId(plan) {
     return String(
-        value ?? ""
-    )
-        .replace(
-            /[&<>"']/g,
-            character => {
-
-                const map = {
-
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    '"': "&quot;",
-                    "'": "&#039;"
-
-                };
-
-                return map[
-                    character
-                ];
-
-            }
-        );
-
-}
-
-
-// =====================================================
-// SET TEXT
-// =====================================================
-
-function setText(
-    id,
-    value
-) {
-
-    const element =
-        document.getElementById(id);
-
-
-    if (element) {
-
-        element.textContent =
-            value;
-
-    }
-
-}
-
-
-// =====================================================
-// GET PLAN IMAGE
-// =====================================================
-
-function getPlanImage(
-    plan
-) {
-
-    return (
-        plan.image ||
-        plan.imageUrl ||
-        "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?auto=format&fit=crop&w=900&q=80"
+        plan?._id ||
+        plan?.id ||
+        plan?.planId ||
+        ""
     );
-
 }
 
 
-// =====================================================
-// LOAD DASHBOARD
-// =====================================================
-
-async function loadDashboard() {
-
-    try {
-
-        const data =
-            await apiFetch(
-                "/investment/dashboard"
-            );
-
-
-        if (!data) {
-
-            return;
-
-        }
-
-
-        currentDashboard =
-            data.dashboard ||
-            data.data?.dashboard ||
-            data.data ||
-            {};
-
-
-        currentUser =
-            data.user ||
-            data.data?.user ||
-            currentUser ||
-            {};
-
-
-        renderDashboard();
-
-
-    } catch (error) {
-
-        console.error(
-            "DASHBOARD:",
-            error.message
-        );
-
-    }
-
+function getPlanName(plan) {
+    return String(
+        plan?.name ||
+        plan?.planName ||
+        plan?.title ||
+        "Investment Plan"
+    );
 }
 
 
-// =====================================================
-// RENDER DASHBOARD
-// =====================================================
-
-function renderDashboard() {
-
-    const dashboard =
-        currentDashboard || {};
-
-
-    const user =
-        currentUser || {};
-
-
-    // =================================================
-    // WALLET
-    // =================================================
-
-    const wallet =
-        dashboard.wallet ??
-        dashboard.balance ??
-        user.wallet ??
-        user.balance ??
-        0;
-
-
-    // =================================================
-    // ACTIVE PLANS
-    // =================================================
-
-    const activePlans =
-        dashboard.activePlans ??
-        dashboard.activeInvestments ??
-        dashboard.activePlansCount ??
-        0;
-
-
-    // =================================================
-    // DAILY INCOME
-    // =================================================
-
-    const dailyIncome =
-        dashboard.dailyIncome ??
-        dashboard.dailyYield ??
-        dashboard.dailyEarning ??
-        0;
-
-
-    // =================================================
-    // TOTAL INVESTMENT
-    // =================================================
-
-    const totalInvestment =
-        dashboard.totalInvestment ??
-        dashboard.totalInvested ??
-        dashboard.investedAmount ??
-        0;
-
-
-    // =================================================
-    // REAL TOTAL EARNED
-    // =================================================
-
-    const totalEarned =
-        dashboard.totalEarned ??
-        dashboard.totalEarning ??
-        dashboard.earnings ??
-        dashboard.totalIncome ??
-        0;
-
-
-    setText(
-        "walletBalance",
-        money(wallet)
+function getPlanPrice(plan) {
+    return numeric(
+        plan?.price ??
+        plan?.amount ??
+        plan?.investment ??
+        plan?.minInvestment,
+        NaN
     );
-
-
-    setText(
-        "activePlans",
-        activePlans
-    );
-
-
-    setText(
-        "dailyIncome",
-        money(dailyIncome)
-    );
-
-
-    setText(
-        "totalInvestment",
-        money(totalInvestment)
-    );
-
-
-    setText(
-        "totalEarned",
-        money(totalEarned)
-    );
-
 }
 
 
-
-// =====================================================
-// LOAD ALL PLANS
-// =====================================================
-
-let plansRequestId = 0;
-
-async function loadPlans() {
-
-    if (!plansContainer) {
-        console.error("plansContainer not found.");
-        return;
-    }
-
-    const requestId = ++plansRequestId;
-
-
-    // =================================================
-    // SHOW LOADING
-    // =================================================
-
-    plansContainer.innerHTML = `
-        <div class="loading-card">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-
-            <span>
-                Loading investment options...
-            </span>
-        </div>
-    `;
-
-
-    try {
-
-        console.log("Loading all investment plans...");
-
-
-        // =================================================
-        // API REQUEST
-        // =================================================
-
-        const data = await apiFetch("/plans");
-
-        console.log("Plans API response:", data);
-
-
-        // =================================================
-        // PREVENT OLD REQUEST FROM OVERWRITING NEW DATA
-        // =================================================
-
-        if (requestId !== plansRequestId) {
-            return;
-        }
-
-
-        // =================================================
-        // CHECK RESPONSE
-        // =================================================
-
-        if (!data) {
-
-            plans = [];
-
-            renderNoPlans();
-
-            return;
-        }
-
-
-        // =================================================
-        // SUPPORT DIFFERENT API RESPONSE STRUCTURES
-        // =================================================
-
-        let receivedPlans = [];
-
-
-        // Direct array
-        if (Array.isArray(data)) {
-
-            receivedPlans = data;
-
-        }
-
-
-        // { plans: [] }
-        else if (Array.isArray(data.plans)) {
-
-            receivedPlans = data.plans;
-
-        }
-
-
-        // { data: { plans: [] } }
-        else if (
-            data.data &&
-            Array.isArray(data.data.plans)
-        ) {
-
-            receivedPlans = data.data.plans;
-
-        }
-
-
-        // { data: [] }
-        else if (
-            data.data &&
-            Array.isArray(data.data)
-        ) {
-
-            receivedPlans = data.data;
-
-        }
-
-
-        // =================================================
-        // SAVE ALL PLANS
-        // =================================================
-
-        plans = receivedPlans;
-
-
-        console.log(
-            "All plans loaded:",
-            plans
-        );
-
-        console.log(
-            "Total plans:",
-            plans.length
-        );
-
-
-        // =================================================
-        // NO PLANS
-        // =================================================
-
-        if (plans.length === 0) {
-
-            renderNoPlans();
-
-            return;
-        }
-
-
-        // =================================================
-        // SORT PLANS BY INVESTMENT
-        // LOWEST → HIGHEST
-        // =================================================
-
-        plans.sort((a, b) => {
-
-            const investmentA = Number(
-                a?.price ??
-                a?.amount ??
-                a?.investment ??
-                0
-            );
-
-
-            const investmentB = Number(
-                b?.price ??
-                b?.amount ??
-                b?.investment ??
-                0
-            );
-
-
-            return investmentA - investmentB;
-
-        });
-
-
-        // =================================================
-        // DEBUG SORTED PLANS
-        // =================================================
-
-        console.log(
-            "Plans sorted by investment:"
-        );
-
-
-        plans.forEach((plan, index) => {
-
-            const investment = Number(
-                plan?.price ??
-                plan?.amount ??
-                plan?.investment ??
-                0
-            );
-
-
-            console.log(
-                `${index + 1}. ${plan?.name || "Plan"} - ₹${investment}`
-            );
-
-        });
-
-
-        // =================================================
-        // RENDER ALL PLANS
-        // =================================================
-
-        renderPlans(plans);
-
-
-    } catch (error) {
-
-        // =================================================
-        // PLAN LOAD ERROR
-        // =================================================
-
-        console.error(
-            "PLANS LOAD ERROR:",
-            error
-        );
-
-
-        // =================================================
-        // PREVENT OLD REQUEST FROM SHOWING ERROR
-        // =================================================
-
-        if (requestId !== plansRequestId) {
-            return;
-        }
-
-
-        plans = [];
-
-
-        // =================================================
-        // ERROR MESSAGE
-        // =================================================
-
-        plansContainer.innerHTML = `
-
-            <div class="loading-card">
-
-                <i class="fa-solid fa-circle-exclamation"></i>
-
-                <span>
-                    ${escapeHtml(
-                        error?.message ||
-                        "Unable to load investment plans."
-                    )}
-                </span>
-
-            </div>
-
-        `;
-
-    }
-
+function getPlanDailyIncome(plan) {
+    return numeric(
+        plan?.dailyIncome ??
+        plan?.dailyEarning ??
+        plan?.dailyReturn ??
+        plan?.dailyProfit,
+        0
+    );
 }
 
 
-
-// =====================================================
-// NO PLANS MESSAGE
-// =====================================================
-
-function renderNoPlans() {
-
-    if (!plansContainer) {
-        return;
-    }
-
-
-    plansContainer.innerHTML = `
-
-        <div class="loading-card">
-
-            <i class="fa-solid fa-box-open"></i>
-
-            <span>
-                No investment plans are currently available.
-            </span>
-
-        </div>
-
-    `;
-
+function getPlanDuration(plan) {
+    return numeric(
+        plan?.duration ??
+        plan?.durationDays ??
+        plan?.days,
+        0
+    );
 }
 
 
-
-// =====================================================
-// RENDER ALL PLANS
-// =====================================================
-
-function renderPlans(planList) {
-
-    if (!plansContainer) {
-        return;
-    }
-
-
-    // =================================================
-    // CHECK PLAN LIST
-    // =================================================
+function getPlanTotalIncome(plan) {
+    const configuredTotal =
+        plan?.totalIncome ??
+        plan?.totalReturn ??
+        plan?.totalEarning;
 
     if (
-        !Array.isArray(planList) ||
-        planList.length === 0
+        configuredTotal !== undefined &&
+        configuredTotal !== null
     ) {
-
-        renderNoPlans();
-
-        return;
+        return numeric(configuredTotal, 0);
     }
 
-
-    // =================================================
-    // RENDER EVERY PLAN
-    // =================================================
-
-    plansContainer.innerHTML = planList
-        .map((plan, index) => {
-
-
-            // =========================================
-            // PRICE / INVESTMENT
-            // =========================================
-
-            const price = Number(
-                plan?.price ??
-                plan?.amount ??
-                plan?.investment ??
-                0
-            );
-
-
-            // =========================================
-            // DAILY INCOME
-            // =========================================
-
-            const daily = Number(
-                plan?.dailyIncome ??
-                plan?.dailyYield ??
-                plan?.dailyEarning ??
-                0
-            );
-
-
-            // =========================================
-            // DURATION
-            // =========================================
-
-            const days = Number(
-                plan?.days ??
-                plan?.duration ??
-                0
-            );
-
-
-            // =========================================
-            // TOTAL INCOME
-            // =========================================
-
-            const backendTotal = Number(
-                plan?.totalIncome ??
-                plan?.totalEarning ??
-                0
-            );
-
-
-            const total =
-                backendTotal > 0
-                    ? backendTotal
-                    : daily * days;
-
-
-            // =========================================
-            // PLAN NAME
-            // =========================================
-
-            const name = String(
-                plan?.name ||
-                "Bitcoin Investment"
-            );
-
-
-            // =========================================
-            // PLAN DESCRIPTION
-            // =========================================
-
-            const description = String(
-                plan?.description ||
-                "Bitcoin investment option."
-            );
-
-
-            // =========================================
-            // PLAN IMAGE
-            // =========================================
-
-            const image = getPlanImage(plan);
-
-
-            // =========================================
-            // RETURN PERCENTAGE
-            // =========================================
-
-            const returnPercent =
-                price > 0
-                    ? (
-                        (
-                            (total - price) /
-                            price
-                        ) * 100
-                    ).toFixed(1)
-                    : "0.0";
-
-
-            // =========================================
-            // PLAN ID
-            // =========================================
-
-            const planId = String(
-                plan?._id || ""
-            );
-
-
-            // =========================================
-            // PLAN CARD
-            // =========================================
-
-            return `
-
-                <article
-                    class="plan-card"
-                    style="
-                        animation-delay:${index * 0.07}s;
-                    "
-                >
-
-                    <!-- PLAN IMAGE -->
-
-                    <div class="plan-image">
-
-                        <img
-                            src="${escapeHtml(image)}"
-                            alt="${escapeHtml(name)}"
-                            loading="lazy"
-
-                            onerror="
-                                this.onerror=null;
-                                this.style.display='none';
-                            "
-                        >
-
-                    </div>
-
-
-                    <!-- PLAN CONTENT -->
-
-                    <div class="plan-content">
-
-
-                        <!-- PLAN NAME -->
-
-                        <h3>
-                            ${escapeHtml(name)}
-                        </h3>
-
-
-                        <!-- PLAN DESCRIPTION -->
-
-                        <p class="plan-description">
-                            ${escapeHtml(description)}
-                        </p>
-
-
-                        <!-- PLAN DETAILS -->
-
-                        <div class="plan-details">
-
-
-                            <!-- INVESTMENT -->
-
-                            <div
-                                class="
-                                    plan-detail
-                                    investment-highlight
-                                "
-                            >
-
-                                <span>
-                                    Investment
-                                </span>
-
-                                <strong>
-                                    ${money(price)}
-                                </strong>
-
-                            </div>
-
-
-                            <!-- DAILY INCOME -->
-
-                            <div class="plan-detail">
-
-                                <span>
-                                    Daily Income
-                                </span>
-
-                                <strong>
-                                    ${money(daily)}
-                                </strong>
-
-                            </div>
-
-
-                            <!-- DURATION -->
-
-                            <div class="plan-detail">
-
-                                <span>
-                                    Duration
-                                </span>
-
-                                <strong>
-                                    ${days} Days
-                                </strong>
-
-                            </div>
-
-
-                            <!-- TOTAL INCOME -->
-
-                            <div
-                                class="
-                                    plan-detail
-                                    total-income-detail
-                                "
-                            >
-
-                                <span>
-                                    Total Income
-                                </span>
-
-                                <strong>
-                                    ${money(total)}
-                                </strong>
-
-                            </div>
-
-
-                            <!-- RETURN -->
-
-                            <div
-                                class="
-                                    plan-detail
-                                    return-detail
-                                "
-                            >
-
-                                <span>
-                                    Return
-                                </span>
-
-                                <strong>
-                                    +${returnPercent}%
-                                </strong>
-
-                            </div>
-
-
-                        </div>
-
-
-                        <!-- INVEST BUTTON -->
-
-                        <button
-                            class="plan-button"
-                            type="button"
-                            ${!planId ? "disabled" : ""}
-                            onclick="
-                                openPurchaseModal(
-                                    '${escapeHtml(planId)}'
-                                )
-                            "
-                        >
-
-                            <i
-                                class="
-                                    fa-brands
-                                    fa-bitcoin
-                                "
-                            ></i>
-
-                            Invest Now
-
-                        </button>
-
-
-                    </div>
-
-                </article>
-
-            `;
-
-        })
-        .join("");
-
+    return getPlanDailyIncome(plan) * getPlanDuration(plan);
 }
 
-// =====================================================
-// OPEN PURCHASE MODAL
-// =====================================================
 
-function openPurchaseModal(
-    planId
-) {
+function getPlanDescription(plan) {
+    return String(
+        plan?.description ||
+        plan?.details ||
+        "Review the plan terms before making an investment."
+    );
+}
 
-    if (!purchaseModal) {
 
-        return;
+function getPlanImage(plan) {
+    const candidate = String(
+        plan?.image ||
+        plan?.imageUrl ||
+        plan?.photo ||
+        ""
+    ).trim();
 
+    if (!candidate) {
+        return FALLBACK_IMAGE;
     }
 
+    try {
+        const url = new URL(candidate, window.location.href);
 
-    selectedPlan =
-        plans.find(
-            plan =>
-                String(
-                    plan._id
-                ) ===
-                String(
-                    planId
+        if (
+            url.protocol === "https:" ||
+            (
+                url.origin === window.location.origin &&
+                candidate.startsWith("/") &&
+                !candidate.startsWith("//")
+            )
+        ) {
+            return url.href;
+        }
+    } catch {
+        // Invalid URL: use the fallback image.
+    }
+
+    return FALLBACK_IMAGE;
+}
+
+
+function isPlanAvailable(plan) {
+    const status = String(
+        plan?.status || ""
+    ).toLowerCase();
+
+    return Boolean(
+        getPlanId(plan) &&
+        Number.isFinite(getPlanPrice(plan)) &&
+        getPlanPrice(plan) > 0 &&
+        plan?.isActive !== false &&
+        plan?.active !== false &&
+        plan?.enabled !== false &&
+        status !== "inactive" &&
+        status !== "disabled" &&
+        status !== "unavailable"
+    );
+}
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+async function loadDashboard() {
+    if (!requireAuthToken()) return;
+
+    try {
+        const result = await apiRequest(API.dashboard);
+
+        const source =
+            result.dashboard ||
+            result.data?.dashboard ||
+            {};
+
+        const user =
+            result.user ||
+            result.data?.user ||
+            {};
+
+        /*
+         * Normalize the wallet field names returned by the API.
+         * The backend must provide the authoritative balances.
+         */
+
+        const walletBalance = numeric(
+            source.walletBalance ??
+            source.wallet ??
+            source.balance ??
+            user.balance,
+            0
+        );
+
+        const investableDepositBalance = numeric(
+            source.investableDepositBalance ??
+            user.investableDepositBalance,
+            0
+        );
+
+        const withdrawableEarnings = numeric(
+            source.withdrawableEarnings ??
+            user.withdrawableEarnings,
+            0
+        );
+
+        /*
+         * Save normalized values for purchase validation.
+         * These frontend values are not transaction authorization.
+         */
+
+        state.dashboard = {
+            ...source,
+
+            wallet: walletBalance,
+            balance: walletBalance,
+            walletBalance,
+
+            investableDepositBalance,
+            withdrawableEarnings
+        };
+
+
+        /* ----------------------------------------------------
+           CARD 1 — TOTAL WALLET BALANCE
+        ---------------------------------------------------- */
+
+        [
+            "walletBalance",
+            "wallet",
+            "balance"
+        ].forEach(id => {
+            const element = getElement(id);
+
+            if (element) {
+                element.textContent = formatMoney(
+                    walletBalance
+                );
+            }
+        });
+
+
+        /* ----------------------------------------------------
+           CARD 2 — REMAINING DEPOSIT BALANCE
+        ---------------------------------------------------- */
+
+        [
+            "investableBalance",
+            "availableInvestmentBalance"
+        ].forEach(id => {
+            const element = getElement(id);
+
+            if (element) {
+                element.textContent = formatMoney(
+                    investableDepositBalance
+                );
+            }
+        });
+
+
+        /* ----------------------------------------------------
+           CARD 3 — AVAILABLE FOR WITHDRAWAL
+        ---------------------------------------------------- */
+
+        [
+            "withdrawableEarnings",
+            "withdrawableBalance"
+        ].forEach(id => {
+            const element = getElement(id);
+
+            if (element) {
+                element.textContent = formatMoney(
+                    withdrawableEarnings
+                );
+            }
+        });
+
+
+        /* ----------------------------------------------------
+           OPTIONAL DASHBOARD STATISTICS
+        ---------------------------------------------------- */
+
+        setText(
+            "activePlans",
+            source.activePlans ??
+            source.activeInvestments ??
+            0
+        );
+
+        setText(
+            "totalInvestment",
+            formatMoney(source.totalInvestment ?? 0)
+        );
+
+        setText(
+            "dailyIncome",
+            formatMoney(source.dailyIncome ?? 0)
+        );
+
+        setText(
+            "totalEarned",
+            formatMoney(source.totalEarned ?? 0)
+        );
+
+
+        const errorElement = getElement("dashboardError");
+
+        if (errorElement) {
+            errorElement.textContent = "";
+            errorElement.classList.add("hidden");
+        }
+
+        console.log(
+            "Tesla Wealth dashboard loaded successfully."
+        );
+
+        return state.dashboard;
+
+    } catch (error) {
+        console.error(
+            "Dashboard loading error:",
+            error
+        );
+
+        if (!state.sessionExpired) {
+            const messageElement =
+                getElement("dashboardError");
+
+            if (messageElement) {
+                messageElement.textContent =
+                    error.message ||
+                    "Unable to load dashboard.";
+
+                messageElement.classList.remove("hidden");
+            }
+        }
+
+        throw error;
+    }
+}
+
+
+/* ============================================================
+   LOAD INVESTMENT PLANS
+============================================================ */
+
+async function loadPlans() {
+    const result = await apiRequest(API.plans);
+
+    const plans = unwrapArray(result, [
+        "plans",
+        "data",
+        "results"
+    ]);
+
+    state.plans = plans;
+
+    renderPlans();
+
+    return state.plans;
+}
+
+
+/* ============================================================
+   PLAN SORTING
+============================================================ */
+
+function getSortedFilteredPlans() {
+    const searchTerm = (
+        getElement("planSearch")?.value || ""
+    ).trim().toLowerCase();
+
+    const sortMode =
+        getElement("planSort")?.value || "low";
+
+    const plans = state.plans.filter(plan => {
+        const searchableText = [
+            getPlanName(plan),
+            getPlanDescription(plan)
+        ].join(" ").toLowerCase();
+
+        return searchableText.includes(searchTerm);
+    });
+
+    if (sortMode === "high") {
+        plans.sort(
+            (a, b) => getPlanPrice(b) - getPlanPrice(a)
+        );
+
+    } else if (sortMode === "name") {
+        plans.sort(
+            (a, b) =>
+                getPlanName(a).localeCompare(
+                    getPlanName(b)
                 )
         );
 
+    } else {
+        plans.sort(
+            (a, b) => getPlanPrice(a) - getPlanPrice(b)
+        );
+    }
 
-    if (!selectedPlan) {
+    return plans;
+}
 
-        alert(
-            "Investment option not found."
+
+/* ============================================================
+   PLAN RENDERING
+============================================================ */
+
+function renderPlans() {
+    const container = getElement("plansContainer");
+
+    if (!container) return;
+
+    const plans = getSortedFilteredPlans();
+
+    const emptyElement = getElement("plansEmpty");
+
+    if (!plans.length) {
+        container.replaceChildren();
+
+        if (emptyElement) {
+            emptyElement.classList.remove("hidden");
+        }
+
+        return;
+    }
+
+    if (emptyElement) {
+        emptyElement.classList.add("hidden");
+    }
+
+    container.innerHTML = plans.map(plan => {
+        const id = getPlanId(plan);
+        const name = getPlanName(plan);
+        const description = getPlanDescription(plan);
+        const price = getPlanPrice(plan);
+        const daily = getPlanDailyIncome(plan);
+        const duration = getPlanDuration(plan);
+        const total = getPlanTotalIncome(plan);
+        const image = getPlanImage(plan);
+        const available = isPlanAvailable(plan);
+
+        return `
+            <article class="plan-card">
+
+                <div class="plan-card-top">
+
+                    <div class="plan-image">
+                        <img
+                            src="${escapeHTML(image)}"
+                            alt="${escapeHTML(name)}"
+                            loading="lazy"
+                            referrerpolicy="no-referrer"
+                        >
+                    </div>
+
+                    <span class="plan-tag ${
+                        available ? "" : "unavailable"
+                    }">
+                        ${
+                            available
+                                ? "Investment Plan"
+                                : "Unavailable"
+                        }
+                    </span>
+
+                </div>
+
+                <h3>${escapeHTML(name)}</h3>
+
+                <p class="plan-description">
+                    ${escapeHTML(description)}
+                </p>
+
+                <span class="price-caption">
+                    Investment amount
+                </span>
+
+                <div class="plan-price">
+                    ${
+                        Number.isFinite(price)
+                            ? formatMoney(price)
+                            : "—"
+                    }
+                </div>
+
+                <div class="plan-metrics">
+
+                    <div>
+                        <small>Listed daily income</small>
+                        <strong>${formatMoney(daily)}</strong>
+                    </div>
+
+                    <div>
+                        <small>Duration</small>
+                        <strong>${duration} days</strong>
+                    </div>
+
+                </div>
+
+                <div class="plan-total">
+                    <span>Listed total income</span>
+                    <strong>${formatMoney(total)}</strong>
+                </div>
+
+                <p class="plan-disclaimer">
+                    Listed figures are estimates, not guaranteed returns.
+                </p>
+
+                <button
+                    type="button"
+                    class="button button-primary plan-buy"
+                    data-plan-id="${escapeHTML(id)}"
+                    ${available ? "" : "disabled"}
+                >
+                    ${
+                        available
+                            ? "Review & Invest"
+                            : "Unavailable"
+                    }
+
+                    ${available ? "<span>→</span>" : ""}
+                </button>
+
+            </article>
+        `;
+    }).join("");
+
+
+    /*
+     * If an image fails, use a safe fallback image.
+     */
+
+    container.querySelectorAll("img").forEach(imageElement => {
+        imageElement.addEventListener("error", () => {
+            imageElement.src = FALLBACK_IMAGE;
+        }, { once: true });
+    });
+}
+
+
+/* ============================================================
+   PURCHASE ELIGIBILITY
+============================================================ */
+
+function validateInvestmentBalance(plan) {
+    if (!state.dashboard) {
+        return (
+            "Your account balance is not loaded. " +
+            "Please try again."
+        );
+    }
+
+    if (!isPlanAvailable(plan)) {
+        return "This investment plan is currently unavailable.";
+    }
+
+    const price = getPlanPrice(plan);
+
+    if (!Number.isFinite(price) || price <= 0) {
+        return "This plan has an invalid investment amount.";
+    }
+
+    if (
+        state.dashboard.investmentPurchaseEnabled === false
+    ) {
+        return (
+            "Investment purchases are temporarily disabled."
+        );
+    }
+
+    const walletBalance = numeric(
+        state.dashboard.walletBalance,
+        0
+    );
+
+    const eligibleBalance = numeric(
+        state.dashboard.investableDepositBalance,
+        0
+    );
+
+    if (eligibleBalance < price) {
+        return (
+            `You need ${formatMoney(price)} in eligible ` +
+            `deposit funds. Your current eligible balance is ` +
+            `${formatMoney(eligibleBalance)}.`
+        );
+    }
+
+    if (walletBalance < price) {
+        return (
+            "Your wallet balance is insufficient for this purchase. " +
+            `Required: ${formatMoney(price)}.`
+        );
+    }
+
+    return "";
+}
+
+
+/* ============================================================
+   PURCHASE MODAL
+============================================================ */
+
+function openPurchaseModal(planId) {
+    if (state.loadingPurchase) return;
+
+    const plan = state.plans.find(
+        item => getPlanId(item) === String(planId)
+    );
+
+    if (!plan) {
+        showMessage(
+            "Investment plan not found. Refresh and try again.",
+            "error"
         );
 
         return;
-
     }
 
+    const validationError =
+        validateInvestmentBalance(plan);
 
-    const price =
-        Number(
-            selectedPlan.price ??
-            selectedPlan.amount ??
-            selectedPlan.investment ??
-            0
+    if (validationError) {
+        showMessage(validationError, "warning");
+        return;
+    }
+
+    const modal = getElement("purchaseModal");
+
+    if (!modal) {
+        showMessage(
+            "The purchase confirmation dialog is unavailable.",
+            "error"
         );
 
+        return;
+    }
 
-    const daily =
-        Number(
-            selectedPlan.dailyIncome ??
-            selectedPlan.dailyYield ??
-            selectedPlan.dailyEarning ??
-            0
-        );
-
-
-    const days =
-        Number(
-            selectedPlan.days ??
-            selectedPlan.duration ??
-            0
-        );
-
-
-    const total =
-        Number(
-            selectedPlan.totalIncome ??
-            selectedPlan.totalEarning ??
-            daily * days
-        );
-
+    state.selectedPlan = plan;
 
     setText(
         "modalPlanName",
-        selectedPlan.name ||
-        "Bitcoin Investment"
+        getPlanName(plan)
     );
 
+    setText(
+        "modalPlanDescription",
+        getPlanDescription(plan)
+    );
 
     setText(
         "modalAmount",
-        money(price)
+        formatMoney(getPlanPrice(plan))
     );
-
 
     setText(
         "modalDaily",
-        money(daily)
+        formatMoney(getPlanDailyIncome(plan))
     );
-
 
     setText(
         "modalDuration",
-        `${days} Days`
+        `${getPlanDuration(plan)} days`
     );
-
 
     setText(
         "modalTotal",
-        money(total)
+        formatMoney(getPlanTotalIncome(plan))
     );
 
 
-    purchaseModal.classList.add(
-        "show"
+    /*
+     * This percentage describes listed total income relative
+     * to principal. It is not a guarantee of future returns.
+     */
+
+    const price = getPlanPrice(plan);
+
+    const totalIncome = getPlanTotalIncome(plan);
+
+    const incomePercentage = price > 0
+        ? (totalIncome / price) * 100
+        : 0;
+
+    setText(
+        "modalReturn",
+        `${incomePercentage.toFixed(2)}%`
     );
 
+    setText(
+        "modalEligibleBalance",
+        formatMoney(
+            state.dashboard.investableDepositBalance
+        )
+    );
+
+    clearModalError();
+
+    const confirmButton =
+        getElement("confirmPurchase");
+
+    if (confirmButton) {
+        confirmButton.disabled = false;
+        confirmButton.textContent = "Confirm purchase";
+    }
+
+    modal.classList.remove("hidden");
+
+    modal.setAttribute("aria-hidden", "false");
+
+    document.body.classList.add("modal-open");
+
+    getElement("closeModal")?.focus();
 }
 
-
-// =====================================================
-// CLOSE PURCHASE MODAL
-// =====================================================
 
 function closePurchaseModal() {
+    if (state.loadingPurchase) return;
 
-    if (!purchaseModal) {
+    const modal = getElement("purchaseModal");
 
-        return;
+    if (modal) {
+        modal.classList.add("hidden");
 
+        modal.setAttribute("aria-hidden", "true");
     }
 
+    document.body.classList.remove("modal-open");
 
-    purchaseModal.classList.remove(
-        "show"
-    );
-
-
-    selectedPlan =
-        null;
-
+    state.selectedPlan = null;
 }
 
 
-// =====================================================
-// CONFIRM PURCHASE
-// =====================================================
+/* ============================================================
+   CONFIRM PURCHASE
+============================================================ */
 
 async function confirmPurchase() {
+    if (state.loadingPurchase) return;
 
-    if (!selectedPlan) {
+    const plan = state.selectedPlan;
 
-        alert(
-            "Please select an investment option."
+    if (!plan) {
+        showMessage(
+            "Please select an investment plan first.",
+            "warning"
         );
 
         return;
-
     }
 
+    const confirmButton =
+        getElement("confirmPurchase");
 
-    const button =
-        document.getElementById(
-            "confirmPurchase"
-        );
+    state.loadingPurchase = true;
 
-
-    if (!button) {
-
-        return;
-
+    if (confirmButton) {
+        confirmButton.disabled = true;
+        confirmButton.textContent = "Processing...";
     }
 
-
-    button.disabled =
-        true;
-
-
-    button.innerHTML = `
-
-        <i
-            class="fa-solid fa-spinner fa-spin"
-        ></i>
-
-        Processing...
-
-    `;
-
+    clearModalError();
 
     try {
+        /*
+         * Refresh the displayed balance before submitting.
+         *
+         * The backend must independently validate and deduct
+         * balances atomically. Frontend validation alone is
+         * never sufficient to authorize a financial transaction.
+         */
 
-        const data =
-            await apiFetch(
-                "/investment/purchase",
-                {
+        await loadDashboard();
 
-                    method: "POST",
+        const validationError =
+            validateInvestmentBalance(plan);
 
-                    body:
-                        JSON.stringify({
-
-                            planId:
-                                selectedPlan._id
-
-                        })
-
-                }
-            );
-
-
-        if (!data) {
-
-            return;
-
+        if (validationError) {
+            throw new Error(validationError);
         }
 
+        const result = await apiRequest(
+            API.purchase,
+            {
+                method: "POST",
 
-        if (!data.success) {
+                body: JSON.stringify({
+                    planId: getPlanId(plan)
+                })
+            }
+        );
 
-            throw new Error(
-                data.message ||
-                data.msg ||
-                "Investment purchase failed."
+        const responseData = unwrapObject(
+            result,
+            ["data"]
+        );
+
+        const requestStatus = String(
+            responseData.status ||
+            result.status ||
+            ""
+        ).toLowerCase();
+
+        const pendingStatuses = [
+            "pending",
+            "processing",
+            "awaiting_approval"
+        ];
+
+        if (
+            pendingStatuses.includes(requestStatus) ||
+            responseData.approvalRequired === true ||
+            result.approvalRequired === true
+        ) {
+            showMessage(
+                result.message ||
+                "Your investment request was submitted and is awaiting confirmation.",
+                "info"
             );
 
+        } else {
+            showMessage(
+                result.message ||
+                "The server accepted your investment request.",
+                "success"
+            );
         }
-
 
         closePurchaseModal();
 
-
-        alert(
-            data.message ||
-            "Bitcoin investment purchased successfully."
-        );
-
-
-        // Refresh all real backend data
-
-        await Promise.all([
-
-            loadDashboard(),
-
-            loadPlans(),
-
-            loadMyInvestments()
-
-        ]);
-
+        await refreshInvestmentPage();
 
     } catch (error) {
-
         console.error(
-            "PURCHASE:",
+            "Tesla Wealth purchase error:",
             error
         );
 
-
-        alert(
+        showModalError(
             error.message ||
-            "Investment purchase failed."
+            "Unable to submit the investment request. Please try again."
         );
-
 
     } finally {
+        state.loadingPurchase = false;
 
-        button.disabled =
-            false;
-
-
-        button.innerHTML = `
-
-            <i
-                class="fa-brands fa-bitcoin"
-            ></i>
-
-            Confirm Investment
-
-        `;
-
+        if (confirmButton) {
+            confirmButton.disabled = false;
+            confirmButton.textContent = "Confirm purchase";
+        }
     }
-
 }
 
 
-// =====================================================
-// LOAD MY INVESTMENTS
-// =====================================================
+/* ============================================================
+   MY INVESTMENTS
+============================================================ */
+
+function getInvestmentStatus(investment) {
+    return String(
+        investment?.status ||
+        investment?.state ||
+        "unknown"
+    ).toLowerCase();
+}
+
+
+function normalizeStatus(status) {
+    const aliases = {
+        running: "active",
+        approved: "active",
+        finished: "completed",
+        complete: "completed",
+        awaiting_approval: "pending",
+        cancelled: "cancelled",
+        canceled: "cancelled"
+    };
+
+    const normalized = aliases[status] || status;
+
+    const allowed = [
+        "active",
+        "completed",
+        "pending",
+        "processing",
+        "rejected",
+        "cancelled",
+        "failed",
+        "unknown"
+    ];
+
+    return allowed.includes(normalized)
+        ? normalized
+        : "unknown";
+}
+
 
 async function loadMyInvestments() {
+    const result = await apiRequest(API.investments);
 
-    if (!myInvestments) {
+    state.investments = unwrapArray(result, [
+        "investments",
+        "data",
+        "results"
+    ]);
+
+    renderMyInvestments();
+
+    return state.investments;
+}
+
+
+function renderMyInvestments() {
+    const container = getElement("myInvestments");
+
+    if (!container) return;
+
+    const emptyElement =
+        getElement("investmentsEmpty");
+
+    if (!state.investments.length) {
+        container.replaceChildren();
+
+        if (emptyElement) {
+            emptyElement.classList.remove("hidden");
+        }
 
         return;
-
     }
 
+    if (emptyElement) {
+        emptyElement.classList.add("hidden");
+    }
 
-    myInvestments.innerHTML = `
+    container.innerHTML = state.investments.map(investment => {
+        const planName =
+            investment.planName ||
+            investment.name ||
+            investment.plan?.name ||
+            "Investment Plan";
 
-        <div class="loading-card">
+        const amount = numeric(
+            investment.amount ??
+            investment.investmentAmount,
+            0
+        );
 
-            <i
-                class="fa-solid fa-spinner fa-spin"
-            ></i>
+        const earned = numeric(
+            investment.earned ??
+            investment.totalEarned,
+            0
+        );
 
-            <span>
-                Loading portfolio...
-            </span>
+        const remainingDays = numeric(
+            investment.remainingDays ??
+            investment.daysRemaining,
+            0
+        );
 
-        </div>
+        const status = normalizeStatus(
+            getInvestmentStatus(investment)
+        );
 
-    `;
+        const purchaseDate = formatDate(
+            investment.purchaseDate ||
+            investment.createdAt
+        );
+
+        return `
+            <article class="investment-row">
+
+                <div class="investment-title">
+
+                    <div
+                        class="investment-symbol"
+                        aria-hidden="true"
+                    >TW</div>
+
+                    <div>
+                        <strong>
+                            ${escapeHTML(planName)}
+                        </strong>
+
+                        <small>
+                            Started ${escapeHTML(purchaseDate)}
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="investment-field">
+                    <span>Invested</span>
+                    <strong>${formatMoney(amount)}</strong>
+                </div>
+
+                <div class="investment-field">
+                    <span>Earned</span>
+                    <strong>${formatMoney(earned)}</strong>
+                </div>
+
+                <div class="investment-field">
+                    <span>Days remaining</span>
+                    <strong>${remainingDays}</strong>
+                </div>
+
+                <div>
+                    <span class="status-pill status-${status}">
+                        ${escapeHTML(
+                            status.charAt(0).toUpperCase() +
+                            status.slice(1)
+                        )}
+                    </span>
+                </div>
+
+            </article>
+        `;
+    }).join("");
+}
 
 
-    try {
+/* ============================================================
+   PAGE REFRESH
+============================================================ */
 
-        const data =
-            await apiFetch(
-                "/investment/my"
+async function refreshInvestmentPage() {
+    const tasks = [
+        ["dashboard", loadDashboard],
+        ["plans", loadPlans],
+        ["investments", loadMyInvestments]
+    ];
+
+    const results = await Promise.allSettled(
+        tasks.map(([, task]) => task())
+    );
+
+    let hasError = false;
+
+    results.forEach((result, index) => {
+        if (result.status === "rejected") {
+            hasError = true;
+
+            console.error(
+                `Tesla Wealth ${tasks[index][0]} error:`,
+                result.reason
+            );
+        }
+    });
+
+    if (hasError && !state.sessionExpired) {
+        showMessage(
+            "Some account information could not be loaded. " +
+            "Check your connection and refresh the page.",
+            "error"
+        );
+    }
+
+    setText(
+        "lastUpdated",
+        new Date().toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+    );
+
+    setText(
+        "currentYear",
+        new Date().getFullYear()
+    );
+
+    return !hasError;
+}
+
+
+/* ============================================================
+   MOBILE SIDEBAR
+============================================================ */
+
+function closeSidebar() {
+    const sidebar = getElement("sidebar");
+
+    const overlay = getElement("sidebarOverlay");
+
+    const menuButton = getElement("menuButton");
+
+    sidebar?.classList.remove("open");
+
+    overlay?.classList.remove("show");
+
+    menuButton?.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+}
+
+
+function toggleSidebar() {
+    const sidebar = getElement("sidebar");
+
+    const overlay = getElement("sidebarOverlay");
+
+    const menuButton = getElement("menuButton");
+
+    if (!sidebar) return;
+
+    const willOpen =
+        !sidebar.classList.contains("open");
+
+    sidebar.classList.toggle("open", willOpen);
+
+    overlay?.classList.toggle("show", willOpen);
+
+    menuButton?.setAttribute(
+        "aria-expanded",
+        String(willOpen)
+    );
+}
+
+
+/* ============================================================
+   SIGN OUT
+============================================================ */
+
+function signOut() {
+    localStorage.removeItem("ki_token");
+
+    localStorage.removeItem("token");
+
+    window.location.href = "auth.html";
+}
+
+
+/* ============================================================
+   EVENT LISTENERS
+============================================================ */
+
+function bindEvents() {
+    getElement("plansContainer")?.addEventListener(
+        "click",
+        event => {
+            const button = event.target.closest(
+                "[data-plan-id]"
             );
 
+            if (!button || button.disabled) return;
 
-        if (!data) {
-
-            return;
-
-        }
-
-
-        const investments =
-            data.investments ||
-            data.data?.investments ||
-            data.data ||
-            [];
-
-
-        if (
-            !Array.isArray(
-                investments
-            ) ||
-            investments.length === 0
-        ) {
-
-            window.currentInvestments =
-                [];
-
-            renderEmptyInvestments();
-
-            return;
-
-        }
-
-
-        // =================================================
-        // IMPORTANT
-        //
-        // Store backend investments globally.
-        // Countdown functions use this array.
-        // =================================================
-
-        window.currentInvestments =
-            investments;
-
-
-        renderMyInvestments(
-            investments
-        );
-
-
-        updateIncomeCountdowns();
-
-
-    } catch (error) {
-
-        console.error(
-            "MY INVESTMENTS:",
-            error.message
-        );
-
-
-        window.currentInvestments =
-            [];
-
-
-        renderEmptyInvestments();
-
-    }
-
-}
-
-
-// =====================================================
-// EMPTY INVESTMENTS
-// =====================================================
-
-function renderEmptyInvestments() {
-
-    if (!myInvestments) {
-
-        return;
-
-    }
-
-
-    myInvestments.innerHTML = `
-
-        <div class="empty-card">
-
-            <i
-                class="fa-brands fa-bitcoin"
-            ></i>
-
-            <p>
-                You don't have any active
-                Bitcoin investments yet.
-            </p>
-
-        </div>
-
-    `;
-
-}
-
-
-// =====================================================
-// RENDER MY INVESTMENTS
-// =====================================================
-
-function renderMyInvestments(
-    investments
-) {
-
-    if (!myInvestments) {
-
-        return;
-
-    }
-
-
-    if (
-        !Array.isArray(
-            investments
-        ) ||
-        investments.length === 0
-    ) {
-
-        renderEmptyInvestments();
-
-        return;
-
-    }
-
-
-    myInvestments.innerHTML =
-        investments
-            .map(
-                (
-                    investment,
-                    index
-                ) => {
-
-
-                    // =====================================
-                    // PLAN
-                    // =====================================
-
-                    const plan =
-                        investment.plan ||
-                        {};
-
-
-                    // =====================================
-                    // NAME
-                    // =====================================
-
-                    const name =
-                        investment.planName ||
-                        investment.name ||
-                        plan.name ||
-                        "Bitcoin Investment";
-
-
-                    // =====================================
-                    // INVESTMENT AMOUNT
-                    // =====================================
-
-                    const amount =
-                        Number(
-                            investment.amount ??
-                            investment.investmentAmount ??
-                            investment.investedAmount ??
-                            investment.price ??
-                            plan.price ??
-                            0
-                        );
-
-
-                    // =====================================
-                    // DAILY INCOME
-                    // =====================================
-
-                    const daily =
-                        Number(
-                            investment.dailyIncome ??
-                            investment.dailyYield ??
-                            investment.dailyEarning ??
-                            plan.dailyIncome ??
-                            0
-                        );
-
-
-                    // =====================================
-                    // REAL EARNED
-                    //
-                    // IMPORTANT:
-                    // This comes from backend.
-                    //
-                    // We DO NOT calculate:
-                    //
-                    // daily × days
-                    //
-                    // for "earned".
-                    // =====================================
-
-                    const earned =
-                        Number(
-                            investment.earned ??
-                            investment.totalEarned ??
-                            investment.profit ??
-                            investment.profitAmount ??
-                            investment.income ??
-                            0
-                        );
-
-
-                    // =====================================
-                    // TOTAL INCOME
-                    // =====================================
-
-                    const totalIncome =
-                        Number(
-                            investment.totalIncome ??
-                            investment.totalEarning ??
-                            investment.expectedIncome ??
-                            plan.totalIncome ??
-                            0
-                        );
-
-
-                    // =====================================
-                    // DURATION
-                    // =====================================
-
-                    const duration =
-                        Number(
-                            investment.duration ??
-                            investment.days ??
-                            plan.duration ??
-                            plan.days ??
-                            0
-                        );
-
-
-                    // =====================================
-                    // REMAINING DAYS
-                    // =====================================
-
-                    const remainingDays =
-                        Number(
-                            investment.remainingDays ??
-                            0
-                        );
-
-
-                    // =====================================
-                    // STATUS
-                    // =====================================
-
-                    const rawStatus =
-                        String(
-                            investment.status ||
-                            "Active"
-                        );
-
-
-                    const status =
-                        rawStatus
-                            .charAt(0)
-                            .toUpperCase() +
-                        rawStatus
-                            .slice(1)
-                            .toLowerCase();
-
-
-                    const isActive =
-                        status === "Active" ||
-                        status === "Running";
-
-
-                    // =====================================
-                    // START DATE
-                    // =====================================
-
-                    const startDate =
-                        investment.purchaseDate ||
-                        investment.startDate ||
-                        investment.createdAt ||
-                        "";
-
-
-                    const formattedDate =
-                        formatInvestmentDate(
-                            startDate
-                        );
-
-
-                    // =====================================
-                    // PROGRESS
-                    // =====================================
-
-                    let progress = 0;
-
-
-                    if (
-                        duration > 0
-                    ) {
-
-                        const completedDays =
-                            Math.max(
-                                0,
-                                duration -
-                                remainingDays
-                            );
-
-
-                        progress =
-                            Math.round(
-                                (
-                                    completedDays /
-                                    duration
-                                ) *
-                                100
-                            );
-
-                    }
-
-
-                    progress =
-                        Math.max(
-                            0,
-                            Math.min(
-                                100,
-                                progress
-                            )
-                        );
-
-
-                    // =====================================
-                    // INVESTMENT ID
-                    // =====================================
-
-                    const investmentId =
-                        investment._id ||
-                        investment.id ||
-                        "";
-
-
-                    // =====================================
-                    // NEXT INCOME
-                    // =====================================
-
-                    const nextIncome =
-                        getNextIncomeDisplay(
-                            investment
-                        );
-
-
-                    // =====================================
-                    // STATUS CLASS
-                    // =====================================
-
-                    const statusClass =
-                        isActive
-                            ? "status-active"
-                            : "status-completed";
-
-
-                    // =====================================
-                    // CARD
-                    // =====================================
-
-                    return `
-
-                        <article
-                            class="my-investment-card"
-                            data-investment-id="${escapeHtml(
-                                investmentId
-                            )}"
-                            style="
-                                animation-delay:
-                                ${Math.min(
-                                    index * 0.08,
-                                    0.5
-                                )}s
-                            "
-                        >
-
-                            <!-- =========================
-                                 HEADER
-                            ========================== -->
-
-                            <div
-                                class="investment-top"
-                            >
-
-                                <div
-                                    class="investment-name"
-                                >
-
-                                    <div
-                                        class="investment-logo"
-                                    >
-
-                                        <i
-                                            class="
-                                                fa-brands
-                                                fa-bitcoin
-                                            "
-                                        ></i>
-
-                                    </div>
-
-
-                                    <div>
-
-                                        <strong>
-                                            ${escapeHtml(
-                                                name
-                                            )}
-                                        </strong>
-
-                                        <span>
-                                            Bitcoin Investment
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-
-                                <span
-                                    class="
-                                        investment-status
-                                        ${statusClass}
-                                    "
-                                >
-
-                                    <i
-                                        class="
-                                            fa-solid
-                                            ${
-                                                isActive
-                                                    ? "fa-bolt"
-                                                    : "fa-circle-check"
-                                            }
-                                        "
-                                    ></i>
-
-                                    ${escapeHtml(
-                                        status
-                                    )}
-
-                                </span>
-
-                            </div>
-
-
-                            <!-- =========================
-                                 MONEY
-                            ========================== -->
-
-                            <div
-                                class="investment-stats"
-                            >
-
-
-                                <div
-                                    class="investment-stat"
-                                >
-
-                                    <span>
-                                        Invested
-                                    </span>
-
-                                    <strong>
-                                        ${money(amount)}
-                                    </strong>
-
-                                </div>
-
-
-                                <div
-                                    class="investment-stat"
-                                >
-
-                                    <span>
-                                        Daily Income
-                                    </span>
-
-                                    <strong
-                                        class="income-value"
-                                    >
-                                        +${money(daily)}
-                                    </strong>
-
-                                </div>
-
-
-                                <div
-                                    class="
-                                        investment-stat
-                                        earned-stat
-                                    "
-                                >
-
-                                    <span>
-                                        Earned
-                                    </span>
-
-                                    <strong>
-                                        +${money(earned)}
-                                    </strong>
-
-                                </div>
-
-
-                                <div
-                                    class="investment-stat"
-                                >
-
-                                    <span>
-                                        Total Income
-                                    </span>
-
-                                    <strong>
-                                        ${money(totalIncome)}
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =========================
-                                 NEXT INCOME
-                            ========================== -->
-
-                            ${
-                                isActive
-                                    ? `
-
-                                <div
-                                    class="next-income-box"
-                                >
-
-                                    <div
-                                        class="
-                                            next-income-icon
-                                        "
-                                    >
-
-                                        <i
-                                            class="
-                                                fa-solid
-                                                fa-clock
-                                            "
-                                        ></i>
-
-                                    </div>
-
-
-                                    <div
-                                        class="
-                                            next-income-content
-                                        "
-                                    >
-
-                                        <span>
-                                            Next Income
-                                        </span>
-
-
-                                        <strong
-                                            class="
-                                                income-countdown
-                                            "
-                                            data-investment-id="${escapeHtml(
-                                                investmentId
-                                            )}"
-                                        >
-                                            ${escapeHtml(
-                                                nextIncome
-                                            )}
-                                        </strong>
-
-                                    </div>
-
-
-                                    <div
-                                        class="
-                                            next-income-amount
-                                        "
-                                    >
-
-                                        <span>
-                                            Daily
-                                        </span>
-
-                                        <strong>
-                                            +${money(daily)}
-                                        </strong>
-
-                                    </div>
-
-                                </div>
-
-                            `
-                                    : `
-
-                                <div
-                                    class="
-                                        completed-income-box
-                                    "
-                                >
-
-                                    <i
-                                        class="
-                                            fa-solid
-                                            fa-circle-check
-                                        "
-                                    ></i>
-
-                                    <span>
-                                        Investment completed
-                                    </span>
-
-                                </div>
-
-                            `
-                            }
-
-
-                            <!-- =========================
-                                 DAYS
-                            ========================== -->
-
-                            <div
-                                class="investment-days"
-                            >
-
-                                <div
-                                    class="days-item"
-                                >
-
-                                    <span>
-                                        Duration
-                                    </span>
-
-                                    <strong>
-                                        ${duration} Days
-                                    </strong>
-
-                                </div>
-
-
-                                <div
-                                    class="days-item"
-                                >
-
-                                    <span>
-                                        Remaining
-                                    </span>
-
-                                    <strong>
-                                        ${remainingDays} Days
-                                    </strong>
-
-                                </div>
-
-
-                                <div
-                                    class="days-item"
-                                >
-
-                                    <span>
-                                        Progress
-                                    </span>
-
-                                    <strong>
-                                        ${progress}%
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =========================
-                                 PROGRESS
-                            ========================== -->
-
-                            <div
-                                class="investment-progress"
-                            >
-
-                                <div
-                                    class="progress-header"
-                                >
-
-                                    <span>
-                                        Investment Progress
-                                    </span>
-
-                                    <strong>
-                                        ${progress}%
-                                    </strong>
-
-                                </div>
-
-
-                                <div
-                                    class="progress-bar"
-                                >
-
-                                    <div
-                                        class="progress-fill"
-                                        style="
-                                            width:${progress}%
-                                        "
-                                    ></div>
-
-                                </div>
-
-                            </div>
-
-
-                            <!-- =========================
-                                 FOOTER
-                            ========================== -->
-
-                            <div
-                                class="investment-footer"
-                            >
-
-                                <span>
-
-                                    <i
-                                        class="
-                                            fa-regular
-                                            fa-calendar
-                                        "
-                                    ></i>
-
-                                    ${
-                                        formattedDate
-                                            ? `Started ${formattedDate}`
-                                            : "Start date unavailable"
-                                    }
-
-                                </span>
-
-
-                                <strong>
-
-                                    ${
-                                        isActive
-                                            ? "Running"
-                                            : "Completed"
-                                    }
-
-                                </strong>
-
-                            </div>
-
-                        </article>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-}
-
-
-// =====================================================
-// FORMAT INVESTMENT DATE
-// =====================================================
-
-function formatInvestmentDate(
-    dateValue
-) {
-
-    if (!dateValue) {
-
-        return "";
-
-    }
-
-
-    const date =
-        new Date(
-            dateValue
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-
-    }
-
-
-    return date.toLocaleDateString(
-        "en-IN",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        }
-    );
-
-}
-
-
-// =====================================================
-// NEXT INCOME DISPLAY
-// =====================================================
-
-function getNextIncomeDisplay(
-    investment
-) {
-
-    if (!investment) {
-
-        return "Income schedule unavailable";
-
-    }
-
-
-    // =================================================
-    // BACKEND NEXT-INCOME DATE
-    // =================================================
-
-    const nextIncomeDate =
-        investment.nextIncomeDate ||
-        investment.nextIncomeAt ||
-        investment.nextIncome ||
-        "";
-
-
-    if (!nextIncomeDate) {
-
-        return "Next income pending";
-
-    }
-
-
-    const target =
-        new Date(
-            nextIncomeDate
-        );
-
-
-    if (
-        Number.isNaN(
-            target.getTime()
-        )
-    ) {
-
-        return "Next income pending";
-
-    }
-
-
-    const now =
-        new Date();
-
-
-    const difference =
-        target.getTime() -
-        now.getTime();
-
-
-    // =================================================
-    // INCOME IS DUE
-    //
-    // Do not credit it here.
-    // Backend should process the income.
-    // =================================================
-
-    if (
-        difference <= 0
-    ) {
-
-        return "Income processing";
-
-    }
-
-
-    const totalSeconds =
-        Math.floor(
-            difference / 1000
-        );
-
-
-    const days =
-        Math.floor(
-            totalSeconds /
-            86400
-        );
-
-
-    const hours =
-        Math.floor(
-            (
-                totalSeconds %
-                86400
-            ) / 3600
-        );
-
-
-    const minutes =
-        Math.floor(
-            (
-                totalSeconds %
-                3600
-            ) / 60
-        );
-
-
-    const seconds =
-        totalSeconds %
-        60;
-
-
-    if (days > 0) {
-
-        return (
-            `${days}d ` +
-            `${String(hours).padStart(2, "0")}h ` +
-            `${String(minutes).padStart(2, "0")}m`
-        );
-
-    }
-
-
-    return (
-        `${String(hours).padStart(2, "0")}:` +
-        `${String(minutes).padStart(2, "0")}:` +
-        `${String(seconds).padStart(2, "0")}`
-    );
-
-}
-
-
-// =====================================================
-// UPDATE INCOME COUNTDOWNS
-// =====================================================
-
-function updateIncomeCountdowns() {
-
-    const countdowns =
-        document.querySelectorAll(
-            ".income-countdown"
-        );
-
-
-    countdowns.forEach(
-        element => {
-
-            const investmentId =
-                element.dataset.investmentId;
-
-
-            if (!investmentId) {
-
-                return;
-
-            }
-
-
-            const investment =
-                window.currentInvestments.find(
-                    item =>
-                        String(
-                            item._id ||
-                            item.id
-                        ) ===
-                        String(
-                            investmentId
-                        )
-                );
-
-
-            if (!investment) {
-
-                return;
-
-            }
-
-
-            element.textContent =
-                getNextIncomeDisplay(
-                    investment
-                );
-
-        }
-    );
-
-}
-
-
-// =====================================================
-// COUNTDOWN TIMER
-// =====================================================
-
-setInterval(
-    updateIncomeCountdowns,
-    1000
-);
-
-
-// =====================================================
-// NAVIGATION
-// =====================================================
-
-function navigate(
-    page
-) {
-
-    switch (page) {
-
-        case "home":
-
-            window.location.href =
-                "home.html";
-
-            break;
-
-
-        case "investments":
-
-            window.location.href =
-                "investments.html";
-
-            break;
-
-
-        case "deposit":
-
-            window.location.href =
-                "deposite.html";
-
-            break;
-
-
-        case "profile":
-
-            window.location.href =
-                "profile.html";
-
-            break;
-
-
-        case "transactions":
-
-            window.location.href =
-                "transactions.html";
-
-            break;
-
-
-        case "withdraw":
-
-            window.location.href =
-                "withdraw.html";
-
-            break;
-
-
-        default:
-
-            console.warn(
-                "Unknown page:",
-                page
+            openPurchaseModal(
+                button.dataset.planId
             );
-
-    }
-
-}
-
-
-// =====================================================
-// REFRESH BUTTON
-// =====================================================
-
-document
-    .getElementById(
-        "refreshButton"
-    )
-    ?.addEventListener(
-        "click",
-        async function() {
-
-            this.classList.add(
-                "rotating"
-            );
-
-
-            try {
-
-                await Promise.all([
-
-                    loadDashboard(),
-
-                    loadPlans(),
-
-                    loadMyInvestments()
-
-                ]);
-
-            } finally {
-
-                setTimeout(
-                    () => {
-
-                        this.classList.remove(
-                            "rotating"
-                        );
-
-                    },
-                    500
-                );
-
-            }
-
         }
     );
 
 
-// =====================================================
-// CLOSE MODAL BUTTON
-// =====================================================
-
-document
-    .getElementById(
-        "closeModal"
-    )
-    ?.addEventListener(
-        "click",
-        closePurchaseModal
+    getElement("planSearch")?.addEventListener(
+        "input",
+        renderPlans
     );
 
 
-// =====================================================
-// CLOSE MODAL OUTSIDE
-// =====================================================
-
-purchaseModal
-    ?.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                event.target ===
-                purchaseModal
-            ) {
-
-                closePurchaseModal();
-
-            }
-
-        }
+    getElement("planSort")?.addEventListener(
+        "change",
+        renderPlans
     );
 
 
-// =====================================================
-// CONFIRM BUTTON
-// =====================================================
-
-document
-    .getElementById(
-        "confirmPurchase"
-    )
-    ?.addEventListener(
+    getElement("confirmPurchase")?.addEventListener(
         "click",
         confirmPurchase
     );
 
 
-// =====================================================
-// PAGE LOAD
-// =====================================================
+    getElement("closeModal")?.addEventListener(
+        "click",
+        closePurchaseModal
+    );
+
+
+    getElement("cancelPurchase")?.addEventListener(
+        "click",
+        closePurchaseModal
+    );
+
+
+    getElement("purchaseModal")?.addEventListener(
+        "click",
+        event => {
+            if (event.target.id === "purchaseModal") {
+                closePurchaseModal();
+            }
+        }
+    );
+
+
+    getElement("menuButton")?.addEventListener(
+        "click",
+        toggleSidebar
+    );
+
+
+    getElement("sidebarOverlay")?.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+
+    getElement("logoutButton")?.addEventListener(
+        "click",
+        signOut
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (event.key === "Escape") {
+                closeSidebar();
+                closePurchaseModal();
+            }
+        }
+    );
+}
+
+
+/* ============================================================
+   INITIALIZE PAGE
+============================================================ */
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function() {
-
-        console.log(
-            "BITCOIN INVESTMENT PAGE STARTING..."
+    async () => {
+        setText(
+            "currentYear",
+            new Date().getFullYear()
         );
 
+        if (!getToken()) {
+            redirectToLogin();
+            return;
+        }
 
-        await loadDashboard();
+        bindEvents();
 
-
-        await loadPlans();
-
-
-        await loadMyInvestments();
-
-
-        console.log(
-            "BITCOIN INVESTMENT PAGE READY"
-        );
-
+        await refreshInvestmentPage();
     }
 );
-// =====================================================
-// CATEGORY TABS
-// =====================================================
-
-document
-    .querySelectorAll(
-        ".category-tab"
-    )
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                // ==========================================
-                // REMOVE ACTIVE
-                // ==========================================
-
-                document
-                    .querySelectorAll(
-                        ".category-tab"
-                    )
-                    .forEach(tab => {
-
-                        tab.classList.remove(
-                            "active"
-                        );
-
-                    });
 
 
-                // ==========================================
-                // ADD ACTIVE
-                // ==========================================
+/* ============================================================
+   DEBUGGING / TESTING
+============================================================ */
 
-                this.classList.add(
-                    "active"
-                );
-
-
-                // ==========================================
-                // SELECT CATEGORY
-                // ==========================================
-
-                selectedCategory =
-                    this.dataset.category;
-
-
-                // ==========================================
-                // FILTER PLANS
-                // ==========================================
-
-                const filteredPlans =
-                    getPlansByCategory(
-                        selectedCategory
-                    );
-
-
-                renderPlans(
-                    filteredPlans
-                );
-
-            }
-        );
-
-    });
+window.TeslaWealthInvestment = {
+    refresh: refreshInvestmentPage,
+    loadDashboard,
+    loadPlans,
+    loadMyInvestments,
+    renderPlans,
+    renderMyInvestments,
+    openPurchaseModal,
+    closePurchaseModal,
+    confirmPurchase
+};

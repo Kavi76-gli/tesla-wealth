@@ -1,1058 +1,520 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <title>
-        Bitcoin Investment | Secure Login & Register
-    </title>
+    <meta name="theme-color" content="#07111f">
+    <meta name="description"
+          content="Access your Tesla Wealth account securely.">
 
+    <title>Tesla Wealth | Secure Login & Registration</title>
 
-    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Existing Firebase compatibility SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
-    <!-- Font Awesome -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
-
-
-    <!-- SweetAlert2 -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-    </script>
-
-
-    <!-- Firebase Compatibility SDK -->
-
-    <script
-        src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js">
-    </script>
-
-    <script
-        src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js">
-    </script>
-
-
-    <!-- AUTH CSS -->
-
-    <link
-        rel="stylesheet"
-        href="css/auth.css"
-    >
-
+    <link rel="stylesheet" href="css/auth.css">
 </head>
-
 
 <body>
 
-
-<!-- ================================= -->
-<!-- BACKGROUND -->
-<!-- ================================= -->
-
-<div class="auth-background">
-
+<div class="auth-background" aria-hidden="true">
     <div class="bg-orb orb-one"></div>
-
     <div class="bg-orb orb-two"></div>
-
     <div class="bg-orb orb-three"></div>
-
     <div class="bg-grid"></div>
-
 </div>
-
-
-<!-- ================================= -->
-<!-- MAIN AUTH PAGE -->
-<!-- ================================= -->
 
 <main class="auth-page">
 
-
-    <!-- ================================= -->
-    <!-- LEFT BRAND SECTION -->
-    <!-- ================================= -->
+    <!-- ======================================
+         DESKTOP BRAND SECTION
+    ======================================= -->
 
     <section class="auth-brand">
 
-
-        <!-- BITCOIN LOGO -->
-
-        <div class="bitcoin-logo">
-
-            <div class="bitcoin-ring"></div>
-
-            <div class="bitcoin-symbol">
-
-                <i
-                    class="fa-brands fa-bitcoin">
-                </i>
-
-            </div>
-
-        </div>
-
-
-        <!-- BRAND TEXT -->
+        <a href="splash.html" class="brand-logo" aria-label="Tesla Wealth home">
+            <span class="logo-monogram">TW</span>
+        </a>
 
         <div class="brand-text">
-
-            <h1>
-                Bitcoin Investment
-            </h1>
-
-            <p>
-                SECURE DIGITAL INVESTMENT PLATFORM
-            </p>
-
+            <h1>TESLA <span>WEALTH</span></h1>
+            <p>YOUR WEALTH. YOUR FUTURE.</p>
         </div>
-
-
-        <!-- BRAND DESCRIPTION -->
 
         <div class="brand-description">
 
             <div class="brand-badge">
-
-                <i
-                    class="fa-solid fa-shield-halved">
-                </i>
-
-                <span>
-                    SECURE ACCOUNT ACCESS
-                </span>
-
+                <i class="fa-solid fa-shield-halved"></i>
+                SECURE ACCOUNT ACCESS
             </div>
 
-
             <h2>
-
-                Manage your account
-
-                <strong>
-                    simply & securely.
-                </strong>
-
+                Your financial journey,
+                <strong>all in one place.</strong>
             </h2>
 
-
             <p>
-
-                Access your account, manage your investment activity,
-                and keep track of your platform information through
-                a secure and easy-to-use dashboard.
-
+                Access your account, review your investment activity,
+                track your transactions, and manage your profile
+                through a clean and convenient interface.
             </p>
 
         </div>
 
-
-        <!-- FEATURES -->
-
         <div class="auth-features">
 
-
             <div class="auth-feature">
-
                 <div class="feature-icon">
-
-                    <i
-                        class="fa-solid fa-shield-halved">
-                    </i>
-
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
-
                 <div>
-
-                    <strong>
-                        Secure Access
-                    </strong>
-
-                    <span>
-                        Protected account authentication
-                    </span>
-
+                    <strong>Account Security</strong>
+                    <span>Protected authentication process</span>
                 </div>
-
             </div>
 
-
             <div class="auth-feature">
-
                 <div class="feature-icon">
-
-                    <i
-                        class="fa-solid fa-user-lock">
-                    </i>
-
+                    <i class="fa-solid fa-chart-line"></i>
                 </div>
-
                 <div>
-
-                    <strong>
-                        Private Account
-                    </strong>
-
-                    <span>
-                        Your account details stay protected
-                    </span>
-
+                    <strong>Account Overview</strong>
+                    <span>Review your account activity</span>
                 </div>
-
             </div>
 
-
             <div class="auth-feature">
-
                 <div class="feature-icon">
-
-                    <i
-                        class="fa-solid fa-mobile-screen-button">
-                    </i>
-
+                    <i class="fa-solid fa-mobile-screen-button"></i>
                 </div>
-
                 <div>
-
-                    <strong>
-                        Mobile Verification
-                    </strong>
-
-                    <span>
-                        SMS OTP phone verification
-                    </span>
-
+                    <strong>Phone Verification</strong>
+                    <span>SMS verification during registration</span>
                 </div>
-
             </div>
 
-
             <div class="auth-feature">
-
                 <div class="feature-icon">
-
-                    <i
-                        class="fa-solid fa-headset">
-                    </i>
-
+                    <i class="fa-solid fa-clock-rotate-left"></i>
                 </div>
-
                 <div>
-
-                    <strong>
-                        Account Support
-                    </strong>
-
-                    <span>
-                        Help when you need assistance
-                    </span>
-
+                    <strong>Activity History</strong>
+                    <span>Review recorded transactions</span>
                 </div>
-
             </div>
-
 
         </div>
-
-
-        <!-- BRAND FOOTER -->
 
         <div class="brand-footer">
-
-            <span>
-
-                <i
-                    class="fa-solid fa-lock">
-                </i>
-
-                Secure account authentication
-
-            </span>
-
-
-            <span>
-
-                <i
-                    class="fa-solid fa-circle-check">
-                </i>
-
-                Account protection enabled
-
-            </span>
-
+            <span><i class="fa-solid fa-lock"></i> Secure access</span>
+            <span><i class="fa-solid fa-mobile-screen"></i> Mobile friendly</span>
         </div>
-
 
     </section>
 
-
-    <!-- ================================= -->
-    <!-- RIGHT AUTH CARD -->
-    <!-- ================================= -->
+    <!-- ======================================
+         AUTHENTICATION CARD
+    ======================================= -->
 
     <section class="auth-card">
 
-
-        <!-- MOBILE BRAND -->
-
+        <!-- Mobile brand -->
         <div class="mobile-brand">
 
-
-            <div class="mobile-bitcoin-logo">
-
-                <i
-                    class="fa-brands fa-bitcoin">
-                </i>
-
+            <div class="mobile-logo">
+                <span>TW</span>
             </div>
-
 
             <div>
-
-                <h1>
-                    Bitcoin Invest
-                </h1>
-
-                <span>
-                    Secure account access
-                </span>
-
+                <h1>TESLA <span>WEALTH</span></h1>
+                <p>Your Wealth. Your Future.</p>
             </div>
-
 
         </div>
 
-
-        <!-- AUTH HEADER -->
-
+        <!-- Authentication heading -->
         <div class="auth-header">
 
-
             <div class="header-icon">
-
-                <i
-                    id="headerIcon"
-                    class="fa-solid fa-right-to-bracket">
-                </i>
-
+                <i id="headerIcon" class="fa-solid fa-right-to-bracket"></i>
             </div>
-
 
             <div>
-
-                <h2 id="authTitle">
-
-                    Welcome Back
-
-                </h2>
-
-
+                <h2 id="authTitle">Welcome Back</h2>
                 <p id="authSubtitle">
-
-                    Login to securely access your account.
-
+                    Login to access your account.
                 </p>
-
             </div>
 
-
         </div>
 
-
-        <!-- TABS -->
-
+        <!-- Login / Registration tabs -->
         <div class="auth-tabs">
 
+            <button type="button"
+                    class="auth-tab active"
+                    id="loginTab"
+                    onclick="showLogin()">
 
-            <button
-                type="button"
-                class="auth-tab active"
-                id="loginTab"
-                onclick="showLogin()"
-            >
-
-                <i
-                    class="fa-solid fa-right-to-bracket">
-                </i>
-
+                <i class="fa-solid fa-right-to-bracket"></i>
                 Login
-
             </button>
 
+            <button type="button"
+                    class="auth-tab"
+                    id="registerTab"
+                    onclick="showRegister()">
 
-            <button
-                type="button"
-                class="auth-tab"
-                id="registerTab"
-                onclick="showRegister()"
-            >
-
-                <i
-                    class="fa-solid fa-user-plus">
-                </i>
-
+                <i class="fa-solid fa-user-plus"></i>
                 Register
-
             </button>
-
 
         </div>
 
+        <!-- ======================================
+             LOGIN FORM
+        ======================================= -->
 
-        <!-- ================================= -->
-        <!-- LOGIN FORM -->
-        <!-- ================================= -->
-
-        <form
-            id="loginForm"
-            class="auth-form active-form"
-            onsubmit="event.preventDefault(); handleLogin();"
-        >
-
-
-            <!-- PHONE -->
+        <form id="loginForm"
+              class="auth-form active-form"
+              onsubmit="event.preventDefault(); handleLogin();">
 
             <div class="form-group">
 
-                <label>
-
-                    <i
-                        class="fa-solid fa-phone">
-                    </i>
-
+                <label for="login_phone">
+                    <i class="fa-solid fa-phone"></i>
                     Mobile Number
-
                 </label>
-
 
                 <div class="input-box">
 
-
                     <div class="input-prefix">
-
-                        <span>
-                            +91
-                        </span>
-
+                        <span>+91</span>
                     </div>
 
-
-                    <input
-                        type="tel"
-                        id="login_phone"
-                        maxlength="10"
-                        inputmode="numeric"
-                        placeholder="Enter mobile number"
-                        autocomplete="tel"
-                        required
-                    >
-
+                    <input type="tel"
+                           id="login_phone"
+                           maxlength="10"
+                           inputmode="numeric"
+                           pattern="[0-9]{10}"
+                           placeholder="Enter mobile number"
+                           autocomplete="tel-national"
+                           required>
 
                 </div>
 
             </div>
 
-
-            <!-- PASSWORD -->
-
             <div class="form-group">
 
-                <label>
-
-                    <i
-                        class="fa-solid fa-lock">
-                    </i>
-
+                <label for="login_pass">
+                    <i class="fa-solid fa-lock"></i>
                     Password
-
                 </label>
-
 
                 <div class="input-box">
 
+                    <i class="fa-solid fa-lock input-icon"></i>
 
-                    <i
-                        class="fa-solid fa-lock">
-                    </i>
+                    <input type="password"
+                           id="login_pass"
+                           placeholder="Enter your password"
+                           autocomplete="current-password"
+                           required>
 
+                    <button type="button"
+                            class="password-toggle"
+                            aria-label="Show or hide password"
+                            onclick="togglePasswordVisibility('login_pass','loginEye')">
 
-                    <input
-                        type="password"
-                        id="login_pass"
-                        placeholder="Enter your password"
-                        autocomplete="current-password"
-                        required
-                    >
-
-
-                    <button
-                        type="button"
-                        class="password-toggle"
-                        onclick="togglePasswordVisibility('login_pass','loginEye')"
-                    >
-
-                        <i
-                            id="loginEye"
-                            class="fa-regular fa-eye-slash">
-                        </i>
+                        <i id="loginEye" class="fa-regular fa-eye-slash"></i>
 
                     </button>
 
-
                 </div>
 
             </div>
 
-
-            <!-- LOGIN OPTIONS -->
-
             <div class="form-options">
-
 
                 <label class="remember-option">
 
-
-                    <input
-                        type="checkbox"
-                        id="rememberMe"
-                    >
-
-
+                    <input type="checkbox" id="rememberMe">
                     <span class="custom-checkbox"></span>
-
-
-                    Remember me
-
+                    <span>Remember me</span>
 
                 </label>
 
-
-                <button
-                    type="button"
-                    class="forgot-btn"
-                    onclick="window.location.href='reset-password.html'"
-                >
+                <button type="button"
+                        class="forgot-btn"
+                        onclick="window.location.href='reset-password.html'">
 
                     Forgot password?
 
                 </button>
 
-
             </div>
 
+            <button type="submit" class="submit-btn" id="loginBtn">
 
-            <!-- LOGIN BUTTON -->
-
-            <button
-                type="submit"
-                class="submit-btn"
-                id="loginBtn"
-            >
-
-                <span>
-                    Login Securely
-                </span>
-
-                <i
-                    class="fa-solid fa-arrow-right">
-                </i>
+                <span>Login Securely</span>
+                <i class="fa-solid fa-arrow-right"></i>
 
             </button>
 
-
-            <!-- SWITCH -->
-
             <div class="form-switch-text">
-
                 Don't have an account?
-
-                <button
-                    type="button"
-                    onclick="showRegister()"
-                >
-
+                <button type="button" onclick="showRegister()">
                     Create Account
-
                 </button>
-
             </div>
-
 
         </form>
 
+        <!-- ======================================
+             REGISTRATION FORM
+        ======================================= -->
 
-        <!-- ================================= -->
-        <!-- REGISTER FORM -->
-        <!-- ================================= -->
-
-        <form
-            id="registerForm"
-            class="auth-form"
-            onsubmit="event.preventDefault(); handleRegister();"
-        >
-
-
-            <!-- NOTICE -->
+        <form id="registerForm"
+              class="auth-form"
+              onsubmit="event.preventDefault(); handleRegister();">
 
             <div class="register-notice">
 
-                <i
-                    class="fa-solid fa-circle-info">
-                </i>
+                <i class="fa-solid fa-circle-info"></i>
 
                 <span>
-
-                    Your mobile number will be verified
-                    with a secure SMS OTP before your
-                    account is created.
-
+                    Verify your mobile number using SMS OTP
+                    as part of the registration process.
                 </span>
 
             </div>
 
-
-            <!-- FULL NAME -->
-
             <div class="form-group">
 
-                <label>
-
-                    <i
-                        class="fa-solid fa-user">
-                    </i>
-
+                <label for="f_name">
+                    <i class="fa-solid fa-user"></i>
                     Full Name
-
                 </label>
-
 
                 <div class="input-box">
 
-                    <i
-                        class="fa-solid fa-user">
-                    </i>
+                    <i class="fa-solid fa-user input-icon"></i>
 
-
-                    <input
-                        type="text"
-                        id="f_name"
-                        placeholder="Enter your full name"
-                        autocomplete="name"
-                        required
-                    >
+                    <input type="text"
+                           id="f_name"
+                           placeholder="Enter your full name"
+                           autocomplete="name"
+                           maxlength="100"
+                           required>
 
                 </div>
 
             </div>
 
-
-            <!-- PHONE -->
-
             <div class="form-group">
 
-                <label>
-
-                    <i
-                        class="fa-solid fa-phone">
-                    </i>
-
+                <label for="f_phone">
+                    <i class="fa-solid fa-phone"></i>
                     Mobile Number
-
                 </label>
-
 
                 <div class="input-box">
 
-
                     <div class="input-prefix">
-
-                        <span>
-                            +91
-                        </span>
-
+                        <span>+91</span>
                     </div>
 
-
-                    <input
-                        type="tel"
-                        id="f_phone"
-                        maxlength="10"
-                        inputmode="numeric"
-                        placeholder="Enter 10 digit mobile number"
-                        autocomplete="tel"
-                        required
-                    >
-
+                    <input type="tel"
+                           id="f_phone"
+                           maxlength="10"
+                           inputmode="numeric"
+                           pattern="[0-9]{10}"
+                           placeholder="Enter 10 digit number"
+                           autocomplete="tel-national"
+                           required>
 
                 </div>
 
-
-                <small style="
-                    display:block;
-                    margin-top:7px;
-                    font-size:11px;
-                    opacity:.65;
-                ">
-
-                    <i
-                        class="fa-solid fa-shield-halved">
-                    </i>
-
-                    An SMS OTP will be sent to this number.
-
+                <small class="field-hint">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Your number will be verified by SMS OTP.
                 </small>
 
             </div>
 
-
-            <!-- PASSWORD -->
-
             <div class="form-group">
 
-                <label>
-
-                    <i
-                        class="fa-solid fa-lock">
-                    </i>
-
+                <label for="f_pass">
+                    <i class="fa-solid fa-lock"></i>
                     Create Password
-
                 </label>
-
 
                 <div class="input-box">
 
+                    <i class="fa-solid fa-lock input-icon"></i>
 
-                    <i
-                        class="fa-solid fa-lock">
-                    </i>
+                    <input type="password"
+                           id="f_pass"
+                           placeholder="Minimum 6 characters"
+                           minlength="6"
+                           autocomplete="new-password"
+                           required>
 
+                    <button type="button"
+                            class="password-toggle"
+                            aria-label="Show or hide password"
+                            onclick="togglePasswordVisibility('f_pass','registerEye')">
 
-                    <input
-                        type="password"
-                        id="f_pass"
-                        placeholder="Minimum 6 characters"
-                        autocomplete="new-password"
-                        required
-                    >
-
-
-                    <button
-                        type="button"
-                        class="password-toggle"
-                        onclick="togglePasswordVisibility('f_pass','registerEye')"
-                    >
-
-                        <i
-                            id="registerEye"
-                            class="fa-regular fa-eye-slash">
-                        </i>
+                        <i id="registerEye"
+                           class="fa-regular fa-eye-slash"></i>
 
                     </button>
-
 
                 </div>
 
             </div>
 
-
-            <!-- CONFIRM PASSWORD -->
-
             <div class="form-group">
 
-                <label>
-
-                    <i
-                        class="fa-solid fa-lock">
-                    </i>
-
+                <label for="f_pass2">
+                    <i class="fa-solid fa-shield-halved"></i>
                     Confirm Password
-
                 </label>
-
 
                 <div class="input-box">
 
+                    <i class="fa-solid fa-lock input-icon"></i>
 
-                    <i
-                        class="fa-solid fa-shield-halved">
-                    </i>
+                    <input type="password"
+                           id="f_pass2"
+                           placeholder="Confirm your password"
+                           minlength="6"
+                           autocomplete="new-password"
+                           required>
 
+                    <button type="button"
+                            class="password-toggle"
+                            aria-label="Show or hide confirmation password"
+                            onclick="togglePasswordVisibility('f_pass2','confirmEye')">
 
-                    <input
-                        type="password"
-                        id="f_pass2"
-                        placeholder="Confirm your password"
-                        autocomplete="new-password"
-                        required
-                    >
-
-
-                    <button
-                        type="button"
-                        class="password-toggle"
-                        onclick="togglePasswordVisibility('f_pass2','confirmEye')"
-                    >
-
-                        <i
-                            id="confirmEye"
-                            class="fa-regular fa-eye-slash">
-                        </i>
+                        <i id="confirmEye"
+                           class="fa-regular fa-eye-slash"></i>
 
                     </button>
 
-
                 </div>
 
             </div>
-
-
-            <!-- REFERRAL -->
 
             <div class="form-group">
 
-                <label>
-
-                    <i
-                        class="fa-solid fa-gift">
-                    </i>
-
+                <label for="f_ref">
+                    <i class="fa-solid fa-gift"></i>
                     Referral Code
-
-                    <span class="optional">
-                        Optional
-                    </span>
-
+                    <span class="optional">OPTIONAL</span>
                 </label>
-
 
                 <div class="input-box">
 
+                    <i class="fa-solid fa-gift input-icon"></i>
 
-                    <i
-                        class="fa-solid fa-gift">
-                    </i>
-
-
-                    <input
-                        type="text"
-                        id="f_ref"
-                        placeholder="Enter referral code"
-                    >
-
+                    <input type="text"
+                           id="f_ref"
+                           placeholder="Enter referral code"
+                           autocomplete="off"
+                           maxlength="100">
 
                 </div>
 
             </div>
-
-
-            <!-- TERMS -->
 
             <label class="terms-option">
 
-
-                <input
-                    type="checkbox"
-                    id="registerTerms"
-                    required
-                >
-
+                <input type="checkbox" id="registerTerms" required>
 
                 <span class="custom-checkbox"></span>
 
-
                 <span>
-
                     I agree to the
-
-                    <a
-                        href="terms.html"
-                        target="_blank"
-                    >
-                        Terms & Conditions
+                    <a href="terms.html" target="_blank" rel="noopener noreferrer">
+                        Terms &amp; Conditions
                     </a>
-
                     and understand the platform rules.
-
                 </span>
-
 
             </label>
 
+            <!-- Required by the existing Firebase phone OTP flow -->
+            <div id="recaptcha-container"></div>
 
-            <!-- FIREBASE RECAPTCHA -->
+            <button type="submit" class="submit-btn" id="regBtn">
 
-            <div
-                id="recaptcha-container"
-                style="
-                    min-height:1px;
-                "
-            ></div>
-
-
-            <!-- REGISTER BUTTON -->
-
-            <button
-                type="submit"
-                class="submit-btn"
-                id="regBtn"
-            >
-
-                <span>
-                    Verify Mobile & Create Account
-                </span>
-
-                <i
-                    class="fa-solid fa-mobile-screen-button">
-                </i>
+                <span>Verify Mobile &amp; Create Account</span>
+                <i class="fa-solid fa-mobile-screen-button"></i>
 
             </button>
 
+            <div class="otp-security-note">
 
-            <!-- OTP SECURITY NOTE -->
-
-            <div style="
-                display:flex;
-                align-items:center;
-                gap:8px;
-                margin-top:12px;
-                padding:10px 12px;
-                border-radius:10px;
-                background:rgba(16,185,129,.08);
-                border:1px solid rgba(16,185,129,.15);
-                font-size:11px;
-                line-height:1.5;
-                opacity:.8;
-            ">
-
-                <i
-                    class="fa-solid fa-circle-check"
-                    style="color:#10b981;"
-                ></i>
+                <i class="fa-solid fa-circle-check"></i>
 
                 <span>
-                    Your mobile number must be verified
-                    before your account can be created.
+                    Mobile verification is required before
+                    your account can be created.
                 </span>
 
             </div>
 
-
-            <!-- SWITCH -->
-
             <div class="form-switch-text">
-
                 Already have an account?
-
-                <button
-                    type="button"
-                    onclick="showLogin()"
-                >
-
+                <button type="button" onclick="showLogin()">
                     Login Now
-
                 </button>
-
             </div>
-
 
         </form>
 
-
-        <!-- ================================= -->
-        <!-- SECURITY FOOTER -->
-        <!-- ================================= -->
-
+        <!-- Security footer -->
         <div class="security-footer">
 
-
-            <div>
-
-                <i
-                    class="fa-solid fa-lock">
-                </i>
-
-                Secure login
-
-            </div>
-
+            <span>
+                <i class="fa-solid fa-lock"></i>
+                Secure access
+            </span>
 
             <span class="security-dot"></span>
 
-
-            <div>
-
-                <i
-                    class="fa-solid fa-shield-halved">
-                </i>
-
-                Account protected
-
-            </div>
-
-
-            <span class="security-dot"></span>
-
-
-            <div>
-
-                <i
-                    class="fa-solid fa-mobile-screen-button">
-                </i>
-
-                SMS verified
-
-            </div>
-
+            <span>
+                <i class="fa-solid fa-shield-halved"></i>
+                Account protection
+            </span>
 
         </div>
 
-
     </section>
-
 
 </main>
 
-
-<!-- ================================= -->
-<!-- APP JAVASCRIPT -->
-<!-- ================================= -->
-
-<script
-    src="js/app.js">
-</script>
-
+<!-- Keep the existing application JavaScript -->
+<script src="js/app.js"></script>
 
 </body>
-
 </html>
 

@@ -28,7 +28,11 @@ const depositSchema = new mongoose.Schema({
         enum: ["Pending", "Approved", "Rejected"],
         default: "Pending"
     },
-
+investableDepositBalance: {
+    type: Number,
+    default: 0,
+    min: 0
+},
     remark: {
         type: String,
         default: ""

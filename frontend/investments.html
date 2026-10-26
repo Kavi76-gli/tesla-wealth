@@ -1,685 +1,850 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
     >
 
-    <title>Bitcoin Investment</title>
+    <meta name="theme-color" content="#071b16">
 
-    <!-- Google Font -->
+    <meta
+        name="description"
+        content="Tesla Wealth investment dashboard. Review available plans, eligible deposit funds, investment records, and account balances."
+    >
+
+    <meta name="color-scheme" content="light">
+
+    <title>Investment Plans | Tesla Wealth</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
         rel="stylesheet"
     >
 
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
+    <link rel="stylesheet" href="css/investment.css">
 
-    <!-- Investment CSS -->
-    <link
-        rel="stylesheet"
-        href="css/investment.css"
-    >
-
+    <script defer src="js/investment.js"></script>
 </head>
 
-
 <body>
+<div class="app-shell">
 
+    <!-- ==================================================
+         SIDEBAR
+    =================================================== -->
+    <aside class="sidebar" id="sidebar">
 
-<!-- =====================================================
-     PAGE
-====================================================== -->
-
-<div class="page">
-
-
-    <!-- =================================================
-         HEADER
-    ================================================== -->
-
-    <header class="top-header">
-
-        <button
-            class="back-button"
-            onclick="history.back()"
-            type="button"
+        <a
+            class="brand"
+            href="home.html"
+            aria-label="Tesla Wealth dashboard"
         >
+            <span class="brand-mark" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
 
-            <i class="fa-solid fa-arrow-left"></i>
+            <span class="brand-copy">
+                <strong>TESLA <b>WEALTH</b></strong>
+                <small>WEALTH WORKSPACE</small>
+            </span>
+        </a>
 
-        </button>
+        <div class="nav-heading">MAIN MENU</div>
 
+        <nav class="side-nav" aria-label="Main navigation">
 
-        <div class="header-title">
+            <a href="home.html">
+                <span class="nav-icon" aria-hidden="true">⌂</span>
+                <span>Dashboard</span>
+            </a>
 
-            <div class="header-bitcoin">
+            <a
+                class="active"
+                href="investment.html"
+                aria-current="page"
+            >
+                <span class="nav-icon" aria-hidden="true">↗</span>
+                <span>Investment plans</span>
+            </a>
 
-                <i class="fa-brands fa-bitcoin"></i>
+            <a href="investments.html">
+                <span class="nav-icon" aria-hidden="true">▤</span>
+                <span>My investments</span>
+            </a>
 
+            <a href="deposite.html">
+                <span class="nav-icon" aria-hidden="true">＋</span>
+                <span>Deposit funds</span>
+            </a>
+
+            <a href="withdraw.html">
+                <span class="nav-icon" aria-hidden="true">↙</span>
+                <span>Withdraw</span>
+            </a>
+
+            <a href="transition.html">
+                <span class="nav-icon" aria-hidden="true">⇄</span>
+                <span>Transactions</span>
+            </a>
+
+            <a href="profile.html">
+                <span class="nav-icon" aria-hidden="true">◉</span>
+                <span>My profile</span>
+            </a>
+
+            <a href="reer.html">
+                <span class="nav-icon" aria-hidden="true">♧</span>
+                <span>Referral team</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="support-card">
+                <div class="support-icon" aria-hidden="true">?</div>
+
+                <strong>Need assistance?</strong>
+
+                <p>
+                    Contact support if you need help understanding
+                    an investment plan or your account activity.
+                </p>
+
+                <a href="support.html">
+                    Contact support <span aria-hidden="true">↗</span>
+                </a>
             </div>
 
+            <button
+                class="logout-button"
+                id="logoutButton"
+                type="button"
+            >
+                <span aria-hidden="true">↪</span>
+                Sign out
+            </button>
+
+        </div>
+    </aside>
+
+    <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+    ></div>
+
+    <!-- ==================================================
+         MAIN CONTENT
+    =================================================== -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <button
+                class="menu-button"
+                id="menuButton"
+                type="button"
+                aria-label="Open navigation"
+                aria-controls="sidebar"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+            <div class="breadcrumbs">
+                <span>Workspace</span>
+                <i aria-hidden="true">/</i>
+                <strong>Investment plans</strong>
+            </div>
+
+            <div class="top-actions">
+
+                <span class="secure-pill">
+                    <span class="live-dot"></span>
+                    Account overview
+                </span>
+
+                <a
+                    href="profile.html"
+                    class="profile-avatar"
+                    aria-label="Open my profile"
+                >
+                    TW
+                </a>
+
+            </div>
+        </header>
+
+        <!-- PAGE INTRODUCTION -->
+        <section class="page-intro">
 
             <div>
 
-                <span>
-                    Bitcoin
-                </span>
+                <div class="overline">
+                    <span class="overline-line"></span>
+                    YOUR WEALTH WORKSPACE
+                </div>
 
                 <h1>
-                    Investment
+                    Investment <em>plans.</em>
                 </h1>
 
+                <p>
+                    Review your available investment options, check
+                    eligible funds, and manage your investment activity
+                    from one place.
+                </p>
+
             </div>
 
+            <div class="last-updated">
+                <span class="live-dot"></span>
+                <span id="lastUpdated" role="status">
+                    Loading account…
+                </span>
+            </div>
+
+        </section>
+
+        <!-- Dashboard/API error message; populated by investment.js when needed. -->
+        <div
+            id="dashboardError"
+            class="modal-error hidden"
+            role="alert"
+            aria-live="assertive"
+        ></div>
+
+<!-- ==================================================
+     TESLA WEALTH — ACCOUNT BALANCES
+=================================================== -->
+
+<section class="balance-card" aria-label="Account balances">
+
+    <div class="balance-glow" aria-hidden="true"></div>
+
+    <!-- TOTAL WALLET BALANCE -->
+    <div class="balance-block wallet-block">
+
+        <div class="balance-label">
+            <span class="balance-symbol" aria-hidden="true">◈</span>
+            TOTAL WALLET BALANCE
         </div>
 
-
-        <button
-            class="header-refresh"
-            id="refreshButton"
-            type="button"
+        <div
+            class="balance-amount"
+            id="walletBalance"
+            aria-live="polite"
         >
-
-            <i class="fa-solid fa-rotate"></i>
-
-        </button>
-
-    </header>
-
-
-
-    <!-- =================================================
-         HERO
-    ================================================== -->
-
-    <section class="hero-card">
-
-        <div class="hero-glow glow-one"></div>
-        <div class="hero-glow glow-two"></div>
-
-        <div class="hero-shine"></div>
-
-
-        <div class="hero-top">
-
-            <div class="btc-symbol">
-
-                <i class="fa-brands fa-bitcoin"></i>
-
-            </div>
-
-
-            <div class="market-status">
-
-                <span></span>
-
-                Live Market
-
-            </div>
-
+            ₹0.00
         </div>
-
-
-        <div class="hero-content">
-
-            <span>
-                DIGITAL ASSET INVESTMENT
-            </span>
-
-            <h2>
-                Grow with Bitcoin
-            </h2>
-
-            <p>
-                Choose an available investment plan
-                and track your investment earnings
-                from one simple dashboard.
-            </p>
-
-        </div>
-
-
-        <div class="hero-bottom">
-
-            <div>
-
-                <small>
-                    Asset
-                </small>
-
-                <strong>
-                    BTC
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <small>
-                    Platform
-                </small>
-
-                <strong>
-                    Bitcoin
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <small>
-                    Status
-                </small>
-
-                <strong>
-                    Active
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =================================================
-         WALLET
-    ================================================== -->
-
-    <section class="wallet-card">
-
-        <div class="wallet-info">
-
-            <span>
-                Available Balance
-            </span>
-
-            <h2 id="walletBalance">
-                ₹0
-            </h2>
-
-            <small>
-                Available for investment
-            </small>
-
-        </div>
-
-
-        <div class="wallet-icon">
-
-            <i class="fa-solid fa-wallet"></i>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =================================================
-         STATISTICS
-    ================================================== -->
-
-    <section class="stats-grid">
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-layer-group"></i>
-
-            </div>
-
-            <div>
-
-                <span>
-                    Active Plans
-                </span>
-
-                <strong id="activePlans">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-coins"></i>
-
-            </div>
-
-            <div>
-
-                <span>
-                    Daily Income
-                </span>
-
-                <strong id="dailyIncome">
-                    ₹0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-chart-line"></i>
-
-            </div>
-
-            <div>
-
-                <span>
-                    Total Invested
-                </span>
-
-                <strong id="totalInvestment">
-                    ₹0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon">
-
-                <i class="fa-solid fa-sack-dollar"></i>
-
-            </div>
-
-            <div>
-
-                <span>
-                    Total Earned
-                </span>
-
-                <strong id="totalEarned">
-                    ₹0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- =================================================
-         SECTION HEADER
-    ================================================== -->
-<!-- =================================================
-     SECTION HEADER
-================================================== -->
-
-<section class="section-heading">
-
-    <div>
-
-        <span class="section-label">
-            BITCOIN
-        </span>
-
-        <h2>
-            Available Investment
-        </h2>
 
         <p>
-            Select an option that suits your budget.
+            Your recorded wallet funds, including credited activity
         </p>
 
-    </div>
-
-</section>
-
-
-<!-- =================================================
-     CATEGORY TABS
-================================================== -->
-
-<!-- =================================================
-     PLANS
-================================================== -->
-
-<section
-    id="plansContainer"
-    class="plans-container"
->
-
-    <div class="loading-card">
-
-        <i class="fa-solid fa-spinner fa-spin"></i>
-
-        <span>
-            Loading investment options...
-        </span>
+        <a href="transition.html" class="balance-link">
+            View transactions <span aria-hidden="true">→</span>
+        </a>
 
     </div>
 
-</section>
+    <div class="balance-divider"></div>
 
+    <!-- REMAINING DEPOSIT BALANCE -->
+    <div class="balance-block eligible-block">
 
-    <!-- =================================================
-         MY INVESTMENTS
-    ================================================== -->
+        <div class="balance-label">
+            <span class="balance-symbol" aria-hidden="true">↗</span>
+            REMAINING DEPOSIT BALANCE
 
-    <section class="section-heading my-heading">
-
-        <div>
-
-            <span class="section-label">
-                PORTFOLIO
-            </span>
-
-            <h2>
-                My Investments
-            </h2>
-
-            <p>
-                Track your active Bitcoin investments.
-            </p>
-
+            <span
+                class="info-tip"
+                title="Only the remaining approved deposit principal eligible for investment is shown."
+                aria-label="Remaining eligible deposit funds information"
+            >i</span>
         </div>
 
-    </section>
+        <div
+            class="balance-amount eligible-amount"
+            id="investableBalance"
+            aria-live="polite"
+        >
+            ₹0.00
+        </div>
+
+        <p>
+            Remaining approved deposit principal available for investment
+        </p>
+
+        <a href="investment.html#plansContainer" class="balance-link">
+            Explore investment plans
+            <span aria-hidden="true">→</span>
+        </a>
+
+    </div>
+
+    <div class="balance-divider balance-divider-third"></div>
+
+    <!-- AVAILABLE FOR WITHDRAWAL -->
+    <div class="balance-block withdrawable-block">
+
+        <div class="balance-label">
+            <span class="balance-symbol" aria-hidden="true">₹</span>
+            AVAILABLE FOR WITHDRAWAL
+        </div>
+
+        <div
+            class="balance-amount eligible-amount"
+            id="withdrawableEarnings"
+            aria-live="polite"
+        >
+            ₹0.00
+        </div>
+
+        <p>
+            Eligible returns and credited referral bonuses, subject to account rules
+        </p>
+
+        <a href="withdraw.html" class="balance-link">
+            Request withdrawal
+            <span aria-hidden="true">→</span>
+        </a>
+
+    </div>
+
+    <div
+        class="balance-watermark"
+        aria-hidden="true"
+    >TW</div>
+
+</section>
 
 
-    <section
-        id="myInvestments"
-        class="my-investments"
-    >
 
-        <div class="loading-card">
+        <!-- ==================================================
+             INVESTMENT SUMMARY
+        =================================================== -->
+        <section
+            class="stats-grid"
+            aria-label="Investment summary"
+        >
 
-            <i class="fa-solid fa-spinner fa-spin"></i>
+            <article class="stat-card">
+
+                <div class="stat-top">
+                    <span>ACTIVE INVESTMENTS</span>
+                    <span
+                        class="stat-icon icon-green"
+                        aria-hidden="true"
+                    >↗</span>
+                </div>
+
+                <strong id="activePlans">0</strong>
+
+                <small>Currently active records</small>
+
+            </article>
+
+            <article class="stat-card">
+
+                <div class="stat-top">
+                    <span>DAILY INCOME</span>
+                    <span
+                        class="stat-icon icon-blue"
+                        aria-hidden="true"
+                    >◷</span>
+                </div>
+
+                <strong id="dailyIncome">₹0.00</strong>
+
+                <small>Daily income recorded by the platform</small>
+
+            </article>
+
+            <article class="stat-card">
+
+                <div class="stat-top">
+                    <span>TOTAL INVESTED</span>
+                    <span
+                        class="stat-icon icon-violet"
+                        aria-hidden="true"
+                    >▤</span>
+                </div>
+
+                <strong id="totalInvestment">₹0.00</strong>
+
+                <small>Across recorded investments</small>
+
+            </article>
+
+            <article class="stat-card">
+
+                <div class="stat-top">
+                    <span>TOTAL EARNED</span>
+                    <span
+                        class="stat-icon icon-gold"
+                        aria-hidden="true"
+                    >⌁</span>
+                </div>
+
+                <strong id="totalEarned">₹0.00</strong>
+
+                <small>Recorded investment earnings</small>
+
+            </article>
+
+        </section>
+
+        <!-- ==================================================
+             AVAILABLE INVESTMENT PLANS
+        =================================================== -->
+        <section
+            class="content-section"
+            id="availablePlansSection"
+        >
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="section-kicker">
+                        EXPLORE YOUR OPTIONS
+                    </div>
+
+                    <h2>Available plans</h2>
+
+                    <p>
+                        Compare plan amounts, durations, and listed
+                        income figures before making a decision.
+                    </p>
+
+                </div>
+
+                <div class="plan-controls">
+
+                    <label class="search-box">
+
+                        <span aria-hidden="true">⌕</span>
+
+                        <input
+                            id="planSearch"
+                            type="search"
+                            placeholder="Search plans"
+                            aria-label="Search investment plans"
+                            autocomplete="off"
+                        >
+
+                    </label>
+
+                    <select
+                        id="planSort"
+                        aria-label="Sort investment plans"
+                    >
+                        <option value="low">Price: low to high</option>
+                        <option value="high">Price: high to low</option>
+                        <option value="name">Name: A to Z</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- FUND ELIGIBILITY NOTICE -->
+            <div class="funds-notice">
+
+                <span
+                    class="notice-mark"
+                    aria-hidden="true"
+                >i</span>
+
+                <p>
+                    <strong>Understand your eligible funds.</strong>
+
+                    Investment purchases must be covered by the remaining
+                    approved deposit balance. Daily income and referral
+                    commissions do not increase your investable deposit
+                    balance. Your purchase will be validated by the server.
+                </p>
+
+            </div>
+
+            <!-- PLAN LOADING / RESULTS -->
+            <div
+                id="plansContainer"
+                class="plans-grid"
+                aria-live="polite"
+            >
+
+                <div class="loading-state">
+                    <span
+                        class="spinner"
+                        aria-hidden="true"
+                    ></span>
+
+                    Loading available plans…
+                </div>
+
+            </div>
+
+            <!-- NO PLANS -->
+            <div
+                id="plansEmpty"
+                class="empty-state hidden"
+            >
+
+                <span
+                    class="empty-icon"
+                    aria-hidden="true"
+                >◇</span>
+
+                <strong>No plans found</strong>
+
+                <p>
+                    Try another search or check again later.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- ==================================================
+             MY RECENT INVESTMENTS
+        =================================================== -->
+        <section class="content-section investments-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="section-kicker">
+                        YOUR ACCOUNT ACTIVITY
+                    </div>
+
+                    <h2>My investments</h2>
+
+                    <p>
+                        Review your recent investment records and
+                        their current status.
+                    </p>
+
+                </div>
+
+                <a
+                    class="view-all"
+                    href="investments.html"
+                >
+                    View all investments
+                    <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
+
+            <div
+                id="myInvestments"
+                class="investment-list"
+                aria-live="polite"
+            >
+
+                <div class="loading-state">
+                    <span
+                        class="spinner"
+                        aria-hidden="true"
+                    ></span>
+
+                    Loading your investments…
+                </div>
+
+            </div>
+
+            <div
+                id="investmentsEmpty"
+                class="empty-state hidden"
+            >
+
+                <span
+                    class="empty-icon"
+                    aria-hidden="true"
+                >▤</span>
+
+                <strong>No investment records yet</strong>
+
+                <p>
+                    Your investment records will appear here when
+                    available.
+                </p>
+
+                <a
+                    class="button button-primary button-small"
+                    href="#availablePlansSection"
+                >
+                    Explore plans
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- ==================================================
+             FINANCIAL INFORMATION
+        =================================================== -->
+        <section class="content-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="section-kicker">
+                        ACCOUNT INFORMATION
+                    </div>
+
+                    <h2>How your balances work</h2>
+
+                    <p>
+                        Understand the difference between wallet funds,
+                        investment-eligible deposits, and earnings.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="funds-notice">
+
+                <span
+                    class="notice-mark"
+                    aria-hidden="true"
+                >i</span>
+
+                <p>
+                    <strong>Wallet balance:</strong>
+                    your recorded account funds.
+
+                    <br><br>
+
+                    <strong>Investable deposit balance:</strong>
+                    the remaining approved deposit principal eligible
+                    for new investment purchases.
+
+                    <br><br>
+
+                    <strong>Withdrawable earnings:</strong>
+                    earnings recorded as eligible for withdrawal,
+                    subject to applicable account rules and pending
+                    withdrawal reservations.
+
+                    <br><br>
+
+                    <strong>Important:</strong>
+                    the figures displayed here are informational.
+                    The backend must independently validate every
+                    purchase and withdrawal.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="page-footer">
 
             <span>
-                Loading portfolio...
+                © <span id="currentYear"></span> Tesla Wealth
             </span>
 
-        </div>
+            <span>
+                Investment involves risk. Listed income figures are
+                not guarantees of future returns.
+            </span>
 
-    </section>
+        </footer>
 
-
-
-    <div class="bottom-space"></div>
-
+    </main>
 </div>
 
-
-
-<!-- =====================================================
-     PURCHASE MODAL
-====================================================== -->
-
+<!-- ======================================================
+     NOTIFICATIONS
+======================================================= -->
 <div
-    id="purchaseModal"
-    class="modal"
->
+    class="toast-region"
+    id="toastRegion"
+    aria-live="polite"
+    aria-atomic="true"
+></div>
 
-    <div class="modal-box">
+<!-- ======================================================
+     PURCHASE REVIEW MODAL
+======================================================= -->
+<div
+    class="modal-backdrop hidden"
+    id="purchaseModal"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="modalTitle"
+>
+    <div class="purchase-modal">
 
         <button
             class="modal-close"
             id="closeModal"
             type="button"
+            aria-label="Close investment review"
         >
-
-            <i class="fa-solid fa-xmark"></i>
-
+            ×
         </button>
 
-
-        <div class="modal-bitcoin">
-
-            <i class="fa-brands fa-bitcoin"></i>
-
+        <div class="section-kicker">
+            INVESTMENT REVIEW
         </div>
 
-
-        <span class="modal-label">
-            CONFIRM INVESTMENT
-        </span>
-
-
-        <h2 id="modalPlanName">
-            Bitcoin Plan
+        <h2 id="modalTitle">
+            Review investment plan
         </h2>
 
+        <p class="modal-intro">
+            Review the selected plan and available eligible funds
+            before submitting your purchase request.
+        </p>
 
-        <div class="confirm-details">
+        <!-- SELECTED PLAN -->
+        <div class="selected-plan">
 
+            <div
+                class="selected-plan-mark"
+                aria-hidden="true"
+            >TW</div>
 
-            <div class="confirm-row">
+            <div>
 
-                <span>
-                    Investment
-                </span>
-
-                <strong id="modalAmount">
-                    ₹0
+                <strong id="modalPlanName">
+                    Investment plan
                 </strong>
 
-            </div>
-
-
-            <div class="confirm-row">
-
-                <span>
-                    Daily Income
-                </span>
-
-                <strong id="modalDaily">
-                    ₹0
-                </strong>
+                <small id="modalPlanDescription">
+                    Plan description
+                </small>
 
             </div>
-
-
-            <div class="confirm-row">
-
-                <span>
-                    Duration
-                </span>
-
-                <strong id="modalDuration">
-                    0 Days
-                </strong>
-
-            </div>
-
-
-            <div class="confirm-row total-row">
-
-                <span>
-                    Total Income
-                </span>
-
-                <strong id="modalTotal">
-                    ₹0
-                </strong>
-
-            </div>
-
-
-<!-- RETURN -->
-
-<div class="plan-detail return-detail">
-
-    <span>
-        Return
-    </span>
-
-    <strong>
-        ${price > 0
-            ? ((total / price) * 100).toFixed(1)
-            : "0.0"
-        }%
-    </strong>
-
-</div>
 
         </div>
 
+        <!-- PLAN DETAILS -->
+        <div class="modal-details">
 
-        <button
-            id="confirmPurchase"
-            class="confirm-button"
-            type="button"
-        >
+            <div>
+                <span>Investment amount</span>
+                <strong id="modalAmount">₹0.00</strong>
+            </div>
 
-            <i class="fa-brands fa-bitcoin"></i>
+            <div>
+                <span>Listed daily income</span>
+                <strong id="modalDaily">₹0.00</strong>
+            </div>
 
-            Confirm Investment
+            <div>
+                <span>Duration</span>
+                <strong id="modalDuration">0 days</strong>
+            </div>
 
-        </button>
+            <div>
+                <span>Listed total income</span>
+                <strong id="modalTotal">₹0.00</strong>
+            </div>
+
+            <div>
+                <span>Listed income / investment</span>
+                <strong id="modalReturn">0%</strong>
+            </div>
+
+        </div>
+
+        <!-- ELIGIBLE FUNDS -->
+        <div class="modal-eligible">
+
+            <span>Eligible funds available</span>
+
+            <strong id="modalEligibleBalance">
+                ₹0.00
+            </strong>
+
+        </div>
+
+        <!-- PURCHASE DISCLOSURE -->
+        <div class="funds-notice">
+
+            <span
+                class="notice-mark"
+                aria-hidden="true"
+            >i</span>
+
+            <p>
+                The purchase must be validated by the server.
+                Only eligible approved deposit funds may be used.
+                Income estimates are not guaranteed, and an investment
+                request is not confirmed until the server reports
+                the resulting status.
+            </p>
+
+        </div>
+
+        <p class="modal-disclaimer">
+            Please review the plan's duration, payout terms, and risks
+            before continuing. Do not invest money you cannot afford
+            to lose.
+        </p>
+
+        <!-- MODAL ACTIONS -->
+        <div class="modal-actions">
+
+            <button
+                class="button button-secondary"
+                id="cancelPurchase"
+                type="button"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="button button-primary"
+                id="confirmPurchase"
+                type="button"
+            >
+                Confirm purchase
+                <span aria-hidden="true">→</span>
+            </button>
+
+        </div>
+
+        <!-- ERROR MESSAGE -->
+        <div
+            id="modalError"
+            class="modal-error hidden"
+            role="alert"
+        ></div>
 
     </div>
-
 </div>
 
+<!-- FOOTER INITIALIZATION -->
+<script>
+    (function () {
+        const yearElement = document.getElementById("currentYear");
 
-
-<!-- =====================================================
-     BOTTOM NAVIGATION
-====================================================== -->
-
-<nav class="bottom-nav">
-
-
-    <button
-        class="nav-item"
-        data-page="home"
-        onclick="navigate('home')"
-        type="button"
-    >
-
-        <div class="nav-icon">
-
-            <i class="fa-solid fa-house"></i>
-
-        </div>
-
-        <span>
-            Home
-        </span>
-
-    </button>
-
-
-    <button
-        class="nav-item active"
-        data-page="investments"
-        onclick="navigate('investments')"
-        type="button"
-    >
-
-        <div class="nav-icon">
-
-            <i class="fa-brands fa-bitcoin"></i>
-
-        </div>
-
-        <span>
-            Invest
-        </span>
-
-    </button>
-
-
-    <button
-        class="nav-item nav-center"
-        data-page="deposit"
-        onclick="navigate('deposit')"
-        type="button"
-    >
-
-        <div class="center-button">
-
-            <i class="fa-solid fa-plus"></i>
-
-        </div>
-
-        <span>
-            Deposit
-        </span>
-
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-page="invite"
-        onclick="window.location.href='reer.html'"
-        type="button"
-    >
-
-        <div class="nav-icon">
-
-            <i class="fa-solid fa-user-plus"></i>
-
-        </div>
-
-        <span>
-            Invite
-        </span>
-
-    </button>
-
-
-    <button
-        class="nav-item"
-        data-page="profile"
-        onclick="navigate('profile')"
-        type="button"
-    >
-
-        <div class="nav-icon">
-
-            <i class="fa-solid fa-user"></i>
-
-        </div>
-
-        <span>
-            Profile
-        </span>
-
-    </button>
-
-
-</nav>
-
-
-
-<script src="js/investment.js"></script>
+        if (yearElement) {
+            yearElement.textContent = new Date().getFullYear();
+        }
+    })();
+</script>
 
 </body>
-
 </html>
