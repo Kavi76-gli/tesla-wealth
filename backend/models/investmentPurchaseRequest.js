@@ -5,13 +5,29 @@
 const mongoose = require("mongoose");
 
 // ======================================================
-// PURCHASE REQUEST SCHEMA
+// CONSTANTS
+// ======================================================
+
+const REQUEST_STATUSES = [
+    "Pending",
+    "Approved",
+    "Rejected",
+    "Cancelled"
+];
+
+const APPROVAL_MODES = [
+    "automatic",
+    "manual"
+];
+
+// ======================================================
+// INVESTMENT PURCHASE REQUEST SCHEMA
 // ======================================================
 
 const investmentPurchaseRequestSchema = new mongoose.Schema(
     {
         // ==============================================
-        // USER WHO REQUESTED THE PURCHASE
+        // USER WHO REQUESTED THE INVESTMENT
         // ==============================================
 
         user: {
@@ -33,22 +49,26 @@ const investmentPurchaseRequestSchema = new mongoose.Schema(
         },
 
         // ==============================================
-        // PLAN SNAPSHOT
-        // Preserve the requested details for review.
-        // The plan's current price will be rechecked
-        // when the request is approved.
+        // PLAN DETAILS AT REQUEST TIME
+        // These preserve the original request information.
         // ==============================================
 
         planName: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            minlength: 1,
+            maxlength: 150
         },
 
         requestedAmount: {
             type: Number,
             required: true,
-            min: 0
+            min: 0,
+            validate: {
+                validator: Number.isFinite,
+                message: "Requested amount must be a valid number."
+            }
         },
 
         // ==============================================
@@ -57,12 +77,10 @@ const investmentPurchaseRequestSchema = new mongoose.Schema(
 
         status: {
             type: String,
-            enum: [
-                "Pending",
-                "Approved",
-                "Rejected",
-                "Cancelled"
-            ],
+            enum: {
+                values: REQUEST_STATUSES,
+                message: "Invalid investment request status."
+            },
             default: "Pending",
             required: true,
             index: true
@@ -74,13 +92,16 @@ const investmentPurchaseRequestSchema = new mongoose.Schema(
 
         approvalMode: {
             type: String,
-            enum: ["automatic", "manual"],
+            enum: {
+                values: APPROVAL_MODES,
+                message: "Approval mode must be automatic or manual."
+            },
             default: "manual",
             required: true
         },
 
         // ==============================================
-        // ADMIN REVIEW
+        // ADMINISTRATOR REVIEW
         // ==============================================
 
         reviewedBy: {
@@ -102,7 +123,7 @@ const investmentPurchaseRequestSchema = new mongoose.Schema(
         },
 
         // ==============================================
-        // RESULTING RECORDS
+        // RESULTING INVESTMENT RECORD
         // ==============================================
 
         investment: {
@@ -111,6 +132,10 @@ const investmentPurchaseRequestSchema = new mongoose.Schema(
             default: null
         },
 
+        // ==============================================
+        // RESULTING TRANSACTION RECORD
+        // ==============================================
+
         transaction: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Transaction",
@@ -118,7 +143,7 @@ const investmentPurchaseRequestSchema = new mongoose.Schema(
         },
 
         // ==============================================
-        // REQUEST PROCESSING
+        // PROCESSING INFORMATION
         // ==============================================
 
         processedAt: {
@@ -134,31 +159,59 @@ const investmentPurchaseRequestSchema = new mongoose.Schema(
         }
     },
     {
-        timestamps: true
+        timestamps: true,
+        versionKey: false
     }
 );
 
 // ======================================================
-// QUERY INDEXES
+// INDEXES
 // ======================================================
 
-// Retrieve a user's requests, newest first.
+// User's purchase requests, newest first.
 investmentPurchaseRequestSchema.index({
     user: 1,
     createdAt: -1
 });
 
-// Retrieve requests awaiting administrator review.
+// Admin review queue.
 investmentPurchaseRequestSchema.index({
     status: 1,
     createdAt: -1
 });
 
-// Retrieve requests for a particular plan and status.
+// Requests associated with a particular plan.
 investmentPurchaseRequestSchema.index({
     user: 1,
     plan: 1,
     status: 1
+});
+
+// Administrator review history.
+investmentPurchaseRequestSchema.index({
+    reviewedBy: 1,
+    reviewedAt: -1
+});
+
+// ======================================================
+// VALIDATION
+// ======================================================
+
+// Prevent an invalid review date from being saved.
+investmentPurchaseRequestSchema.pre("validate", function () {
+    if (this.reviewedAt && Number.isNaN(this.reviewedAt.getTime())) {
+        this.invalidate(
+            "reviewedAt",
+            "The administrator review date is invalid."
+        );
+    }
+
+    if (this.processedAt && Number.isNaN(this.processedAt.getTime())) {
+        this.invalidate(
+            "processedAt",
+            "The request processing date is invalid."
+        );
+    }
 });
 
 // ======================================================

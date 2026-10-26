@@ -13,7 +13,17 @@ const Transaction = require("../models/transaction");
 const InvestmentPurchaseRequest = require(
     "../models/investmentPurchaseRequest"
 );
+// ======================================================
+// INVESTMENT ADMIN SETTINGS + ACTIVITY LOG MODELS
+// ======================================================
 
+const InvestmentAdminSettings = require(
+    "../models/investmentAdminSettings"
+);
+
+const InvestmentAdminActivity = require(
+    "../models/investmentAdminActivity"
+);
 // ======================================================
 // HELPERS
 // ======================================================
@@ -895,6 +905,711 @@ exports.rejectPurchaseRequest = async (req, res) => {
             success: false,
             message:
                 "Unable to reject the investment request."
+        });
+    }
+};
+
+// ======================================================
+// TESLA WEALTH — GLOBAL INVESTMENT ADMIN CONTROLS
+// ======================================================
+
+// ======================================================
+// HELPERS — GLOBAL SETTINGS
+// ======================================================
+
+async function getOrCreateGlobalInvestmentSettings() {
+    return InvestmentAdminSettings.findOneAndUpdate(
+        { key: "global" },
+        {
+            $setOnInsert: {
+                key: "global",
+                investmentPurchaseEnabled: true,
+                investmentApprovalMode: "automatic",
+                maxActiveInvestments: 10,
+                investmentPurchaseNote: "",
+                maxActivePerPlan: 0,
+                allowRepurchaseAfterCompletion: true,
+                restrictionNote: ""
+            }
+        },
+        {
+            new: true,
+            upsert: true,
+            setDefaultsOnInsert: true,
+            runValidators: true
+        }
+    );
+}
+
+function globalSettingsResponse(settings) {
+    return {
+        investmentPurchaseEnabled:
+            settings.investmentPurchaseEnabled,
+
+        investmentApprovalMode:
+            settings.investmentApprovalMode,
+
+        maxActiveInvestments:
+            settings.maxActiveInvestments,
+
+        investmentPurchaseNote:
+            settings.investmentPurchaseNote || "",
+
+        maxActivePerPlan:
+            settings.maxActivePerPlan,
+
+        allowRepurchaseAfterCompletion:
+            settings.allowRepurchaseAfterCompletion,
+
+        restrictionNote:
+            settings.restrictionNote || ""
+    };
+}
+
+async function recordInvestmentAdminActivity(
+    req,
+    action,
+    target = "",
+    targetId = "",
+    details = ""
+) {
+    try {
+        const adminId = getAdminId(req);
+
+        if (!adminId || !isValidObjectId(adminId)) {
+            return;
+        }
+
+        await InvestmentAdminActivity.create({
+            admin: adminId,
+            action,
+            target,
+            targetId: String(targetId || ""),
+            details: String(details || ""),
+            result: "Success"
+        });
+    } catch (error) {
+        // An audit-log failure must not undo a successful setting update.
+        console.error(
+            "INVESTMENT ADMIN ACTIVITY LOG ERROR:",
+            error.message
+        );
+    }
+}
+
+// ======================================================
+// 1. GET GLOBAL INVESTMENT SETTINGS
+// GET /api/investment/admin/settings
+// ======================================================
+
+exports.getGlobalInvestmentSettings = async (req, res) => {
+    try {
+        const settings =
+            await getOrCreateGlobalInvestmentSettings();
+
+        return res.status(200).json({
+            success: true,
+            settings: globalSettingsResponse(settings)
+        });
+    } catch (error) {
+        console.error(
+            "GET GLOBAL INVESTMENT SETTINGS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve global investment settings."
+        });
+    }
+};
+
+// ======================================================
+// 2. UPDATE GLOBAL INVESTMENT SETTINGS
+// PATCH /api/investment/admin/settings
+// ======================================================
+
+exports.updateGlobalInvestmentSettings = async (req, res) => {
+    try {
+        const body = req.body || {};
+        const updates = {};
+
+        const booleanFields = [
+            "investmentPurchaseEnabled",
+            "allowRepurchaseAfterCompletion"
+        ];
+
+        const integerFields = [
+            "maxActiveInvestments",
+            "maxActivePerPlan"
+        ];
+
+        const stringFields = [
+            "investmentPurchaseNote",
+            "restrictionNote"
+        ];
+
+        for (const field of booleanFields) {
+            if (Object.prototype.hasOwnProperty.call(body, field)) {
+                if (typeof body[field] !== "boolean") {
+                    return res.status(400).json({
+                        success: false,
+                        message: `${field} must be true or false.`
+                    });
+                }
+
+                updates[field] = body[field];
+            }
+        }
+
+        for (const field of integerFields) {
+            if (Object.prototype.hasOwnProperty.call(body, field)) {
+                const value = body[field];
+
+                if (
+                    typeof value !== "number" ||
+                    !Number.isInteger(value) ||
+                    value < 0 ||
+                    value > 10000
+                ) {
+                    return res.status(400).json({
+                        success: false,
+                        message:
+                            `${field} must be a whole number between 0 and 10000.`
+                    });
+                }
+
+                updates[field] = value;
+            }
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                body,
+                "investmentApprovalMode"
+            )
+        ) {
+            if (
+                !["automatic", "manual"].includes(
+                    body.investmentApprovalMode
+                )
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Approval mode must be automatic or manual."
+                });
+            }
+
+            updates.investmentApprovalMode =
+                body.investmentApprovalMode;
+        }
+
+        for (const field of stringFields) {
+            if (Object.prototype.hasOwnProperty.call(body, field)) {
+                const value = body[field];
+
+                const maxLength =
+                    field === "investmentPurchaseNote" ? 500 : 1000;
+
+                if (
+                    typeof value !== "string" ||
+                    value.length > maxLength
+                ) {
+                    return res.status(400).json({
+                        success: false,
+                        message:
+                            `${field} must be a string of at most ${maxLength} characters.`
+                    });
+                }
+
+                updates[field] = value.trim();
+            }
+        }
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No valid settings were provided."
+            });
+        }
+
+        const settings =
+            await InvestmentAdminSettings.findOneAndUpdate(
+                { key: "global" },
+                {
+                    $set: {
+                        ...updates,
+                        updatedBy: getAdminId(req)
+                    },
+                    $setOnInsert: {
+                        key: "global"
+                    }
+                },
+                {
+                    new: true,
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                    runValidators: true
+                }
+            );
+
+        await recordInvestmentAdminActivity(
+            req,
+            "Updated global investment settings",
+            "Global Investment Settings",
+            settings._id,
+            JSON.stringify(updates)
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Global investment settings updated successfully.",
+            settings: globalSettingsResponse(settings)
+        });
+    } catch (error) {
+        console.error(
+            "UPDATE GLOBAL INVESTMENT SETTINGS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to update global investment settings."
+        });
+    }
+};
+
+// ======================================================
+// 3. GET ALL PLAN SETTINGS
+// GET /api/investment/admin/plans/settings
+// ======================================================
+
+exports.getPlanSettings = async (req, res) => {
+    try {
+        const plans = await Plan.find({})
+            .sort({
+                sortOrder: 1,
+                createdAt: 1
+            })
+            .lean();
+
+        return res.status(200).json({
+            success: true,
+            plans
+        });
+    } catch (error) {
+        console.error(
+            "GET PLAN SETTINGS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve plan settings."
+        });
+    }
+};
+
+// ======================================================
+// 4. UPDATE INDIVIDUAL PLAN SETTINGS
+// PATCH /api/investment/admin/plans/:planId/settings
+// ======================================================
+
+exports.updatePlanSettings = async (req, res) => {
+    try {
+        const { planId } = req.params;
+        const body = req.body || {};
+
+        if (!isValidObjectId(planId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid plan ID."
+            });
+        }
+
+        const allowedFields = [
+            "purchaseEnabled",
+            "requireManualApproval",
+            "maxActivePerUser",
+            "allowRepurchaseAfterCompletion",
+            "restrictionNote"
+        ];
+
+        const updates = {};
+
+        for (const field of allowedFields) {
+            if (Object.prototype.hasOwnProperty.call(body, field)) {
+                updates[field] = body[field];
+            }
+        }
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No valid plan settings were provided."
+            });
+        }
+
+        const booleanFields = [
+            "purchaseEnabled",
+            "requireManualApproval",
+            "allowRepurchaseAfterCompletion"
+        ];
+
+        for (const field of booleanFields) {
+            if (
+                Object.prototype.hasOwnProperty.call(updates, field) &&
+                typeof updates[field] !== "boolean"
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message: `${field} must be true or false.`
+                });
+            }
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                updates,
+                "maxActivePerUser"
+            )
+        ) {
+            const value = updates.maxActivePerUser;
+
+            if (
+                typeof value !== "number" ||
+                !Number.isInteger(value) ||
+                value < 0 ||
+                value > 10000
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Maximum active investments per plan must be a whole number between 0 and 10000."
+                });
+            }
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                updates,
+                "restrictionNote"
+            )
+        ) {
+            const value = updates.restrictionNote;
+
+            if (
+                typeof value !== "string" ||
+                value.length > 1000
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "The restriction note must be a string of at most 1000 characters."
+                });
+            }
+
+            updates.restrictionNote = value.trim();
+        }
+
+        const plan = await Plan.findByIdAndUpdate(
+            planId,
+            {
+                $set: updates
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!plan) {
+            return res.status(404).json({
+                success: false,
+                message: "Investment plan not found."
+            });
+        }
+
+        await recordInvestmentAdminActivity(
+            req,
+            "Updated investment plan settings",
+            plan.name,
+            plan._id,
+            JSON.stringify(updates)
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Investment plan settings updated successfully.",
+            plan
+        });
+    } catch (error) {
+        console.error(
+            "UPDATE PLAN SETTINGS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to update plan settings."
+        });
+    }
+};
+
+// ======================================================
+// 5. GET INVESTMENT RESTRICTIONS
+// GET /api/investment/admin/restrictions
+// ======================================================
+
+exports.getInvestmentRestrictions = async (req, res) => {
+    try {
+        const settings =
+            await getOrCreateGlobalInvestmentSettings();
+
+        const restrictions = {
+            maxActivePerPlan: settings.maxActivePerPlan,
+            allowRepurchaseAfterCompletion:
+                settings.allowRepurchaseAfterCompletion,
+            restrictionNote: settings.restrictionNote || ""
+        };
+
+        return res.status(200).json({
+            success: true,
+            restrictions,
+            settings: restrictions
+        });
+    } catch (error) {
+        console.error(
+            "GET INVESTMENT RESTRICTIONS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve investment restrictions."
+        });
+    }
+};
+
+// ======================================================
+// 6. UPDATE INVESTMENT RESTRICTIONS
+// PATCH /api/investment/admin/restrictions
+// ======================================================
+
+exports.updateInvestmentRestrictions = async (req, res) => {
+    try {
+        const body = req.body || {};
+        const updates = {};
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                body,
+                "maxActivePerPlan"
+            )
+        ) {
+            const value = body.maxActivePerPlan;
+
+            if (
+                typeof value !== "number" ||
+                !Number.isInteger(value) ||
+                value < 0 ||
+                value > 10000
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "maxActivePerPlan must be a whole number between 0 and 10000."
+                });
+            }
+
+            updates.maxActivePerPlan = value;
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                body,
+                "allowRepurchaseAfterCompletion"
+            )
+        ) {
+            if (
+                typeof body.allowRepurchaseAfterCompletion !== "boolean"
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "allowRepurchaseAfterCompletion must be true or false."
+                });
+            }
+
+            updates.allowRepurchaseAfterCompletion =
+                body.allowRepurchaseAfterCompletion;
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                body,
+                "restrictionNote"
+            )
+        ) {
+            if (
+                typeof body.restrictionNote !== "string" ||
+                body.restrictionNote.length > 1000
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "restrictionNote must be a string of at most 1000 characters."
+                });
+            }
+
+            updates.restrictionNote =
+                body.restrictionNote.trim();
+        }
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "No valid investment restrictions were provided."
+            });
+        }
+
+        const settings =
+            await InvestmentAdminSettings.findOneAndUpdate(
+                { key: "global" },
+                {
+                    $set: {
+                        ...updates,
+                        updatedBy: getAdminId(req)
+                    },
+                    $setOnInsert: {
+                        key: "global"
+                    }
+                },
+                {
+                    new: true,
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                    runValidators: true
+                }
+            );
+
+        await recordInvestmentAdminActivity(
+            req,
+            "Updated investment restrictions",
+            "Global Investment Restrictions",
+            settings._id,
+            JSON.stringify(updates)
+        );
+
+        const restrictions = {
+            maxActivePerPlan: settings.maxActivePerPlan,
+            allowRepurchaseAfterCompletion:
+                settings.allowRepurchaseAfterCompletion,
+            restrictionNote: settings.restrictionNote || ""
+        };
+
+        return res.status(200).json({
+            success: true,
+            message: "Investment restrictions updated successfully.",
+            restrictions,
+            settings: restrictions
+        });
+    } catch (error) {
+        console.error(
+            "UPDATE INVESTMENT RESTRICTIONS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to update investment restrictions."
+        });
+    }
+};
+
+// ======================================================
+// 7. GET INVESTMENT ADMIN ACTIVITY
+// GET /api/investment/admin/activity
+//
+// Query: ?page=1&limit=20&search=plan
+// ======================================================
+
+exports.getAdminActivity = async (req, res) => {
+    try {
+        const page = Math.max(
+            1,
+            parseInt(req.query.page, 10) || 1
+        );
+
+        const limit = Math.min(
+            100,
+            Math.max(1, parseInt(req.query.limit, 10) || 20)
+        );
+
+        const search = String(
+            req.query.search || ""
+        ).trim().slice(0, 100);
+
+        const filter = {};
+
+        if (search) {
+            // Escape regex metacharacters in user-supplied search text.
+            const escaped = search.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
+            );
+
+            filter.$or = [
+                { action: { $regex: escaped, $options: "i" } },
+                { target: { $regex: escaped, $options: "i" } },
+                { targetId: { $regex: escaped, $options: "i" } },
+                { details: { $regex: escaped, $options: "i" } },
+                { result: { $regex: escaped, $options: "i" } }
+            ];
+        }
+
+        const [activities, total] = await Promise.all([
+            InvestmentAdminActivity.find(filter)
+                .populate("admin", "name phone")
+                .sort({
+                    createdAt: -1,
+                    _id: -1
+                })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .lean(),
+
+            InvestmentAdminActivity.countDocuments(filter)
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        return res.status(200).json({
+            success: true,
+            activities,
+            logs: activities,
+            data: activities,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages
+            },
+            page,
+            total,
+            totalPages
+        });
+    } catch (error) {
+        console.error(
+            "GET INVESTMENT ADMIN ACTIVITY ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve investment admin activity."
         });
     }
 };

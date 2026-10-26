@@ -87,21 +87,33 @@ function generateInvestmentTxId() {
 // GET ALL ACTIVE PLANS
 // ======================================================
 
+// ======================================================
+// GET AVAILABLE INVESTMENT PLANS
+// ======================================================
+
 exports.getPlans = async (req, res) => {
     try {
         const plans = await Plan.find({
-            status: true
-        }).sort({
-            sortOrder: 1
-        });
+            status: true,
+            purchaseEnabled: { $ne: false }
+        })
+            .sort({
+                sortOrder: 1,
+                createdAt: 1
+            })
+            .lean();
 
-        return res.json({
+        return res.status(200).json({
             success: true,
+            count: plans.length,
             plans
         });
 
     } catch (error) {
-        console.error("GET INVESTMENT PLANS ERROR:", error);
+        console.error(
+            "GET INVESTMENT PLANS ERROR:",
+            error
+        );
 
         return res.status(500).json({
             success: false,
@@ -109,7 +121,6 @@ exports.getPlans = async (req, res) => {
         });
     }
 };
-
 
 // ======================================================
 // PURCHASE INVESTMENT PLAN

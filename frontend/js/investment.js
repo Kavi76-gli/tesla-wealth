@@ -40,7 +40,7 @@ const IS_LOCAL_HOST = [
 ].includes(window.location.hostname);
 
 const API_BASE = IS_LOCAL_HOST
-    ? "http://localhost:5000/api"
+    ? "https://tesla-wealth.onrender.com/api"
     : "https://tesla-wealth.onrender.com/api";
 
 
