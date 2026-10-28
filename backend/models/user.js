@@ -282,6 +282,49 @@ investableDepositBalance: {
             trim: true,
             maxlength: 500
         },
+       
+// ======================================================
+// ADMIN-CONTROLLED INDIVIDUAL PLAN PERMISSIONS
+// ======================================================
+
+investmentPlanPermissions: [
+    {
+        // Investment plan to which this permission applies.
+        plan: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Plan",
+            required: true
+        },
+
+        // Whether this user can purchase this plan.
+        enabled: {
+            type: Boolean,
+            default: true
+        },
+
+        // Maximum lifetime purchases of this plan.
+        // 0 means unlimited, subject to other restrictions.
+        maxLifetimePurchases: {
+            type: Number,
+            default: 0,
+            min: 0,
+            validate: {
+                validator: Number.isInteger,
+                message: "Lifetime purchase limit must be a whole number."
+            }
+        },
+
+        // Optional explanation displayed when a purchase is blocked.
+        restrictionNote: {
+            type: String,
+            default: "",
+            trim: true,
+            maxlength: 500
+        }
+    }
+],
+
+
         // ==============================================
         // INVESTMENT
         // ==============================================

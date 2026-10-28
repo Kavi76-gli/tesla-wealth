@@ -356,6 +356,24 @@ exports.purchasePlan = async (req, res) => {
                     }
                 });
             }
+// ======================================================
+// CHECK INDIVIDUAL PLAN PERMISSION
+// ======================================================
+
+const planPermissionFailure =
+    await checkUserPlanPermission({
+        user,
+        plan
+    });
+
+if (planPermissionFailure) {
+    return res.status(
+        planPermissionFailure.status
+    ).json({
+        success: false,
+        message: planPermissionFailure.message
+    });
+}
 
 
             // Do not deduct funds here.
@@ -514,7 +532,25 @@ exports.purchasePlan = async (req, res) => {
                 return;
             }
 
+// ======================================================
+// RECHECK INDIVIDUAL PLAN PERMISSION INSIDE TRANSACTION
+// ======================================================
 
+const freshPermissionFailure =
+    await checkUserPlanPermission({
+        user: freshUser,
+        plan: freshPlan,
+        session
+    });
+
+if (freshPermissionFailure) {
+    failure = {
+        status: freshPermissionFailure.status,
+        message: freshPermissionFailure.message
+    };
+
+    return;
+}
             // ------------------------------------------
             // Atomically reserve purchase funds
             // ------------------------------------------
@@ -1149,3 +1185,61 @@ exports.getAllPurchaseHistory = async (req, res) => {
     }
 };
 
+// ======================================================
+// CHECK INDIVIDUAL USER PLAN PERMISSION
+// ======================================================
+
+async function checkUserPlanPermission({
+    user,
+    plan,
+    session = null
+}) {
+    const permission = (
+        user.investmentPlanPermissions || []
+    ).find(item =>
+        String(item.plan?._id || item.plan) ===
+        String(plan._id)
+    );
+
+    if (!permission) {
+        return null;
+    }
+
+    if (permission.enabled === false) {
+        return {
+            status: 403,
+            message:
+                permission.restrictionNote ||
+                `Purchasing the ${plan.name} plan is currently disabled for your account.`
+        };
+    }
+
+    const lifetimeLimit = Number(
+        permission.maxLifetimePurchases ?? 0
+    );
+
+    if (lifetimeLimit <= 0) {
+        return null;
+    }
+
+    let query = Investment.countDocuments({
+        user: user._id,
+        plan: plan._id
+    });
+
+    if (session) {
+        query = query.session(session);
+    }
+
+    const lifetimePurchases = await query;
+
+    if (lifetimePurchases >= lifetimeLimit) {
+        return {
+            status: 409,
+            message:
+                `You have reached your lifetime purchase limit of ${lifetimeLimit} for the ${plan.name} plan. Please contact customer support.`
+        };
+    }
+
+    return null;
+}

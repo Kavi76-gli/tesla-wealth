@@ -400,6 +400,10 @@ exports.getPurchaseRequests = async (req, res) => {
 // ADMIN — APPROVE INVESTMENT PURCHASE REQUEST
 // POST /api/investment/admin/purchase-requests/:requestId/approve
 // ======================================================
+// ======================================================
+// ADMIN — APPROVE INVESTMENT PURCHASE REQUEST
+// POST /api/investment/admin/purchase-requests/:requestId/approve
+// ======================================================
 
 exports.approvePurchaseRequest = async (req, res) => {
     const { requestId } = req.params;
@@ -440,7 +444,7 @@ exports.approvePurchaseRequest = async (req, res) => {
 
         await session.withTransaction(async () => {
             // --------------------------------------------------
-            // 1. Load the pending request.
+            // 1. Load the pending purchase request.
             // --------------------------------------------------
 
             const request =
@@ -458,21 +462,43 @@ exports.approvePurchaseRequest = async (req, res) => {
             }
 
             // --------------------------------------------------
-            // 2. Load current user and plan.
+            // 2. Load global settings BEFORE using them.
+            // --------------------------------------------------
+
+            const globalSettings =
+                await InvestmentAdminSettings.findOne({
+                    key: "global"
+                }).session(session);
+
+            // Missing settings use the model's established
+            // default behavior. Existing restrictions are enforced.
+            if (
+                globalSettings &&
+                globalSettings.investmentPurchaseEnabled === false
+            ) {
+                const error = new Error(
+                    globalSettings.investmentPurchaseNote ||
+                    globalSettings.restrictionNote ||
+                    "Investment purchases are temporarily disabled."
+                );
+
+                error.code = "GLOBAL_PURCHASE_DISABLED";
+                throw error;
+            }
+
+            // --------------------------------------------------
+            // 3. Load the user and plan.
             // --------------------------------------------------
 
             const user = await User.findById(
                 request.user
             ).session(session);
 
-            const plan = await Plan.findById(
-                request.plan
-            ).session(session);
-
             if (!user) {
                 const error = new Error(
                     "The user associated with this request was not found."
                 );
+
                 error.code = "USER_NOT_FOUND";
                 throw error;
             }
@@ -481,6 +507,7 @@ exports.approvePurchaseRequest = async (req, res) => {
                 const error = new Error(
                     "The user account is blocked."
                 );
+
                 error.code = "USER_BLOCKED";
                 throw error;
             }
@@ -490,29 +517,67 @@ exports.approvePurchaseRequest = async (req, res) => {
                     user.investmentPurchaseNote ||
                     "Investment purchases are disabled for this user."
                 );
+
                 error.code = "PURCHASE_DISABLED";
                 throw error;
             }
 
-            // Manual approval must still be enabled.
-            if (user.investmentApprovalMode !== "manual") {
-                const error = new Error(
-                    "Manual approval is no longer enabled for this user."
-                );
-                error.code = "APPROVAL_MODE_CHANGED";
-                throw error;
-            }
+            const plan = await Plan.findById(
+                request.plan
+            ).session(session);
 
+            // Check that the plan exists BEFORE accessing its fields.
             if (!plan || plan.status !== true) {
                 const error = new Error(
                     "The investment plan is unavailable."
                 );
+
                 error.code = "PLAN_UNAVAILABLE";
                 throw error;
             }
 
+            if (plan.purchaseEnabled === false) {
+                const error = new Error(
+                    plan.restrictionNote ||
+                    "New purchases for this investment plan are disabled."
+                );
+
+                error.code = "PLAN_PURCHASE_DISABLED";
+                throw error;
+            }
+
             // --------------------------------------------------
-            // 3. Validate requested amount and current plan.
+            // 4. Verify the effective approval policy.
+            //
+            // Manual approval applies when the global setting,
+            // user setting, OR plan setting requires it.
+            //
+            // A global automatic default does not silently
+            // override a user or plan manual requirement.
+            // --------------------------------------------------
+
+            const globalMode =
+                globalSettings?.investmentApprovalMode || "automatic";
+
+            const userMode =
+                user.investmentApprovalMode || "automatic";
+
+            const requiresManualApproval =
+                globalMode === "manual" ||
+                userMode === "manual" ||
+                plan.requireManualApproval === true;
+
+            if (!requiresManualApproval) {
+                const error = new Error(
+                    "Current settings no longer require manual approval for this purchase."
+                );
+
+                error.code = "APPROVAL_MODE_CHANGED";
+                throw error;
+            }
+
+            // --------------------------------------------------
+            // 5. Validate the current plan values and price.
             // --------------------------------------------------
 
             const requestedAmount =
@@ -535,21 +600,25 @@ exports.approvePurchaseRequest = async (req, res) => {
                 const error = new Error(
                     "The request or investment plan contains invalid values."
                 );
+
                 error.code = "INVALID_PLAN";
                 throw error;
             }
 
-            // Do not silently approve a different price.
             if (requestedAmount !== amount) {
                 const error = new Error(
                     "The plan price has changed since this request was submitted. Reject this request and ask the user to submit a new one."
                 );
+
                 error.code = "PRICE_CHANGED";
                 throw error;
             }
 
             // --------------------------------------------------
-            // 4. Check the active investment limit.
+            // 6. Enforce the strictest overall active limit.
+            //
+            // The lower configured positive limit wins.
+            // A configured limit of zero prohibits new purchases.
             // --------------------------------------------------
 
             const activeCount =
@@ -558,22 +627,121 @@ exports.approvePurchaseRequest = async (req, res) => {
                     status: "Running"
                 }).session(session);
 
+            const overallLimits = [];
+
+            if (
+                Number.isInteger(globalSettings?.maxActiveInvestments)
+            ) {
+                overallLimits.push(
+                    globalSettings.maxActiveInvestments
+                );
+            }
+
+            if (
+                Number.isInteger(user.maxActiveInvestments)
+            ) {
+                overallLimits.push(
+                    user.maxActiveInvestments
+                );
+            }
+
+            // Preserve the existing user default when the field
+            // is absent. Global settings default to 10 in the model.
+            if (
+                !Number.isInteger(user.maxActiveInvestments) &&
+                !globalSettings
+            ) {
+                overallLimits.push(10);
+            }
+
             const activeLimit =
-                Number.isInteger(user.maxActiveInvestments) &&
-                user.maxActiveInvestments >= 0
-                    ? user.maxActiveInvestments
+                overallLimits.length > 0
+                    ? Math.min(...overallLimits)
                     : 10;
 
             if (activeCount >= activeLimit) {
                 const error = new Error(
                     `The user has reached the active investment limit of ${activeLimit}.`
                 );
+
                 error.code = "ACTIVE_LIMIT";
                 throw error;
             }
 
             // --------------------------------------------------
-            // 5. Verify eligible funds.
+            // 7. Enforce the active limit for this specific plan.
+            //
+            // Zero means no additional limit at that scope.
+            // If both limits are positive, the lower one wins.
+            // --------------------------------------------------
+
+            const activePlanCount =
+                await Investment.countDocuments({
+                    user: user._id,
+                    plan: plan._id,
+                    status: "Running"
+                }).session(session);
+
+            const planLimits = [
+                Number(globalSettings?.maxActivePerPlan || 0),
+                Number(plan.maxActivePerUser || 0)
+            ].filter(
+                limit =>
+                    Number.isInteger(limit) &&
+                    limit > 0
+            );
+
+            const effectivePlanLimit =
+                planLimits.length > 0
+                    ? Math.min(...planLimits)
+                    : 0;
+
+            if (
+                effectivePlanLimit > 0 &&
+                activePlanCount >= effectivePlanLimit
+            ) {
+                const error = new Error(
+                    `The user has reached the active investment limit of ${effectivePlanLimit} for this plan.`
+                );
+
+                error.code = "PLAN_ACTIVE_LIMIT";
+                throw error;
+            }
+
+            // --------------------------------------------------
+            // 8. Enforce completed-plan repurchase restrictions.
+            // --------------------------------------------------
+
+            const repurchaseAllowed =
+                globalSettings?.allowRepurchaseAfterCompletion !== false &&
+                plan.allowRepurchaseAfterCompletion !== false;
+
+            if (!repurchaseAllowed) {
+                const completedInvestment =
+                    await Investment.findOne({
+                        user: user._id,
+                        plan: plan._id,
+                        status: "Completed"
+                    })
+                    .select("_id")
+                    .session(session);
+
+                if (completedInvestment) {
+                    const error = new Error(
+                        "You cannot purchase this plan again after completing it. Please contact customer support."
+                    );
+
+                    error.code = "REPURCHASE_NOT_ALLOWED";
+                    throw error;
+                }
+            }
+
+            // --------------------------------------------------
+            // 9. Verify eligible funds.
+            //
+            // Both balances must be sufficient.
+            // Do not substitute daily income or referral
+            // commissions for eligible deposit principal.
             // --------------------------------------------------
 
             const walletBalance =
@@ -591,12 +759,13 @@ exports.approvePurchaseRequest = async (req, res) => {
                 const error = new Error(
                     "Insufficient eligible deposit funds or wallet balance."
                 );
+
                 error.code = "INSUFFICIENT_FUNDS";
                 throw error;
             }
 
             // --------------------------------------------------
-            // 6. Conditionally deduct funds.
+            // 10. Atomically deduct funds and update user counters.
             // --------------------------------------------------
 
             const updatedUser =
@@ -605,7 +774,6 @@ exports.approvePurchaseRequest = async (req, res) => {
                         _id: user._id,
                         isBlocked: { $ne: true },
                         investmentPurchaseEnabled: { $ne: false },
-                        investmentApprovalMode: "manual",
                         balance: { $gte: amount },
                         investableDepositBalance: {
                             $gte: amount
@@ -630,12 +798,13 @@ exports.approvePurchaseRequest = async (req, res) => {
                 const error = new Error(
                     "The user's account settings or balances changed. Please try again."
                 );
+
                 error.code = "BALANCE_OR_SETTINGS_CHANGED";
                 throw error;
             }
 
             // --------------------------------------------------
-            // 7. Create investment.
+            // 11. Create the investment.
             // --------------------------------------------------
 
             const purchaseTime = new Date();
@@ -663,7 +832,7 @@ exports.approvePurchaseRequest = async (req, res) => {
             );
 
             // --------------------------------------------------
-            // 8. Create transaction record.
+            // 12. Create the financial transaction.
             // --------------------------------------------------
 
             const txId =
@@ -684,7 +853,7 @@ exports.approvePurchaseRequest = async (req, res) => {
             );
 
             // --------------------------------------------------
-            // 9. Mark request approved.
+            // 13. Mark the request approved.
             // --------------------------------------------------
 
             const approvedRequest =
@@ -716,6 +885,7 @@ exports.approvePurchaseRequest = async (req, res) => {
                 const error = new Error(
                     "This request has already been processed."
                 );
+
                 error.code = "REQUEST_RACE";
                 throw error;
             }
@@ -733,6 +903,20 @@ exports.approvePurchaseRequest = async (req, res) => {
                 "The approval transaction did not complete."
             );
         }
+
+        // Audit logging occurs after the financial transaction commits.
+        await recordInvestmentAdminActivity(
+            req,
+            "Approved investment purchase request",
+            result.investment.planName,
+            result.investment._id,
+            JSON.stringify({
+                requestId,
+                userId: result.user._id,
+                amount: result.investment.amount,
+                transactionId: result.transaction._id
+            })
+        );
 
         console.log("PURCHASE REQUEST APPROVED", {
             requestId,
@@ -768,27 +952,33 @@ exports.approvePurchaseRequest = async (req, res) => {
             USER_NOT_FOUND: 404,
             USER_BLOCKED: 403,
             PURCHASE_DISABLED: 403,
-            APPROVAL_MODE_CHANGED: 409,
+            GLOBAL_PURCHASE_DISABLED: 403,
             PLAN_UNAVAILABLE: 400,
+            PLAN_PURCHASE_DISABLED: 403,
+            APPROVAL_MODE_CHANGED: 409,
             INVALID_PLAN: 400,
             PRICE_CHANGED: 409,
             ACTIVE_LIMIT: 409,
+            PLAN_ACTIVE_LIMIT: 409,
+            REPURCHASE_NOT_ALLOWED: 403,
             INSUFFICIENT_FUNDS: 400,
             BALANCE_OR_SETTINGS_CHANGED: 409,
             REQUEST_RACE: 409
         };
 
         if (knownErrors[error.code]) {
-            return res.status(knownErrors[error.code]).json({
+            return res.status(
+                knownErrors[error.code]
+            ).json({
                 success: false,
-                message: error.message
+                message: error.message,
+                code: error.code
             });
         }
 
         return res.status(500).json({
             success: false,
-            message:
-                "Unable to approve the investment request."
+            message: "Unable to approve the investment request."
         });
 
     } finally {
@@ -1613,3 +1803,426 @@ exports.getAdminActivity = async (req, res) => {
         });
     }
 };
+
+// ======================================================
+// ADMIN — SEARCH USERS BY NAME OR PHONE
+// GET /api/investment/admin/users/search?q=...
+// ======================================================
+
+exports.searchInvestmentUsers = async (req, res) => {
+    try {
+        const search = String(req.query.q || "")
+            .trim()
+            .slice(0, 100);
+
+        const page = Math.max(
+            1,
+            parseInt(req.query.page, 10) || 1
+        );
+
+        const limit = Math.min(
+            50,
+            Math.max(
+                1,
+                parseInt(req.query.limit, 10) || 20
+            )
+        );
+
+        const filter = {};
+
+        if (search) {
+            const escaped = search.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
+            );
+
+            filter.$or = [
+                {
+                    name: {
+                        $regex: escaped,
+                        $options: "i"
+                    }
+                },
+                {
+                    phone: {
+                        $regex: escaped
+                    }
+                }
+            ];
+        }
+
+        const [users, total] = await Promise.all([
+            User.find(filter)
+                .select(
+                    "name phone isBlocked " +
+                    "investmentPurchaseEnabled " +
+                    "investmentApprovalMode " +
+                    "maxActiveInvestments " +
+                    "activeInvestments"
+                )
+                .sort({
+                    name: 1,
+                    _id: 1
+                })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .lean(),
+
+            User.countDocuments(filter)
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            users,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
+
+    } catch (error) {
+        console.error(
+            "SEARCH INVESTMENT USERS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to search users."
+        });
+    }
+};
+
+
+// ======================================================
+// ADMIN — GET INDIVIDUAL USER PLAN PERMISSIONS
+// GET /api/investment/admin/users/:userId/plan-permissions
+// ======================================================
+
+exports.getUserPlanPermissions = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user ID."
+            });
+        }
+
+        const user = await User.findById(userId)
+            .select(
+                "name phone investmentPlanPermissions"
+            )
+            .populate(
+                "investmentPlanPermissions.plan",
+                "name price status"
+            )
+            .lean();
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found."
+            });
+        }
+
+        const permissions = user.investmentPlanPermissions || [];
+
+        const purchaseCounts = await Investment.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId)
+                }
+            },
+            {
+                $group: {
+                    _id: "$plan",
+                    lifetimePurchases: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const countMap = new Map(
+            purchaseCounts.map(item => [
+                String(item._id),
+                item.lifetimePurchases
+            ])
+        );
+
+        const result = permissions.map(permission => {
+            const planId = permission.plan?._id;
+
+            return {
+                ...permission,
+                lifetimePurchases: planId
+                    ? countMap.get(String(planId)) || 0
+                    : 0
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            user: {
+                id: user._id,
+                name: user.name,
+                phone: user.phone
+            },
+            permissions: result
+        });
+
+    } catch (error) {
+        console.error(
+            "GET USER PLAN PERMISSIONS ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve plan permissions."
+        });
+    }
+};
+
+
+// ======================================================
+// ADMIN — CREATE OR UPDATE A USER'S PLAN PERMISSION
+// PATCH /api/investment/admin/users/:userId/plans/:planId/permission
+//
+// Body:
+// {
+//   "enabled": true,
+//   "maxLifetimePurchases": 1,
+//   "restrictionNote": ""
+// }
+// ======================================================
+
+exports.updateUserPlanPermission = async (req, res) => {
+    try {
+        const { userId, planId } = req.params;
+        const body = req.body || {};
+
+        if (
+            !mongoose.Types.ObjectId.isValid(userId) ||
+            !mongoose.Types.ObjectId.isValid(planId)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user ID or plan ID."
+            });
+        }
+
+        const allowedFields = [
+            "enabled",
+            "maxLifetimePurchases",
+            "restrictionNote"
+        ];
+
+        const updates = {};
+
+        for (const field of allowedFields) {
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    body,
+                    field
+                )
+            ) {
+                updates[field] = body[field];
+            }
+        }
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No valid permission settings supplied."
+            });
+        }
+
+        if (
+            "enabled" in updates &&
+            typeof updates.enabled !== "boolean"
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "enabled must be true or false."
+            });
+        }
+
+        if ("maxLifetimePurchases" in updates) {
+            const limit = updates.maxLifetimePurchases;
+
+            if (
+                typeof limit !== "number" ||
+                !Number.isInteger(limit) ||
+                limit < 0 ||
+                limit > 10000
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Lifetime purchase limit must be a whole number between 0 and 10000."
+                });
+            }
+        }
+
+        if ("restrictionNote" in updates) {
+            if (
+                typeof updates.restrictionNote !== "string" ||
+                updates.restrictionNote.length > 500
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Restriction note must not exceed 500 characters."
+                });
+            }
+
+            updates.restrictionNote =
+                updates.restrictionNote.trim();
+        }
+
+        const [user, plan] = await Promise.all([
+            User.findById(userId),
+            Plan.findById(planId)
+        ]);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found."
+            });
+        }
+
+        if (!plan) {
+            return res.status(404).json({
+                success: false,
+                message: "Investment plan not found."
+            });
+        }
+
+        if (!Array.isArray(user.investmentPlanPermissions)) {
+            user.investmentPlanPermissions = [];
+        }
+
+        let permission = user.investmentPlanPermissions.find(
+            item => String(item.plan) === String(planId)
+        );
+
+        if (!permission) {
+            permission = {
+                plan: planId,
+                enabled: true,
+                maxLifetimePurchases: 0,
+                restrictionNote: ""
+            };
+
+            user.investmentPlanPermissions.push(permission);
+        }
+
+        for (const [field, value] of Object.entries(updates)) {
+            permission[field] = value;
+        }
+
+        user.markModified("investmentPlanPermissions");
+
+        await user.save();
+
+        const savedPermission =
+            user.investmentPlanPermissions.find(
+                item => String(item.plan) === String(planId)
+            );
+
+        return res.status(200).json({
+            success: true,
+            message: "User plan permission updated successfully.",
+            permission: {
+                userId: user._id,
+                planId,
+                planName: plan.name,
+                enabled: savedPermission.enabled,
+                maxLifetimePurchases:
+                    savedPermission.maxLifetimePurchases,
+                restrictionNote:
+                    savedPermission.restrictionNote
+            }
+        });
+
+    } catch (error) {
+        console.error(
+            "UPDATE USER PLAN PERMISSION ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to update user plan permission."
+        });
+    }
+};
+
+// ======================================================
+// USER-SPECIFIC PLAN PERMISSION HELPERS
+// ======================================================
+
+// No permission record means the plan is allowed by default.
+// maxLifetimePurchases = 0 means unlimited purchases.
+
+async function validateUserPlanPermission({
+    user,
+    plan,
+    session = null
+}) {
+    const permission = (
+        user.investmentPlanPermissions || []
+    ).find(item =>
+        String(item.plan?._id || item.plan) ===
+        String(plan._id)
+    );
+
+    // No individual restriction has been configured.
+    if (!permission) {
+        return;
+    }
+
+    // Administrator has disabled this plan for this user.
+    if (permission.enabled === false) {
+        const error = new Error(
+            permission.restrictionNote ||
+            `Purchasing the ${plan.name} plan is currently disabled for your account.`
+        );
+
+        error.code = "USER_PLAN_DISABLED";
+        throw error;
+    }
+
+    const lifetimeLimit = Number(
+        permission.maxLifetimePurchases ?? 0
+    );
+
+    // Zero means unlimited.
+    if (lifetimeLimit <= 0) {
+        return;
+    }
+
+    const query = Investment.countDocuments({
+        user: user._id,
+        plan: plan._id
+    });
+
+    if (session) {
+        query.session(session);
+    }
+
+    const lifetimePurchases = await query;
+
+    if (lifetimePurchases >= lifetimeLimit) {
+        const error = new Error(
+            `You have reached your lifetime purchase limit of ${lifetimeLimit} for the ${plan.name} plan. Please contact customer support if you need assistance.`
+        );
+
+        error.code = "USER_PLAN_LIFETIME_LIMIT";
+        throw error;
+    }
+}

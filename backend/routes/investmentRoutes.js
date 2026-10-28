@@ -159,7 +159,23 @@ const getAdminActivity = requireHandler(
     "getAdminActivity",
     "investmentPurchaseController"
 );
+const searchInvestmentUsers = requireHandler(
+    investmentPurchaseController,
+    "searchInvestmentUsers",
+    "investmentPurchaseController"
+);
 
+const getUserPlanPermissions = requireHandler(
+    investmentPurchaseController,
+    "getUserPlanPermissions",
+    "investmentPurchaseController"
+);
+
+const updateUserPlanPermission = requireHandler(
+    investmentPurchaseController,
+    "updateUserPlanPermission",
+    "investmentPurchaseController"
+);
 // ======================================================
 // USER — INVESTMENT DASHBOARD
 // GET /api/investment/dashboard
@@ -345,6 +361,45 @@ router.get(
     auth,
     admin,
     getAdminActivity
+);
+
+
+// ======================================================
+// ADMIN — SEARCH USERS
+// GET /api/investment/admin/users/search?q=...
+// ======================================================
+
+router.get(
+    "/admin/users/search",
+    auth,
+    admin,
+    searchInvestmentUsers
+);
+
+
+// ======================================================
+// ADMIN — GET USER PLAN PERMISSIONS
+// GET /api/investment/admin/users/:userId/plan-permissions
+// ======================================================
+
+router.get(
+    "/admin/users/:userId/plan-permissions",
+    auth,
+    admin,
+    getUserPlanPermissions
+);
+
+
+// ======================================================
+// ADMIN — UPDATE USER PLAN PERMISSION
+// PATCH /api/investment/admin/users/:userId/plans/:planId/permission
+// ======================================================
+
+router.patch(
+    "/admin/users/:userId/plans/:planId/permission",
+    auth,
+    admin,
+    updateUserPlanPermission
 );
 
 // ======================================================

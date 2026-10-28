@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071b16">
+<title>User Investment Controls | Tesla Wealth Admin</title>
+<style>
+:root{--bg:#06110e;--panel:#0c1b16;--panel2:#10241c;--line:rgba(194,255,220,.12);--text:#f3fff7;--muted:#94afa0;--green:#25d366;--green2:#79f5a0;--red:#ff6b78;--amber:#ffca70;--shadow:0 18px 50px rgba(0,0,0,.28)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top right,rgba(37,211,102,.12),transparent 34%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+.wrap{max-width:1250px;margin:auto;padding:28px 18px 60px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--green),#0e8f49);display:grid;place-items:center;color:#042b16;font-size:23px;font-weight:900;box-shadow:0 8px 25px #25d3662b}.brand h1{font-size:19px;margin:0;letter-spacing:.2px}.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}.badge{border:1px solid #25d36645;color:var(--green2);background:#25d36612;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700}
+.hero{margin-bottom:22px}.eyebrow{color:var(--green2);text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800}.hero h2{font-size:clamp(25px,4vw,36px);margin:9px 0 8px;letter-spacing:-.8px}.hero p{color:var(--muted);line-height:1.6;max-width:760px;margin:0;font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:18px;align-items:start}.card{background:linear-gradient(160deg,rgba(16,36,28,.98),rgba(9,23,18,.98));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}.card-head{padding:19px 20px;border-bottom:1px solid var(--line)}.card-head h3{font-size:15px;margin:0}.card-head p{font-size:12px;color:var(--muted);margin:6px 0 0;line-height:1.5}.card-body{padding:19px 20px}.label{display:block;font-size:12px;color:#c2d8ca;font-weight:700;margin-bottom:8px}.searchrow{display:flex;gap:8px}input,textarea,select{width:100%;border:1px solid #315143;background:#07150f;color:var(--text);border-radius:11px;padding:12px 13px;font:inherit;font-size:13px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px #25d36618}input::placeholder,textarea::placeholder{color:#688374}button{border:0;border-radius:11px;padding:11px 14px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:.18s}button:disabled{opacity:.5;cursor:not-allowed}.primary{background:var(--green);color:#042714}.primary:hover{background:var(--green2);transform:translateY(-1px)}.secondary{background:#183328;color:#d9f8e4;border:1px solid #315143}.danger{background:#3a1a20;color:#ffabb2;border:1px solid #70313b}.searchrow button{white-space:nowrap}.hint{font-size:11px;line-height:1.5;color:var(--muted);margin:10px 0 0}.user-list{margin-top:17px;display:grid;gap:8px}.user-item{width:100%;text-align:left;display:flex;align-items:center;gap:11px;background:#0a1912;border:1px solid var(--line);padding:12px;border-radius:13px;color:var(--text)}.user-item:hover,.user-item.active{border-color:#25d3668c;background:#102a1d}.avatar{flex:0 0 37px;width:37px;height:37px;border-radius:12px;display:grid;place-items:center;background:#1b3b2b;color:var(--green2);font-weight:900;font-size:13px}.user-meta{min-width:0;flex:1}.user-name{font-size:13px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.user-phone{font-size:11px;color:var(--muted);margin-top:4px}.user-id{font-size:10px;color:#698575;margin-top:3px;overflow-wrap:anywhere}.empty{padding:22px 10px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+.selection{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.selected-name{font-size:18px;font-weight:850}.selected-sub{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:17px 0}.stat{padding:13px;border:1px solid var(--line);background:#07160f;border-radius:13px}.stat small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px}.stat strong{display:block;font-size:20px;margin-top:6px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:22px 0 12px}.section-title h4{margin:0;font-size:14px}.section-title span{color:var(--muted);font-size:11px}.plan-list{display:grid;gap:12px}.plan-card{border:1px solid var(--line);background:#091911;border-radius:16px;padding:16px}.plan-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.plan-title{font-size:15px;font-weight:850}.plan-meta{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5}.status{border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900;white-space:nowrap}.status.on{color:var(--green2);background:#25d36618;border:1px solid #25d36644}.status.off{color:#ff9ba5;background:#ff6b7815;border:1px solid #ff6b7844}.plan-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}.field{min-width:0}.field.full{grid-column:1/-1}.field small{display:block;color:var(--muted);font-size:10px;margin-top:6px;line-height:1.45}.toggleline{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:11px;padding:11px 12px;min-height:44px}.toggleline span{font-size:12px;font-weight:750}.switch{position:relative;display:inline-block;width:42px;height:24px;flex:0 0 42px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;border-radius:30px;background:#35493e;cursor:pointer;transition:.2s}.slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;border-radius:50%;background:#d6e5dc;transition:.2s}.switch input:checked+.slider{background:#168e49}.switch input:checked+.slider:before{transform:translateX(18px);background:white}.plan-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.note{resize:vertical;min-height:72px}.notice{display:none;border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.5;margin-bottom:14px}.notice.show{display:block}.notice.success{background:#123321;border:1px solid #276f43;color:#a9f5c1}.notice.error{background:#371a20;border:1px solid #7c3440;color:#ffb4bb}.notice.info{background:#15291f;border:1px solid #315143;color:#c7e9d2}.footer-note{color:#759282;font-size:11px;line-height:1.6;margin-top:18px}.hidden{display:none!important}.loading{opacity:.65;pointer-events:none}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.user-list{grid-template-columns:repeat(2,minmax(0,1fr))}.plan-controls{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.wrap{padding:18px 12px 40px}.topbar{align-items:flex-start}.badge{font-size:10px}.user-list{grid-template-columns:1fr}.card-head,.card-body{padding:16px}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:17px}.plan-controls{grid-template-columns:1fr}.field.full{grid-column:auto}.hero h2{font-size:27px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand"><div class="logo">T</div><div><h1>Tesla Wealth <span style="color:var(--green2)">Admin</span></h1><p>Investment management console</p></div></div>
+    <div class="badge">● ADMIN CONTROL</div>
+  </header>
+  <section class="hero">
+    <div class="eyebrow">User-level permissions</div>
+    <h2>Investment Plan Controls</h2>
+    <p>Search a user, then control which plans they can purchase and set a lifetime purchase limit for each plan. A limit of <b>0 means unlimited</b>. Changes are saved to the backend.</p>
+  </section>
+  <div id="notice" class="notice" role="status"></div>
+  <div class="layout">
+    <aside class="card">
+      <div class="card-head"><h3>Find a user</h3><p>Search by the user's name or phone number.</p></div>
+      <div class="card-body">
+        <label class="label" for="searchInput">Name or phone number</label>
+        <div class="searchrow"><input id="searchInput" type="search" placeholder="e.g. Rahul or 98xxxxxx10" autocomplete="off"><button class="primary" id="searchBtn">Search</button></div>
+        <p class="hint">Enter at least one character. Select a result to load their plan permissions.</p>
+        <div id="userList" class="user-list"><div class="empty">Search for a user to get started.</div></div>
+      </div>
+    </aside>
+    <main class="card">
+      <div class="card-head"><div class="selection"><div><h3 style="margin:0">Selected user</h3><div id="selectedName" class="selected-name" style="margin-top:9px">No user selected</div><div id="selectedSub" class="selected-sub">Choose a user from the search results.</div></div><button id="refreshBtn" class="secondary" disabled>Refresh</button></div></div>
+      <div class="card-body">
+        <div id="userStats" class="stats hidden">
+          <div class="stat"><small>Available plans</small><strong id="statPlans">0</strong></div>
+          <div class="stat"><small>Purchases counted</small><strong id="statPurchases">0</strong></div>
+          <div class="stat"><small>Restricted plans</small><strong id="statRestricted">0</strong></div>
+        </div>
+        <div class="section-title"><h4>Plan permissions</h4><span id="planSummary">Select a user first</span></div>
+        <div id="planList" class="plan-list"><div class="empty">User plan controls will appear here.</div></div>
+        <p class="footer-note">Security note: this page sends requests to the Tesla Wealth API using your admin token. The backend must enforce these permissions in both automatic purchases and manual purchase approvals; hiding or disabling a frontend control alone is not security enforcement.</p>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+(() => {
+  "use strict";
+  const API_BASE = "https://tesla-wealth.onrender.com/api";
+  const $ = id => document.getElementById(id);
+  let selectedUser = null;
+  let userPlans = [];
+  let searchTimer = null;
+
+  function getToken() {
+    return localStorage.getItem("adminToken") ||
+           localStorage.getItem("ki_token") ||
+           localStorage.getItem("token") || "";
+  }
+  function showNotice(message, type = "info") {
+    const el = $("notice");
+    el.className = "notice show " + type;
+    el.textContent = message;
+    if (type !== "error") setTimeout(() => { if (el.textContent === message) el.className = "notice"; }, 5500);
+  }
+  function hideNotice() { $("notice").className = "notice"; }
+  function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    })[ch]);
+  }
+  function userId(user) { return user?._id || user?.id || user?.userId || ""; }
+  function userName(user) {
+    return user?.name || user?.fullName || user?.username || user?.displayName || "Unnamed user";
+  }
+  function phone(user) { return user?.phone || user?.mobile || user?.phoneNumber || user?.mobileNumber || "No phone number"; }
+  function initials(name) {
+    return String(name || "U").trim().split(/\s+/).slice(0,2).map(s => s[0] || "").join("").toUpperCase();
+  }
+  async function api(path, options = {}) {
+    const token = getToken();
+    if (!token) throw new Error("Admin token not found. Please sign in to the admin panel first.");
+    const response = await fetch(API_BASE + path, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+        ...(options.headers || {})
+      }
+    });
+    let data = {};
+    try { data = await response.json(); } catch (_) {}
+    if (!response.ok || data.success === false) {
+      throw new Error(data.message || data.error || `Request failed (${response.status})`);
+    }
+    return data;
+  }
+  function unwrapUsers(data) {
+    const candidates = [data.users, data.results, data.data?.users, data.data, data.items];
+    return candidates.find(Array.isArray) || [];
+  }
+  function unwrapPlans(data) {
+    const candidates = [
+      data.plans, data.permissions, data.data?.plans, data.data?.permissions,
+      data.data, data.items
+    ];
+    return candidates.find(Array.isArray) || [];
+  }
+  function planId(item) {
+    const p = item.plan || item._id || item.planId || item;
+    return typeof p === "string" ? p : (p?._id || p?.id || item.planId || "");
+  }
+  function planName(item) {
+    const p = item.plan || item;
+    return item.planName || p?.name || p?.planName || p?.title || "Investment plan";
+  }
+  function normalizePlan(item) {
+    const p = item.plan && typeof item.plan === "object" ? item.plan : item;
+    const permission = item.permission || item;
+    const id = planId(item) || p?._id || p?.id;
+    return {
+      id: String(id || ""),
+      name: planName(item),
+      price: p?.price ?? p?.amount ?? item.price ?? item.amount ?? null,
+      enabled: permission.enabled !== false,
+      maxLifetimePurchases: Number(permission.maxLifetimePurchases ?? 0),
+      restrictionNote: permission.restrictionNote || "",
+      lifetimePurchases: Number(item.lifetimePurchases ?? item.purchaseCount ?? item.totalPurchases ?? item.count ?? 0),
+      activePurchases: Number(item.activePurchases ?? item.activeCount ?? 0),
+      configured: item.configured !== false
+    };
+  }
+  function formatMoney(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "—";
+    return "₹" + n.toLocaleString("en-IN", {maximumFractionDigits:2});
+  }
+
+  async function searchUsers() {
+    hideNotice();
+    const q = $("searchInput").value.trim();
+    if (!q) { showNotice("Please enter a name or phone number to search.", "info"); return; }
+    $("searchBtn").disabled = true;
+    $("searchBtn").textContent = "Searching…";
+    $("userList").innerHTML = '<div class="empty">Searching users…</div>';
+    try {
+      const data = await api("/investment/admin/users/search?q=" + encodeURIComponent(q));
+      const users = unwrapUsers(data);
+      renderUsers(users);
+      if (!users.length) showNotice("No users found for that search.", "info");
+    } catch (err) {
+      $("userList").innerHTML = '<div class="empty">Could not load users.</div>';
+      showNotice(err.message, "error");
+    } finally {
+      $("searchBtn").disabled = false;
+      $("searchBtn").textContent = "Search";
+    }
+  }
+  function renderUsers(users) {
+    if (!users.length) {
+      $("userList").innerHTML = '<div class="empty">No matching users found.</div>';
+      return;
+    }
+    $("userList").innerHTML = users.map(user => {
+      const id = userId(user);
+      const name = userName(user);
+      const active = selectedUser && String(userId(selectedUser)) === String(id);
+      return `<button type="button" class="user-item ${active ? "active" : ""}" data-user-id="${esc(id)}">
+        <span class="avatar">${esc(initials(name))}</span><span class="user-meta">
+        <span class="user-name">${esc(name)}</span><span class="user-phone">${esc(phone(user))}</span>
+        <span class="user-id">ID: ${esc(id)}</span></span></button>`;
+    }).join("");
+    $("userList").querySelectorAll("[data-user-id]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const user = users.find(u => String(userId(u)) === btn.dataset.userId);
+        if (user) selectUser(user);
+      });
+    });
+  }
+  async function selectUser(user) {
+    selectedUser = user;
+    $("selectedName").textContent = userName(user);
+    $("selectedSub").textContent = `${phone(user)} · ID: ${userId(user)}`;
+    $("refreshBtn").disabled = false;
+    $("userStats").classList.remove("hidden");
+    renderUsersFromCurrentSearch();
+    await loadPermissions();
+  }
+  function renderUsersFromCurrentSearch() {
+    // Preserve current results while highlighting the selected user.
+    document.querySelectorAll(".user-item").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.userId === String(userId(selectedUser)));
+    });
+  }
+  async function loadPermissions() {
+    if (!selectedUser) return;
+    const id = userId(selectedUser);
+    $("planList").innerHTML = '<div class="empty">Loading plan permissions…</div>';
+    $("planSummary").textContent = "Loading…";
+    $("refreshBtn").disabled = true;
+    try {
+      const data = await api(`/investment/admin/users/${encodeURIComponent(id)}/plan-permissions`);
+      let items = unwrapPlans(data);
+      // Support responses where plans and permissions are returned separately.
+      const allPlans = data.allPlans || data.data?.allPlans || data.availablePlans || data.data?.availablePlans;
+      const permissions = data.permissionsByPlan || data.data?.permissionsByPlan;
+      if (Array.isArray(allPlans)) {
+        items = allPlans.map(p => {
+          const pid = p._id || p.id;
+          const match = Array.isArray(permissions)
+            ? permissions.find(x => String(planId(x)) === String(pid))
+            : (permissions && permissions[pid]);
+          return match ? {...p, ...match, plan: p} : {...p, plan: p, enabled: true, maxLifetimePurchases: 0, lifetimePurchases: 0, configured: false};
+        });
+      }
+      userPlans = items.map(normalizePlan).filter(p => p.id);
+      renderPlans();
+    } catch (err) {
+      $("planList").innerHTML = '<div class="empty">Could not load this user’s plan permissions.</div>';
+      $("planSummary").textContent = "Load failed";
+      showNotice(err.message, "error");
+    } finally {
+      $("refreshBtn").disabled = !selectedUser;
+    }
+  }
+  function renderPlans() {
+    const restricted = userPlans.filter(p => !p.enabled || (p.maxLifetimePurchases > 0 && p.lifetimePurchases >= p.maxLifetimePurchases)).length;
+    $("statPlans").textContent = userPlans.length;
+    $("statPurchases").textContent = userPlans.reduce((sum,p) => sum + p.lifetimePurchases, 0);
+    $("statRestricted").textContent = restricted;
+    $("planSummary").textContent = `${userPlans.length} plan${userPlans.length === 1 ? "" : "s"} loaded`;
+    if (!userPlans.length) {
+      $("planList").innerHTML = '<div class="empty">No plans were returned by the API. Make sure the backend endpoint returns plan records and permissions.</div>';
+      return;
+    }
+    $("planList").innerHTML = userPlans.map((p,index) => {
+      const capped = p.maxLifetimePurchases > 0 && p.lifetimePurchases >= p.maxLifetimePurchases;
+      return `<article class="plan-card" data-plan-index="${index}">
+        <div class="plan-top"><div><div class="plan-title">${esc(p.name)}</div>
+          <div class="plan-meta">${p.price !== null ? "Plan amount: " + esc(formatMoney(p.price)) + " · " : ""}Lifetime purchases: <b>${p.lifetimePurchases}</b>${p.maxLifetimePurchases > 0 ? " / " + p.maxLifetimePurchases : " · Unlimited limit"}</div>
+          <div class="plan-meta">Plan ID: ${esc(p.id)}</div></div>
+          <span class="status ${p.enabled ? "on" : "off"}">${p.enabled ? "ENABLED" : "DISABLED"}</span></div>
+        <div class="plan-controls">
+          <div class="field"><label class="toggleline"><span>Allow this user to buy this plan</span><span class="switch"><input class="enabled-input" type="checkbox" ${p.enabled ? "checked" : ""} aria-label="Allow plan purchases"><span class="slider"></span></span></label></div>
+          <div class="field"><label class="label">Lifetime purchase limit</label><input class="limit-input" type="number" min="0" max="10000" step="1" value="${esc(p.maxLifetimePurchases)}"><small>0 = unlimited. Counts completed and active investment records for this plan.</small></div>
+          <div class="field full"><label class="label">Restriction note (optional)</label><textarea class="note restriction-note" maxlength="500" placeholder="Message shown when this plan is restricted…">${esc(p.restrictionNote)}</textarea></div>
+        </div>
+        ${capped ? '<div class="plan-meta" style="color:var(--amber);margin-top:12px">This user has reached the configured lifetime limit.</div>' : ""}
+        <div class="plan-actions"><button type="button" class="secondary reset-btn">Reset fields</button><button type="button" class="primary save-btn">Save permission</button></div>
+      </article>`;
+    }).join("");
+    $("planList").querySelectorAll(".plan-card").forEach((card,index) => {
+      card.querySelector(".save-btn").addEventListener("click", () => savePlan(index,card));
+      card.querySelector(".reset-btn").addEventListener("click", () => {
+        const p = userPlans[index];
+        card.querySelector(".enabled-input").checked = p.enabled;
+        card.querySelector(".limit-input").value = p.maxLifetimePurchases;
+        card.querySelector(".restriction-note").value = p.restrictionNote;
+      });
+    });
+  }
+  async function savePlan(index, card) {
+    const p = userPlans[index];
+    if (!selectedUser || !p) return;
+    const enabled = card.querySelector(".enabled-input").checked;
+    const rawLimit = card.querySelector(".limit-input").value.trim();
+    const limit = Number(rawLimit);
+    const restrictionNote = card.querySelector(".restriction-note").value.trim();
+    if (rawLimit === "" || !Number.isInteger(limit) || limit < 0 || limit > 10000) {
+      showNotice("Lifetime purchase limit must be a whole number from 0 to 10000. Use 0 for unlimited.", "error");
+      return;
+    }
+    if (restrictionNote.length > 500) {
+      showNotice("Restriction note must be 500 characters or fewer.", "error");
+      return;
+    }
+    const button = card.querySelector(".save-btn");
+    button.disabled = true;
+    button.textContent = "Saving…";
+    card.classList.add("loading");
+    try {
+      await api(`/investment/admin/users/${encodeURIComponent(userId(selectedUser))}/plans/${encodeURIComponent(p.id)}/permission`, {
+        method: "PATCH",
+        body: JSON.stringify({enabled, maxLifetimePurchases: limit, restrictionNote})
+      });
+      // Update the local record only after the API confirms success.
+      userPlans[index] = {...p, enabled, maxLifetimePurchases: limit, restrictionNote, configured: true};
+      showNotice(`${p.name} permission saved successfully.`, "success");
+      await loadPermissions();
+    } catch (err) {
+      showNotice(err.message, "error");
+    } finally {
+      card.classList.remove("loading");
+      button.disabled = false;
+      button.textContent = "Save permission";
+    }
+  }
+
+  $("searchBtn").addEventListener("click", searchUsers);
+  $("searchInput").addEventListener("keydown", event => {
+    if (event.key === "Enter") searchUsers();
+  });
+  $("searchInput").addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    const q = $("searchInput").value.trim();
+    if (q.length >= 2) searchTimer = setTimeout(searchUsers, 450);
+  });
+  $("refreshBtn").addEventListener("click", loadPermissions);
+
+  // Warn early if this page is opened without an admin session.
+  if (!getToken()) showNotice("No admin token found. Sign in to the Tesla Wealth admin panel, then open this page again.", "error");
+})();
+</script>
+</body>
+</html>
