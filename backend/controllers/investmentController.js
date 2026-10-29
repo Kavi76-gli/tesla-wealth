@@ -123,7 +123,10 @@ exports.getPlans = async (req, res) => {
 };
 
 // ======================================================
-// PURCHASE INVESTMENT PLAN
+// TESLA WEALTH
+// AUTOMATIC INVESTMENT PURCHASE
+// INDIVIDUAL USER PLAN RESTRICTIONS
+// NO PURCHASE REQUESTS
 // ======================================================
 
 exports.purchasePlan = async (req, res) => {
@@ -134,39 +137,29 @@ exports.purchasePlan = async (req, res) => {
         console.log("TESLA WEALTH - INVESTMENT PURCHASE");
         console.log("======================================");
 
-
-        // ==============================================
         // 1. AUTHENTICATION
-        // ==============================================
-
         const userId = getUserId(req);
 
         if (!userId || !validObjectId(userId)) {
             return res.status(401).json({
                 success: false,
-                message: "Authentication required."
+                code: "AUTHENTICATION_REQUIRED",
+                message: "Please log in to purchase an investment plan."
             });
         }
 
-
-        // ==============================================
         // 2. VALIDATE PLAN ID
-        // ==============================================
-
         const { planId } = req.body || {};
 
         if (!planId || !validObjectId(planId)) {
             return res.status(400).json({
                 success: false,
+                code: "INVALID_PLAN_ID",
                 message: "Please select a valid investment plan."
             });
         }
 
-
-        // ==============================================
         // 3. LOAD USER AND PLAN
-        // ==============================================
-
         const [user, plan] = await Promise.all([
             User.findById(userId),
             Plan.findById(planId)
@@ -175,144 +168,139 @@ exports.purchasePlan = async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "User account not found."
+                code: "USER_NOT_FOUND",
+                message: "Your account could not be found."
             });
         }
 
         if (!plan) {
             return res.status(404).json({
                 success: false,
-                message: "Investment plan not found."
+                code: "PLAN_NOT_FOUND",
+                message: "The selected investment plan could not be found."
             });
         }
 
-
-        // ==============================================
         // 4. CHECK ACCOUNT STATUS
-        // ==============================================
-
         if (user.isBlocked === true) {
             return res.status(403).json({
                 success: false,
+                code: "ACCOUNT_BLOCKED",
                 message: "Your account has been blocked."
             });
         }
 
-
-        // ==============================================
-        // 5. CHECK PURCHASE PERMISSION
-        // ==============================================
-
+        // 5. CHECK USER PURCHASE PERMISSION
         if (user.investmentPurchaseEnabled === false) {
             return res.status(403).json({
                 success: false,
+                code: "INVESTMENT_PURCHASE_DISABLED",
                 message:
                     user.investmentPurchaseNote ||
                     "Investment purchases are currently disabled for your account."
             });
         }
 
-
-        // ==============================================
         // 6. CHECK PLAN AVAILABILITY
-        // ==============================================
-
-        if (plan.status !== true) {
-            return res.status(400).json({
+        if (
+            plan.status !== true ||
+            plan.purchaseEnabled === false
+        ) {
+            return res.status(403).json({
                 success: false,
-                message: "This investment plan is currently unavailable."
+                code: "PLAN_UNAVAILABLE",
+                message:
+                    plan.restrictionNote ||
+                    "This investment plan is currently unavailable."
             });
         }
 
+        // 7. CHECK INDIVIDUAL USER PLAN PERMISSION
+        const permissionFailure = await checkUserPlanPermission({
+            user,
+            plan
+        });
 
-        // ==============================================
-        // 7. VALIDATE PLAN VALUES
-        // ==============================================
+        if (permissionFailure) {
+            return res.status(
+                permissionFailure.status || 403
+            ).json({
+                success: false,
+                code: "USER_PLAN_RESTRICTED",
+                message:
+                    permissionFailure.message ||
+                    "You are not allowed to purchase this investment plan."
+            });
+        }
 
+        // 8. VALIDATE PLAN VALUES
         const amount = toNumber(plan.price, NaN);
         const dailyIncome = toNumber(plan.dailyIncome, NaN);
         const duration = toNumber(plan.days, NaN);
 
-        if (!Number.isFinite(amount) || amount <= 0) {
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0 ||
+            !Number.isFinite(dailyIncome) ||
+            dailyIncome <= 0 ||
+            !Number.isInteger(duration) ||
+            duration <= 0
+        ) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid investment amount."
+                code: "INVALID_PLAN_VALUES",
+                message: "This investment plan contains invalid values."
             });
         }
 
-        if (!Number.isFinite(dailyIncome) || dailyIncome <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid daily income."
-            });
-        }
+        const totalIncome = roundMoney(dailyIncome * duration);
 
-        if (!Number.isInteger(duration) || duration <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid investment duration."
-            });
-        }
-
-        const totalIncome = roundMoney(
-            dailyIncome * duration
-        );
-
-
-        // ==============================================
-        // 8. CHECK ACTIVE INVESTMENT LIMIT
-        // ==============================================
-
-        const activeInvestmentCount =
-            await Investment.countDocuments({
-                user: user._id,
-                status: "Running"
-            });
-
+        // 9. CHECK ACTIVE INVESTMENT LIMIT
         const maxActiveInvestments =
             Number.isInteger(user.maxActiveInvestments) &&
             user.maxActiveInvestments >= 0
                 ? user.maxActiveInvestments
                 : 10;
 
-        if (activeInvestmentCount >= maxActiveInvestments) {
+        const activeCount = await Investment.countDocuments({
+            user: user._id,
+            status: "Running"
+        });
+
+        if (activeCount >= maxActiveInvestments) {
             return res.status(403).json({
                 success: false,
+                code: "ACTIVE_INVESTMENT_LIMIT",
                 message:
                     `You have reached your maximum limit of ` +
                     `${maxActiveInvestments} active investments.`
             });
         }
 
-
-        // ==============================================
-        // 9. VALIDATE AVAILABLE FUNDS
-        // ==============================================
-
-        const walletBalance = toNumber(user.balance);
+        // 10. CHECK AVAILABLE FUNDS
+        const walletBalance = toNumber(user.balance, 0);
         const depositBalance = toNumber(
-            user.investableDepositBalance
+            user.investableDepositBalance,
+            0
         );
 
-        console.log("User:", user._id.toString());
-        console.log("Plan:", plan.name);
-        console.log("Investment amount:", amount);
-        console.log("Wallet balance:", walletBalance);
-        console.log("Eligible deposit balance:", depositBalance);
-
         if (
+            !Number.isFinite(walletBalance) ||
+            !Number.isFinite(depositBalance) ||
             walletBalance < 0 ||
             depositBalance < 0
         ) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid account balance."
+                code: "INVALID_ACCOUNT_BALANCE",
+                message: "Your account balance is invalid."
             });
         }
 
         if (depositBalance < amount) {
             return res.status(400).json({
                 success: false,
+                code: "INSUFFICIENT_DEPOSIT_FUNDS",
                 message:
                     `Insufficient eligible deposit funds. ` +
                     `Required ₹${amount}; available ₹${depositBalance}.`
@@ -322,96 +310,15 @@ exports.purchasePlan = async (req, res) => {
         if (walletBalance < amount) {
             return res.status(400).json({
                 success: false,
+                code: "INSUFFICIENT_WALLET_BALANCE",
                 message:
                     `Insufficient wallet balance. ` +
                     `Required ₹${amount}; available ₹${walletBalance}.`
             });
         }
 
-
-        // ==============================================
-        // 10. MANUAL APPROVAL MODE
-        // ==============================================
-
-        if (user.investmentApprovalMode === "manual") {
-
-            const existingRequest =
-                await InvestmentPurchaseRequest.findOne({
-                    user: user._id,
-                    plan: plan._id,
-                    status: "Pending"
-                });
-
-            if (existingRequest) {
-                return res.status(409).json({
-                    success: false,
-                    message:
-                        "You already have a pending request for this investment plan.",
-                    request: {
-                        id: existingRequest._id,
-                        planName: existingRequest.planName,
-                        requestedAmount: existingRequest.requestedAmount,
-                        status: existingRequest.status,
-                        createdAt: existingRequest.createdAt
-                    }
-                });
-            }
-// ======================================================
-// CHECK INDIVIDUAL PLAN PERMISSION
-// ======================================================
-
-const planPermissionFailure =
-    await checkUserPlanPermission({
-        user,
-        plan
-    });
-
-if (planPermissionFailure) {
-    return res.status(
-        planPermissionFailure.status
-    ).json({
-        success: false,
-        message: planPermissionFailure.message
-    });
-}
-
-
-            // Do not deduct funds here.
-            // The approval controller must revalidate balances.
-
-            const purchaseRequest =
-                await InvestmentPurchaseRequest.create({
-                    user: user._id,
-                    plan: plan._id,
-                    planName: plan.name,
-                    requestedAmount: amount,
-                    status: "Pending",
-                    approvalMode: "manual"
-                });
-
-            console.log(
-                "PENDING INVESTMENT REQUEST:",
-                purchaseRequest._id.toString()
-            );
-
-            return res.status(201).json({
-                success: true,
-                message:
-                    "Your investment request has been submitted and is awaiting administrator approval.",
-                request: {
-                    id: purchaseRequest._id,
-                    planName: purchaseRequest.planName,
-                    requestedAmount: purchaseRequest.requestedAmount,
-                    status: purchaseRequest.status,
-                    createdAt: purchaseRequest.createdAt
-                }
-            });
-        }
-
-
-        // ==============================================
-        // 11. AUTOMATIC PURCHASE TRANSACTION
-        // ==============================================
+        // 11. START AUTOMATIC PURCHASE TRANSACTION
+        // No purchase request or manual approval is created.
 
         session = await mongoose.startSession();
 
@@ -419,11 +326,7 @@ if (planPermissionFailure) {
         let failure = null;
 
         await session.withTransaction(async () => {
-
-            // ------------------------------------------
-            // Reload user and plan
-            // ------------------------------------------
-
+            // Reload user and plan inside transaction
             const freshUser = await User.findById(
                 user._id
             ).session(session);
@@ -435,7 +338,8 @@ if (planPermissionFailure) {
             if (!freshUser) {
                 failure = {
                     status: 404,
-                    message: "User account not found."
+                    code: "USER_NOT_FOUND",
+                    message: "Your account could not be found."
                 };
                 return;
             }
@@ -443,6 +347,7 @@ if (planPermissionFailure) {
             if (freshUser.isBlocked === true) {
                 failure = {
                     status: 403,
+                    code: "ACCOUNT_BLOCKED",
                     message: "Your account has been blocked."
                 };
                 return;
@@ -451,6 +356,7 @@ if (planPermissionFailure) {
             if (freshUser.investmentPurchaseEnabled === false) {
                 failure = {
                     status: 403,
+                    code: "INVESTMENT_PURCHASE_DISABLED",
                     message:
                         freshUser.investmentPurchaseNote ||
                         "Investment purchases are disabled for your account."
@@ -458,33 +364,51 @@ if (planPermissionFailure) {
                 return;
             }
 
-            if (freshUser.investmentApprovalMode === "manual") {
+            if (
+                !freshPlan ||
+                freshPlan.status !== true ||
+                freshPlan.purchaseEnabled === false
+            ) {
                 failure = {
-                    status: 409,
+                    status: 403,
+                    code: "PLAN_UNAVAILABLE",
                     message:
-                        "Your account now requires manual investment approval."
+                        freshPlan?.restrictionNote ||
+                        "This investment plan is currently unavailable."
                 };
                 return;
             }
 
-            if (!freshPlan || freshPlan.status !== true) {
+            // Recheck individual user plan restrictions
+            const freshPermissionFailure =
+                await checkUserPlanPermission({
+                    user: freshUser,
+                    plan: freshPlan,
+                    session
+                });
+
+            if (freshPermissionFailure) {
                 failure = {
-                    status: 400,
-                    message: "This investment plan is unavailable."
+                    status: freshPermissionFailure.status || 403,
+                    code: "USER_PLAN_RESTRICTED",
+                    message:
+                        freshPermissionFailure.message ||
+                        "You are not allowed to purchase this plan."
                 };
                 return;
             }
 
-
-            // ------------------------------------------
             // Revalidate plan values
-            // ------------------------------------------
+            const freshAmount = toNumber(
+                freshPlan.price,
+                NaN
+            );
 
-            const freshAmount = toNumber(freshPlan.price, NaN);
             const freshDailyIncome = toNumber(
                 freshPlan.dailyIncome,
                 NaN
             );
+
             const freshDuration = toNumber(
                 freshPlan.days,
                 NaN
@@ -500,31 +424,29 @@ if (planPermissionFailure) {
             ) {
                 failure = {
                     status: 400,
+                    code: "INVALID_PLAN_VALUES",
                     message: "The investment plan contains invalid values."
                 };
                 return;
             }
 
-
-            // ------------------------------------------
             // Recheck active investment limit
-            // ------------------------------------------
-
-            const activeCount =
-                await Investment.countDocuments({
-                    user: freshUser._id,
-                    status: "Running"
-                }).session(session);
-
             const activeLimit =
                 Number.isInteger(freshUser.maxActiveInvestments) &&
                 freshUser.maxActiveInvestments >= 0
                     ? freshUser.maxActiveInvestments
                     : 10;
 
-            if (activeCount >= activeLimit) {
+            const freshActiveCount =
+                await Investment.countDocuments({
+                    user: freshUser._id,
+                    status: "Running"
+                }).session(session);
+
+            if (freshActiveCount >= activeLimit) {
                 failure = {
                     status: 403,
+                    code: "ACTIVE_INVESTMENT_LIMIT",
                     message:
                         `You have reached your maximum limit of ` +
                         `${activeLimit} active investments.`
@@ -532,155 +454,90 @@ if (planPermissionFailure) {
                 return;
             }
 
-// ======================================================
-// RECHECK INDIVIDUAL PLAN PERMISSION INSIDE TRANSACTION
-// ======================================================
-
-const freshPermissionFailure =
-    await checkUserPlanPermission({
-        user: freshUser,
-        plan: freshPlan,
-        session
-    });
-
-if (freshPermissionFailure) {
-    failure = {
-        status: freshPermissionFailure.status,
-        message: freshPermissionFailure.message
-    };
-
-    return;
-}
-            // ------------------------------------------
-            // Atomically reserve purchase funds
-            // ------------------------------------------
-
-            const updatedUser =
-                await User.findOneAndUpdate(
-                    {
-                        _id: freshUser._id,
-
-                        isBlocked: {
-                            $ne: true
-                        },
-
-                        investmentPurchaseEnabled: {
-                            $ne: false
-                        },
-
-                        investmentApprovalMode: {
-                            $ne: "manual"
-                        },
-
-                        balance: {
-                            $gte: freshAmount
-                        },
-
-                        investableDepositBalance: {
-                            $gte: freshAmount
-                        }
-                    },
-                    {
-                        $inc: {
-                            balance: -freshAmount,
-
-                            investableDepositBalance:
-                                -freshAmount,
-
-                            activeInvestments: 1,
-
-                            dailyYield: freshDailyIncome
-                        }
-                    },
-                    {
-                        new: true,
-                        session,
-                        runValidators: true
+            // Atomically deduct funds
+            const updatedUser = await User.findOneAndUpdate(
+                {
+                    _id: freshUser._id,
+                    isBlocked: { $ne: true },
+                    investmentPurchaseEnabled: { $ne: false },
+                    balance: { $gte: freshAmount },
+                    investableDepositBalance: {
+                        $gte: freshAmount
                     }
-                );
+                },
+                {
+                    $inc: {
+                        balance: -freshAmount,
+                        investableDepositBalance: -freshAmount,
+                        activeInvestments: 1,
+                        dailyYield: freshDailyIncome
+                    }
+                },
+                {
+                    new: true,
+                    session,
+                    runValidators: true
+                }
+            );
 
             if (!updatedUser) {
                 failure = {
                     status: 409,
+                    code: "BALANCE_OR_PERMISSION_CHANGED",
                     message:
                         "Your available funds or account permissions changed. Please refresh and try again."
                 };
                 return;
             }
 
-
-            // ------------------------------------------
-            // Create investment record
-            // ------------------------------------------
-
+            // Create investment
             const purchaseTime = new Date();
 
-            const [investment] =
-                await Investment.create(
-                    [
-                        {
-                            user: updatedUser._id,
-                            plan: freshPlan._id,
-                            planName: freshPlan.name,
-                            image: freshPlan.image || "",
+            const calculatedTotalIncome = roundMoney(
+                freshDailyIncome * freshDuration
+            );
 
-                            amount: freshAmount,
-                            dailyIncome: freshDailyIncome,
-                            duration: freshDuration,
-
-                            totalIncome:
-                                freshDailyIncome * freshDuration,
-
-                            earned: 0,
-                            remainingDays: freshDuration,
-
-                            purchaseDate: purchaseTime,
-                            lastIncomeDate: null,
-                            completedDate: null,
-
-                            status: "Running"
-                        }
-                    ],
+            const [investment] = await Investment.create(
+                [
                     {
-                        session
+                        user: updatedUser._id,
+                        plan: freshPlan._id,
+                        planName: freshPlan.name,
+                        image: freshPlan.image || "",
+                        amount: freshAmount,
+                        dailyIncome: freshDailyIncome,
+                        duration: freshDuration,
+                        totalIncome: calculatedTotalIncome,
+                        earned: 0,
+                        remainingDays: freshDuration,
+                        purchaseDate: purchaseTime,
+                        lastIncomeDate: null,
+                        completedDate: null,
+                        status: "Running"
                     }
-                );
+                ],
+                { session }
+            );
 
-
-            // ------------------------------------------
-            // Create purchase transaction
-            // ------------------------------------------
-
-            const [transaction] =
-                await Transaction.create(
-                    [
-                        {
-                            userId: updatedUser._id,
-
-                            txId: generateInvestmentTxId(),
-
-                            type: "Investment",
-
-                            amount: -freshAmount,
-
-                            description:
-                                `${freshPlan.name} investment purchased.`
-                        }
-                    ],
+            // Create transaction history record
+            const [transaction] = await Transaction.create(
+                [
                     {
-                        session
+                        userId: updatedUser._id,
+                        txId: generateInvestmentTxId(),
+                        type: "Investment",
+                        amount: -freshAmount,
+                        description:
+                            `${freshPlan.name} investment purchased.`
                     }
-                );
+                ],
+                { session }
+            );
 
-
-            // ------------------------------------------
-            // Prepare successful result
-            // ------------------------------------------
-
+            // Prepare response
             purchaseResult = {
                 investment,
                 transaction,
-
                 purchaseTime,
 
                 nextIncomeDate: new Date(
@@ -708,20 +565,15 @@ if (freshPermissionFailure) {
 
                 duration: freshDuration,
 
-                totalIncome: roundMoney(
-                    freshDailyIncome * freshDuration
-                )
+                totalIncome: calculatedTotalIncome
             };
         });
 
-
-        // ==============================================
-        // 12. HANDLE VALIDATION FAILURE
-        // ==============================================
-
+        // 12. HANDLE FAILURE
         if (failure) {
             return res.status(failure.status).json({
                 success: false,
+                code: failure.code || "PURCHASE_FAILED",
                 message: failure.message
             });
         }
@@ -729,15 +581,12 @@ if (freshPermissionFailure) {
         if (!purchaseResult) {
             return res.status(500).json({
                 success: false,
+                code: "PURCHASE_RESULT_MISSING",
                 message: "The investment purchase could not be completed."
             });
         }
 
-
-        // ==============================================
         // 13. SUCCESS RESPONSE
-        // ==============================================
-
         console.log(
             "INVESTMENT CREATED:",
             purchaseResult.investment._id.toString()
@@ -750,7 +599,7 @@ if (freshPermissionFailure) {
 
         return res.status(201).json({
             success: true,
-
+            code: "INVESTMENT_PURCHASED",
             message: "Investment purchased successfully.",
 
             investment: purchaseResult.investment,
@@ -759,13 +608,9 @@ if (freshPermissionFailure) {
 
             incomeSchedule: {
                 purchaseDate: purchaseResult.purchaseTime,
-
                 firstIncomeDate: purchaseResult.nextIncomeDate,
-
                 dailyIncome: purchaseResult.dailyIncome,
-
                 duration: purchaseResult.duration,
-
                 totalIncome: purchaseResult.totalIncome
             },
 
@@ -781,16 +626,19 @@ if (freshPermissionFailure) {
                 activeInvestments:
                     purchaseResult.activeInvestments,
 
-                dailyYield:
-                    purchaseResult.dailyYield
+                dailyYield: purchaseResult.dailyYield
             }
         });
 
     } catch (error) {
-        console.error("INVESTMENT PURCHASE ERROR:", error);
+        console.error(
+            "TESLA WEALTH INVESTMENT PURCHASE ERROR:",
+            error
+        );
 
         return res.status(500).json({
             success: false,
+            code: "INVESTMENT_PURCHASE_ERROR",
             message:
                 "Unable to complete the investment purchase. Please try again later."
         });

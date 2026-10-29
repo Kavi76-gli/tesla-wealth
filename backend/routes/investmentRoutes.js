@@ -1,10 +1,11 @@
+
 // ======================================================
 // TESLA WEALTH — INVESTMENT ROUTES
 // User Investments + Admin Investment Management
+// Automatic Purchases + Per-User Plan Permissions
 // ======================================================
 
 const express = require("express");
-
 const router = express.Router();
 
 const auth = require("../middleware/authMiddleware");
@@ -19,7 +20,21 @@ const investmentPurchaseController = require(
 );
 
 // ======================================================
-// VALIDATE ROUTE HANDLERS AT STARTUP
+// VALIDATE MIDDLEWARE
+// ======================================================
+
+function requireMiddleware(middleware, middlewareName) {
+    if (typeof middleware !== "function") {
+        throw new Error(
+            `[TESLA WEALTH] Invalid middleware: ${middlewareName}`
+        );
+    }
+
+    return middleware;
+}
+
+// ======================================================
+// VALIDATE CONTROLLER HANDLERS
 // ======================================================
 
 function requireHandler(controller, functionName, controllerName) {
@@ -36,20 +51,13 @@ function requireHandler(controller, functionName, controllerName) {
     return handler;
 }
 
-function requireMiddleware(middleware, middlewareName) {
-    if (typeof middleware !== "function") {
-        throw new Error(
-            `[TESLA WEALTH] Invalid middleware: ${middlewareName}`
-        );
-    }
-
-    return middleware;
-}
-
 requireMiddleware(auth, "authMiddleware");
 requireMiddleware(admin, "adminMiddleware");
 
-// Investment controller handlers
+// ======================================================
+// USER INVESTMENT CONTROLLER HANDLERS
+// ======================================================
+
 const userDashboard = requireHandler(
     investmentController,
     "userDashboard",
@@ -86,7 +94,10 @@ const getAllPurchaseHistory = requireHandler(
     "investmentController"
 );
 
-// Purchase request controller handlers
+// ======================================================
+// ADMIN INVESTMENT CONTROLLER HANDLERS
+// ======================================================
+
 const getUserInvestmentSettings = requireHandler(
     investmentPurchaseController,
     "getUserInvestmentSettings",
@@ -99,25 +110,6 @@ const updateUserInvestmentSettings = requireHandler(
     "investmentPurchaseController"
 );
 
-const getPurchaseRequests = requireHandler(
-    investmentPurchaseController,
-    "getPurchaseRequests",
-    "investmentPurchaseController"
-);
-
-const approvePurchaseRequest = requireHandler(
-    investmentPurchaseController,
-    "approvePurchaseRequest",
-    "investmentPurchaseController"
-);
-
-const rejectPurchaseRequest = requireHandler(
-    investmentPurchaseController,
-    "rejectPurchaseRequest",
-    "investmentPurchaseController"
-);
-
-// Additional admin controller handlers
 const getGlobalInvestmentSettings = requireHandler(
     investmentPurchaseController,
     "getGlobalInvestmentSettings",
@@ -159,6 +151,7 @@ const getAdminActivity = requireHandler(
     "getAdminActivity",
     "investmentPurchaseController"
 );
+
 const searchInvestmentUsers = requireHandler(
     investmentPurchaseController,
     "searchInvestmentUsers",
@@ -176,6 +169,14 @@ const updateUserPlanPermission = requireHandler(
     "updateUserPlanPermission",
     "investmentPurchaseController"
 );
+
+// Optional handler: only register the endpoint if the controller
+// exports removeUserPlanPermission.
+const removeUserPlanPermission =
+    typeof investmentPurchaseController.removeUserPlanPermission === "function"
+        ? investmentPurchaseController.removeUserPlanPermission
+        : null;
+
 // ======================================================
 // USER — INVESTMENT DASHBOARD
 // GET /api/investment/dashboard
@@ -201,6 +202,10 @@ router.get(
 // ======================================================
 // USER — PURCHASE INVESTMENT PLAN
 // POST /api/investment/purchase
+//
+// Purchases are handled automatically by purchasePlan.
+// Per-user restrictions and plan limits must be enforced
+// inside the controller before completing the purchase.
 // ======================================================
 
 router.post(
@@ -221,7 +226,7 @@ router.get(
 );
 
 // ======================================================
-// ADMIN — PROCESS DAILY INCOME
+// ADMIN — PROCESS DAILY INVESTMENT INCOME
 // POST /api/investment/daily-income
 // ======================================================
 
@@ -233,7 +238,7 @@ router.post(
 );
 
 // ======================================================
-// ADMIN — PURCHASE HISTORY
+// ADMIN — ALL INVESTMENT PURCHASE HISTORY
 // GET /api/investment/admin/purchase-history
 // ======================================================
 
@@ -244,8 +249,31 @@ router.get(
     getAllPurchaseHistory
 );
 
+// Legacy-compatible admin history endpoint.
+// GET /api/investment/admin/history
+router.get(
+    "/admin/history",
+    auth,
+    admin,
+    getAllPurchaseHistory
+);
+
 // ======================================================
-// ADMIN — USER INVESTMENT SETTINGS
+// ADMIN — SEARCH USERS BY NAME OR PHONE
+// GET /api/investment/admin/users/search?q=...
+// ======================================================
+
+router.get(
+    "/admin/users/search",
+    auth,
+    admin,
+    searchInvestmentUsers
+);
+
+// ======================================================
+// ADMIN — INDIVIDUAL USER INVESTMENT SETTINGS
+// GET /api/investment/admin/users/:userId/settings
+// PATCH /api/investment/admin/users/:userId/settings
 // ======================================================
 
 router.get(
@@ -263,32 +291,51 @@ router.patch(
 );
 
 // ======================================================
-// ADMIN — PURCHASE REQUESTS
+// ADMIN — GET INDIVIDUAL USER PLAN PERMISSIONS
+// GET /api/investment/admin/users/:userId/plan-permissions
 // ======================================================
 
 router.get(
-    "/admin/purchase-requests",
+    "/admin/users/:userId/plan-permissions",
     auth,
     admin,
-    getPurchaseRequests
-);
-
-router.post(
-    "/admin/purchase-requests/:requestId/approve",
-    auth,
-    admin,
-    approvePurchaseRequest
-);
-
-router.post(
-    "/admin/purchase-requests/:requestId/reject",
-    auth,
-    admin,
-    rejectPurchaseRequest
+    getUserPlanPermissions
 );
 
 // ======================================================
+// ADMIN — UPDATE INDIVIDUAL USER PLAN PERMISSION
+// PATCH /api/investment/admin/users/:userId/plans/:planId/permission
+// ======================================================
+
+router.patch(
+    "/admin/users/:userId/plans/:planId/permission",
+    auth,
+    admin,
+    updateUserPlanPermission
+);
+
+// ======================================================
+// ADMIN — REMOVE INDIVIDUAL USER PLAN PERMISSION
+//
+// DELETE /api/investment/admin/users/:userId/plans/:planId/permission
+//
+// This endpoint is available only if the controller exports
+// removeUserPlanPermission.
+// ======================================================
+
+if (removeUserPlanPermission) {
+    router.delete(
+        "/admin/users/:userId/plans/:planId/permission",
+        auth,
+        admin,
+        removeUserPlanPermission
+    );
+}
+
+// ======================================================
 // ADMIN — GLOBAL INVESTMENT SETTINGS
+// GET    /api/investment/admin/settings
+// PATCH  /api/investment/admin/settings
 // ======================================================
 
 router.get(
@@ -306,18 +353,9 @@ router.patch(
 );
 
 // ======================================================
-// ADMIN — INVESTMENT HISTORY
-// ======================================================
-
-router.get(
-    "/admin/history",
-    auth,
-    admin,
-    getAllPurchaseHistory
-);
-
-// ======================================================
-// ADMIN — PLAN SETTINGS
+// ADMIN — GLOBAL PLAN SETTINGS
+// GET /api/investment/admin/plans/settings
+// PATCH /api/investment/admin/plans/:planId/settings
 // ======================================================
 
 router.get(
@@ -336,6 +374,8 @@ router.patch(
 
 // ======================================================
 // ADMIN — INVESTMENT RESTRICTIONS
+// GET /api/investment/admin/restrictions
+// PATCH /api/investment/admin/restrictions
 // ======================================================
 
 router.get(
@@ -353,7 +393,8 @@ router.patch(
 );
 
 // ======================================================
-// ADMIN — ACTIVITY LOG
+// ADMIN — INVESTMENT ADMIN ACTIVITY LOG
+// GET /api/investment/admin/activity
 // ======================================================
 
 router.get(
@@ -363,47 +404,9 @@ router.get(
     getAdminActivity
 );
 
-
-// ======================================================
-// ADMIN — SEARCH USERS
-// GET /api/investment/admin/users/search?q=...
-// ======================================================
-
-router.get(
-    "/admin/users/search",
-    auth,
-    admin,
-    searchInvestmentUsers
-);
-
-
-// ======================================================
-// ADMIN — GET USER PLAN PERMISSIONS
-// GET /api/investment/admin/users/:userId/plan-permissions
-// ======================================================
-
-router.get(
-    "/admin/users/:userId/plan-permissions",
-    auth,
-    admin,
-    getUserPlanPermissions
-);
-
-
-// ======================================================
-// ADMIN — UPDATE USER PLAN PERMISSION
-// PATCH /api/investment/admin/users/:userId/plans/:planId/permission
-// ======================================================
-
-router.patch(
-    "/admin/users/:userId/plans/:planId/permission",
-    auth,
-    admin,
-    updateUserPlanPermission
-);
-
 // ======================================================
 // EXPORT ROUTER
 // ======================================================
 
 module.exports = router;
+
