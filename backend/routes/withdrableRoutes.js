@@ -1,3 +1,5 @@
+"use strict";
+
 const express = require("express");
 
 const router = express.Router();
@@ -10,7 +12,7 @@ const admin = require("../middleware/adminMiddleware");
 
 
 // ======================================================
-// USER ROUTES
+// USER WITHDRAWAL ROUTES
 // ======================================================
 
 // Create withdrawal
@@ -21,7 +23,7 @@ router.post(
 );
 
 
-// My withdrawals
+// Get logged-in user's withdrawals
 router.get(
     "/my",
     auth,
@@ -30,10 +32,10 @@ router.get(
 
 
 // ======================================================
-// ADMIN ROUTES
+// ADMIN WITHDRAWAL ROUTES
 // ======================================================
 
-// All withdrawals
+// Get all withdrawal requests
 router.get(
     "/admin/all",
     auth,
@@ -51,7 +53,7 @@ router.patch(
 );
 
 
-// Reject withdrawal
+// Reject withdrawal with separate reason and alert
 router.patch(
     "/admin/reject/:id",
     auth,
@@ -59,5 +61,31 @@ router.patch(
     withdrawalController.rejectWithdrawal
 );
 
+
+// ======================================================
+// ADMIN - USER WITHDRAWAL PERMISSION CONTROL
+// ======================================================
+
+// Enable withdrawals for a user
+router.patch(
+    "/admin/users/:userId/enable",
+    auth,
+    admin,
+    withdrawalController.enableUserWithdrawal
+);
+
+
+// Disable withdrawals for a user
+router.patch(
+    "/admin/users/:userId/disable",
+    auth,
+    admin,
+    withdrawalController.disableUserWithdrawal
+);
+
+
+// ======================================================
+// EXPORT ROUTER
+// ======================================================
 
 module.exports = router;

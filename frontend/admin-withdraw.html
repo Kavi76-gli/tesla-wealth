@@ -10,7 +10,14 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin - Withdrawals</title>
+    <meta name="theme-color" content="#07130f">
+
+    <meta
+        name="description"
+        content="Manage, review, approve and reject user withdrawal requests."
+    >
+
+    <title>Admin - Withdrawals | Bitcoin Investment</title>
 
 
     <!-- Font Awesome -->
@@ -21,7 +28,7 @@
     >
 
 
-    <!-- CSS -->
+    <!-- Admin Withdrawal CSS -->
 
     <link
         rel="stylesheet"
@@ -34,465 +41,497 @@
 <body>
 
 
-<!-- ==================================================
-     SIDEBAR
-================================================== -->
-
-<aside class="sidebar" id="sidebar">
-
-
-    <div class="sidebar-logo">
-
-        <i class="fa-solid fa-crown"></i>
-
-        <span>Admin Panel</span>
-
-    </div>
-
-
-    <nav class="sidebar-menu">
-
-
-        <a href="./admin.html">
-
-            <i class="fa-solid fa-chart-line"></i>
-
-            Dashboard
-
-        </a>
-
-
-        <a href="./admin-users.html">
-
-            <i class="fa-solid fa-users"></i>
-
-            Users
-
-        </a>
-
-
-        <a href="./admin-deposits.html">
-
-            <i class="fa-solid fa-money-bill-wave"></i>
-
-            Deposits
-
-        </a>
-
-
-        <a
-            href="./admin-withdrawals.html"
-            class="active"
-        >
-
-            <i class="fa-solid fa-money-bill-transfer"></i>
-
-            Withdrawals
-
-        </a>
-
-
-        <a href="./investment-plans.html">
-
-            <i class="fa-solid fa-layer-group"></i>
-
-            Investment Plans
-
-        </a>
-
-
-        <a href="./payment-settings.html">
-
-            <i class="fa-solid fa-credit-card"></i>
-
-            Payment Settings
-
-        </a>
-
-
-        <a href="./transaction.html">
-
-            <i class="fa-solid fa-receipt"></i>
-
-            Transactions
-
-        </a>
-
-
-        <a href="./admin-settings.html">
-
-            <i class="fa-solid fa-gear"></i>
-
-            Settings
-
-        </a>
-
-
-    </nav>
-
-
-    <button
-        id="logoutBtn"
-        class="logout-btn"
-    >
-
-        <i class="fa-solid fa-right-from-bracket"></i>
-
-        Logout
-
-    </button>
-
-
-</aside>
-
-
-
-<!-- ==================================================
-     MAIN
-================================================== -->
-
-<main class="main-content">
-
-
     <!-- ==================================================
-         TOP BAR
+         SIDEBAR
     ================================================== -->
 
-    <header class="topbar">
+    <aside class="sidebar" id="sidebar">
 
 
-        <button
-            id="menuBtn"
-            class="menu-btn"
-        >
+        <!-- LOGO -->
 
-            <i class="fa-solid fa-bars"></i>
+        <div class="sidebar-logo">
 
-        </button>
+            <i class="fa-solid fa-crown"></i>
 
-
-        <div class="page-title">
-
-            <h1>Withdrawals</h1>
-
-            <p>Manage user withdrawal requests</p>
+            <span>Admin Panel</span>
 
         </div>
 
 
-        <button
-            id="refreshBtn"
-            class="refresh-btn"
-        >
+        <!-- NAVIGATION -->
 
-            <i class="fa-solid fa-rotate"></i>
-
-            Refresh
-
-        </button>
+        <nav class="sidebar-menu" aria-label="Admin navigation">
 
 
-    </header>
+            <a href="./admin.html">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <span>Dashboard</span>
+
+            </a>
 
 
+            <a href="./admin-users.html">
 
-    <!-- ==================================================
-         STAT CARDS
-    ================================================== -->
+                <i class="fa-solid fa-users"></i>
 
-    <section class="stats">
+                <span>Users</span>
 
-
-        <div class="stat-card">
-
-            <div class="stat-icon pending">
-
-                <i class="fa-solid fa-clock"></i>
-
-            </div>
-
-            <div>
-
-                <span>Pending</span>
-
-                <strong id="pendingCount">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
+            </a>
 
 
-        <div class="stat-card">
+            <a href="./admin-deposits.html">
 
-            <div class="stat-icon approved">
+                <i class="fa-solid fa-money-bill-wave"></i>
 
-                <i class="fa-solid fa-circle-check"></i>
+                <span>Deposits</span>
 
-            </div>
-
-            <div>
-
-                <span>Approved</span>
-
-                <strong id="approvedCount">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
+            </a>
 
 
-        <div class="stat-card">
-
-            <div class="stat-icon rejected">
-
-                <i class="fa-solid fa-circle-xmark"></i>
-
-            </div>
-
-            <div>
-
-                <span>Rejected</span>
-
-                <strong id="rejectedCount">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-icon total">
-
-                <i class="fa-solid fa-wallet"></i>
-
-            </div>
-
-            <div>
-
-                <span>Total</span>
-
-                <strong id="totalCount">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- ==================================================
-         FILTER
-    ================================================== -->
-
-    <section class="filter-card">
-
-
-        <div class="search-box">
-
-            <i class="fa-solid fa-magnifying-glass"></i>
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search user, phone or withdrawal ID..."
+            <a
+                href="./admin-withdrawals.html"
+                class="active"
+                aria-current="page"
             >
 
-        </div>
+                <i class="fa-solid fa-money-bill-transfer"></i>
+
+                <span>Withdrawals</span>
+
+            </a>
 
 
-        <select id="statusFilter">
+            <a href="./investment-plans.html">
 
-            <option value="All">
-                All Status
-            </option>
+                <i class="fa-solid fa-layer-group"></i>
 
-            <option value="Pending">
-                Pending
-            </option>
+                <span>Investment Plans</span>
 
-            <option value="Approved">
-                Approved
-            </option>
-
-            <option value="Rejected">
-                Rejected
-            </option>
-
-        </select>
+            </a>
 
 
-    </section>
+            <a href="./payment-settings.html">
+
+                <i class="fa-solid fa-credit-card"></i>
+
+                <span>Payment Settings</span>
+
+            </a>
+
+
+            <a href="./transaction.html">
+
+                <i class="fa-solid fa-receipt"></i>
+
+                <span>Transactions</span>
+
+            </a>
+
+
+            <a href="./admin-settings.html">
+
+                <i class="fa-solid fa-gear"></i>
+
+                <span>Settings</span>
+
+            </a>
+
+
+        </nav>
+
+
+        <!-- LOGOUT -->
+
+        <button
+            type="button"
+            id="logoutBtn"
+            class="logout-btn"
+        >
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Logout</span>
+
+        </button>
+
+
+    </aside>
 
 
 
     <!-- ==================================================
-         WITHDRAWAL TABLE
+         MAIN CONTENT
     ================================================== -->
 
-    <section class="table-card">
+    <main class="main-content">
 
 
-        <div class="table-header">
+        <!-- ==================================================
+             TOP BAR
+        ================================================== -->
 
-            <h2>
-
-                Withdrawal Requests
-
-            </h2>
-
-
-            <span id="resultCount">
-
-                0 requests
-
-            </span>
-
-        </div>
-
-
-        <div class="table-wrapper">
-
-
-            <table>
-
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            #
-                        </th>
-
-                        <th>
-                            User
-                        </th>
-
-                        <th>
-                            Amount
-                        </th>
-
-                        <th>
-                            Method
-                        </th>
-
-                        <th>
-                            Payment Details
-                        </th>
-
-                        <th>
-                            Date
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Action
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="withdrawalTableBody">
-
-                    <tr>
-
-                        <td
-                            colspan="8"
-                            class="loading"
-                        >
-
-                            <i class="fa-solid fa-spinner fa-spin"></i>
-
-                            Loading withdrawals...
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-
-            </table>
-
-
-        </div>
-
-
-    </section>
-
-
-
-</main>
-
-
-
-<!-- ==================================================
-     DETAILS MODAL
-================================================== -->
-
-<div
-    id="detailsModal"
-    class="modal"
->
-
-
-    <div class="modal-box">
-
-
-        <div class="modal-header">
-
-            <h3>
-
-                Withdrawal Details
-
-            </h3>
+        <header class="topbar">
 
 
             <button
-                id="closeModal"
-                class="close-btn"
+                type="button"
+                id="menuBtn"
+                class="menu-btn"
+                aria-label="Toggle sidebar"
+                aria-controls="sidebar"
             >
 
-                <i class="fa-solid fa-xmark"></i>
+                <i class="fa-solid fa-bars"></i>
 
             </button>
+
+
+            <div class="page-title">
+
+                <h1>Withdrawals</h1>
+
+                <p>Manage user withdrawal requests</p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="refreshBtn"
+                class="refresh-btn"
+            >
+
+                <i class="fa-solid fa-rotate"></i>
+
+                <span>Refresh</span>
+
+            </button>
+
+
+        </header>
+
+
+
+        <!-- ==================================================
+             STATISTICS
+        ================================================== -->
+
+        <section class="stats" aria-label="Withdrawal statistics">
+
+
+            <!-- PENDING -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon pending">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Pending</span>
+
+                    <strong id="pendingCount">0</strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- APPROVED -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon approved">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Approved</span>
+
+                    <strong id="approvedCount">0</strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- REJECTED -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon rejected">
+
+                    <i class="fa-solid fa-circle-xmark"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Rejected</span>
+
+                    <strong id="rejectedCount">0</strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon total">
+
+                    <i class="fa-solid fa-wallet"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Total</span>
+
+                    <strong id="totalCount">0</strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ==================================================
+             FILTERS
+        ================================================== -->
+
+        <section class="filter-card">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search user, phone or withdrawal ID..."
+                    autocomplete="off"
+                    aria-label="Search withdrawal requests"
+                >
+
+            </div>
+
+
+            <!-- STATUS FILTER -->
+
+            <select
+                id="statusFilter"
+                aria-label="Filter by withdrawal status"
+            >
+
+                <option value="All">
+                    All Status
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+                <option value="Approved">
+                    Approved
+                </option>
+
+                <option value="Rejected">
+                    Rejected
+                </option>
+
+            </select>
+
+
+        </section>
+
+
+
+        <!-- ==================================================
+             WITHDRAWAL TABLE
+        ================================================== -->
+
+        <section class="table-card">
+
+
+            <!-- TABLE HEADER -->
+
+            <div class="table-header">
+
+                <h2>
+
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+
+                    Withdrawal Requests
+
+                </h2>
+
+
+                <span id="resultCount">
+
+                    0 requests
+
+                </span>
+
+            </div>
+
+
+
+            <!-- TABLE -->
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>User</th>
+
+                            <th>Amount</th>
+
+                            <th>Method</th>
+
+                            <th>Payment Details</th>
+
+                            <th>Date</th>
+
+                            <th>Status</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="withdrawalTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="loading"
+                            >
+
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                                Loading withdrawals...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+
+    </main>
+
+
+
+    <!-- ==================================================
+         WITHDRAWAL DETAILS MODAL
+    ================================================== -->
+
+    <div
+        id="detailsModal"
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+        style="display: none;"
+    >
+
+
+        <div class="modal-box">
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header">
+
+                <h3 id="modalTitle">
+
+                    <i class="fa-solid fa-wallet"></i>
+
+                    Withdrawal Details
+
+                </h3>
+
+
+                <button
+                    type="button"
+                    id="closeModal"
+                    class="close-btn"
+                    onclick="closeModal()"
+                    aria-label="Close withdrawal details"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- MODAL CONTENT -->
+
+            <div
+                id="modalContent"
+                class="modal-content"
+            >
+
+                <!-- JavaScript inserts withdrawal details here -->
+
+            </div>
+
 
         </div>
 
 
-        <div
-            id="modalContent"
-            class="modal-content"
-        ></div>
-
-
     </div>
 
-</div>
 
 
+    <!-- ==================================================
+         JAVASCRIPT
+    ================================================== -->
 
-<!-- ==================================================
-     JAVASCRIPT
-================================================== -->
-
-<script src="js/admin-withdraw.js"></script>
+    <script src="js/admin-withdraw.js"></script>
 
 
 </body>

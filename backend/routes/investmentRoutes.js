@@ -263,12 +263,51 @@ router.get(
 // GET /api/investment/admin/users/search?q=...
 // ======================================================
 
+// ======================================================
+// ADMIN — SEARCH USERS BY NAME OR PHONE
+// ======================================================
+
+// Existing endpoint:
+// GET /api/investment/admin/users/search?q=6376762757
+
 router.get(
     "/admin/users/search",
     auth,
     admin,
-    searchInvestmentUsers
+    (req, res, next) => {
+        // Support both query parameter names.
+        if (
+            typeof req.query.search === "string" &&
+            !req.query.q
+        ) {
+            req.query.q = req.query.search;
+        }
+
+        return searchInvestmentUsers(req, res, next);
+    }
 );
+
+// Backward-compatible frontend endpoint:
+// GET /api/investment/admin/users?search=6376762757
+
+router.get(
+    "/admin/users",
+    auth,
+    admin,
+    (req, res, next) => {
+        // The existing controller can continue using req.query.q.
+        if (
+            typeof req.query.search === "string" &&
+            !req.query.q
+        ) {
+            req.query.q = req.query.search;
+        }
+
+        return searchInvestmentUsers(req, res, next);
+    }
+);
+
+
 
 // ======================================================
 // ADMIN — INDIVIDUAL USER INVESTMENT SETTINGS
@@ -294,6 +333,31 @@ router.patch(
 // ADMIN — GET INDIVIDUAL USER PLAN PERMISSIONS
 // GET /api/investment/admin/users/:userId/plan-permissions
 // ======================================================
+
+// ======================================================
+// ADMIN — GET INDIVIDUAL USER PLAN PERMISSIONS
+// ======================================================
+
+// Existing endpoint:
+// GET /api/investment/admin/users/:userId/plan-permissions
+
+router.get(
+    "/admin/users/:userId/plan-permissions",
+    auth,
+    admin,
+    getUserPlanPermissions
+);
+
+// Frontend-compatible endpoint:
+// GET /api/investment/admin/users/:userId/plans
+
+router.get(
+    "/admin/users/:userId/plans",
+    auth,
+    admin,
+    getUserPlanPermissions
+);
+
 
 router.get(
     "/admin/users/:userId/plan-permissions",

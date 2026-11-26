@@ -1,913 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Settings | Tesla Wealth Admin</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Payment Settings | Investment Admin</title>
-
-    <!-- Font Awesome -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
-
-    <!-- Your CSS -->
-    <link
-        rel="stylesheet"
-        href="css/payment-setting.css"
-    >
-
+    <link rel="stylesheet" href="css/payment-setting.css">
 </head>
-
 
 <body>
 
-
-<!-- =====================================================
-     SIDEBAR
-===================================================== -->
-
+<!-- SIDEBAR -->
 <aside class="sidebar">
-
     <div class="logo">
-
         <div class="logo-icon">
-
             <i class="fas fa-chart-line"></i>
-
         </div>
-
         <div>
-
-            <h2>Investment</h2>
-
+            <h2>Tesla Wealth</h2>
             <span>ADMIN PANEL</span>
-
         </div>
-
     </div>
 
-
     <nav>
-
         <ul>
-
-            <li>
-                <a href="dashboard.html">
-
-                    <i class="fas fa-chart-line"></i>
-
-                    <span>Dashboard</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="users.html">
-
-                    <i class="fas fa-users"></i>
-
-                    <span>Users</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="deposits.html">
-
-                    <i class="fas fa-wallet"></i>
-
-                    <span>Deposits</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="withdrawals.html">
-
-                    <i class="fas fa-money-bill-wave"></i>
-
-                    <span>Withdrawals</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="investment-plans.html">
-
-                    <i class="fas fa-chart-pie"></i>
-
-                    <span>Investment Plans</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="purchase-history.html">
-
-                    <i class="fas fa-cart-shopping"></i>
-
-                    <span>Purchase History</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="daily-income.html">
-
-                    <i class="fas fa-coins"></i>
-
-                    <span>Daily Income</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="banner.html">
-
-                    <i class="fas fa-image"></i>
-
-                    <span>Banner</span>
-
-                </a>
-            </li>
-
-
-            <li>
-                <a href="notice.html">
-
-                    <i class="fas fa-bullhorn"></i>
-
-                    <span>Notice</span>
-
-                </a>
-            </li>
-
-
-            <!-- ACTIVE -->
+            <li><a href="dashboard.html"><i class="fas fa-chart-line"></i><span>Dashboard</span></a></li>
+            <li><a href="users.html"><i class="fas fa-users"></i><span>Users</span></a></li>
+            <li><a href="deposits.html"><i class="fas fa-wallet"></i><span>Deposits</span></a></li>
+            <li><a href="withdrawals.html"><i class="fas fa-money-bill-wave"></i><span>Withdrawals</span></a></li>
+            <li><a href="investment-plans.html"><i class="fas fa-chart-pie"></i><span>Investment Plans</span></a></li>
+            <li><a href="purchase-history.html"><i class="fas fa-cart-shopping"></i><span>Purchase History</span></a></li>
+            <li><a href="daily-income.html"><i class="fas fa-coins"></i><span>Daily Income</span></a></li>
+            <li><a href="banner.html"><i class="fas fa-image"></i><span>Banner</span></a></li>
+            <li><a href="notice.html"><i class="fas fa-bullhorn"></i><span>Notice</span></a></li>
 
             <li class="active">
-
                 <a href="payment-settings.html">
-
                     <i class="fas fa-qrcode"></i>
-
                     <span>Payment Settings</span>
-
-                </a>
-
-            </li>
-
-
-            <li>
-                <a href="settings.html">
-
-                    <i class="fas fa-cog"></i>
-
-                    <span>Settings</span>
-
                 </a>
             </li>
 
-
-            <!-- LOGOUT -->
+            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
 
             <li class="logout-item">
-
-                <a
-                    href="#"
-                    id="logoutBtn"
-                >
-
+                <a href="#" id="logoutBtn">
                     <i class="fas fa-right-from-bracket"></i>
-
                     <span>Logout</span>
-
                 </a>
-
             </li>
-
         </ul>
-
     </nav>
-
 </aside>
 
-
-
-<!-- =====================================================
-     MAIN CONTENT
-===================================================== -->
-
+<!-- MAIN CONTENT -->
 <main class="main-content">
 
-
-    <!-- =================================================
-         TOPBAR
-    ================================================== -->
-
     <header class="topbar">
-
         <div class="page-title">
-
-            <span class="title-icon">
-
-                <i class="fas fa-qrcode"></i>
-
-            </span>
-
-
+            <span class="title-icon"><i class="fas fa-qrcode"></i></span>
             <div>
-
-                <h1>
-                    Payment Settings
-                </h1>
-
-                <p>
-                    Manage your deposit payment information
-                </p>
-
+                <h1>Payment Settings</h1>
+                <p>Manage your USDT deposit payment information</p>
             </div>
-
         </div>
-
 
         <div class="admin-profile">
-
-            <div class="admin-avatar">
-
-                <i class="fas fa-user-shield"></i>
-
-            </div>
-
-
+            <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
             <div>
-
-                <strong id="adminName">
-                    Administrator
-                </strong>
-
-                <span>
-                    Admin Account
-                </span>
-
+                <strong id="adminName">Administrator</strong>
+                <span>Admin Account</span>
             </div>
-
         </div>
-
     </header>
-
-
-
-    <!-- =================================================
-         PAGE CONTENT
-    ================================================== -->
 
     <section class="content">
 
-
-        <!-- =================================================
-             INFORMATION CARD
-        ================================================== -->
-
         <div class="info-banner">
-
-            <div class="info-icon">
-
-                <i class="fas fa-circle-info"></i>
-
-            </div>
-
-
+            <div class="info-icon"><i class="fas fa-circle-info"></i></div>
             <div>
-
-                <strong>
-                    Payment Information
-                </strong>
-
-                <p>
-                    These payment details will be shown to users
-                    on the Deposit page.
-                </p>
-
+                <strong>Payment Information</strong>
+                <p>These payment details and the Binance Pay QR code will be shown to users on the Deposit page.</p>
             </div>
-
         </div>
-
-
-
-        <!-- =================================================
-             SETTINGS CARD
-        ================================================== -->
 
         <div class="settings-card">
 
-
             <div class="card-header">
-
                 <div>
-
-                    <h2>
-                        Payment Configuration
-                    </h2>
-
-                    <p>
-                        Configure UPI and bank payment details
-                    </p>
-
+                    <h2>Payment Configuration</h2>
+                    <p>Configure Binance Pay and deposit limits</p>
                 </div>
-
-
                 <div class="secure-badge">
-
                     <i class="fas fa-shield-halved"></i>
-
                     Secure
-
                 </div>
-
             </div>
 
+            <form id="paymentForm" enctype="multipart/form-data">
 
-
-            <!-- =================================================
-                 FORM
-            ================================================== -->
-
-            <form
-                id="paymentForm"
-                enctype="multipart/form-data"
-            >
-
-
-                <!-- =============================================
-                     BASIC PAYMENT INFORMATION
-                ============================================== -->
-
+                <!-- BASIC INFORMATION -->
                 <div class="section-title">
-
-                    <span>
-                        <i class="fas fa-building"></i>
-                    </span>
-
+                    <span><i class="fas fa-building"></i></span>
                     <div>
-
-                        <h3>
-                            Basic Information
-                        </h3>
-
-                        <p>
-                            General payment configuration
-                        </p>
-
+                        <h3>Basic Information</h3>
+                        <p>General payment configuration</p>
                     </div>
-
                 </div>
 
-
                 <div class="form-grid">
-
-
-                    <!-- COMPANY -->
-
                     <div class="input-box">
-
-                        <label for="companyName">
-                            Company Name
-                        </label>
-
+                        <label for="companyName">Company Name</label>
                         <div class="input-wrapper">
-
                             <i class="fas fa-building"></i>
-
                             <input
                                 type="text"
                                 id="companyName"
-                                placeholder="Bitcoin Investment"
+                                placeholder="Tesla Wealth"
                             >
-
                         </div>
-
                     </div>
-
-
-
-                    <!-- PAYMENT TYPE -->
 
                     <div class="input-box">
-
-                        <label for="paymentType">
-                            Payment Type
-                        </label>
-
+                        <label for="paymentType">Payment Type</label>
                         <div class="input-wrapper">
-
                             <i class="fas fa-credit-card"></i>
-
                             <select id="paymentType">
-
-                                <option value="UPI">
-                                    UPI
-                                </option>
-
-                                <option value="BANK">
-                                    Bank Transfer
-                                </option>
-
-                                <option value="BOTH">
-                                    UPI + Bank Transfer
-                                </option>
-
+                                <option value="BINANCE_PAY">Binance Pay (USDT)</option>
+                                <option value="UPI">UPI</option>
+                                <option value="BANK">Bank Transfer</option>
+                                <option value="BOTH">UPI + Bank Transfer</option>
                             </select>
-
                         </div>
-
                     </div>
-
                 </div>
 
-
-
-                <!-- =================================================
-                     UPI DETAILS
-                ================================================== -->
-
+                <!-- BINANCE PAY DETAILS -->
                 <div class="section-title">
-
-                    <span>
-                        <i class="fas fa-mobile-screen-button"></i>
-                    </span>
-
+                    <span><i class="fab fa-bitcoin"></i></span>
                     <div>
-
-                        <h3>
-                            UPI Details
-                        </h3>
-
-                        <p>
-                            Configure the UPI payment information
-                        </p>
-
+                        <h3>Binance Pay Details</h3>
+                        <p>Upload your Binance Pay QR code and provide payment instructions</p>
                     </div>
-
                 </div>
-
 
                 <div class="form-grid">
-
-
                     <div class="input-box">
-
-                        <label for="upiId">
-                            UPI ID
-                        </label>
-
+                        <label for="upiId">Payment ID (Optional)</label>
                         <div class="input-wrapper">
-
                             <i class="fas fa-at"></i>
-
                             <input
                                 type="text"
                                 id="upiId"
-                                placeholder="example@upi"
+                                placeholder="Optional payment identifier"
                             >
-
                         </div>
-
                     </div>
 
-
                     <div class="input-box">
-
-                        <label for="accountHolder">
-                            Account Holder
-                        </label>
-
+                        <label for="accountHolder">Account Holder (Optional)</label>
                         <div class="input-wrapper">
-
                             <i class="fas fa-user"></i>
-
                             <input
                                 type="text"
                                 id="accountHolder"
-                                placeholder="Account holder name"
+                                placeholder="Optional account holder name"
                             >
-
                         </div>
-
                     </div>
-
                 </div>
 
-
-
-                <!-- =================================================
-                     BANK DETAILS
-                ================================================== -->
-
+                <!-- BANK DETAILS -->
                 <div class="section-title">
-
-                    <span>
-                        <i class="fas fa-building-columns"></i>
-                    </span>
-
+                    <span><i class="fas fa-building-columns"></i></span>
                     <div>
-
-                        <h3>
-                            Bank Details
-                        </h3>
-
-                        <p>
-                            Configure bank transfer information
-                        </p>
-
+                        <h3>Bank Details</h3>
+                        <p>Only needed if you use bank transfer payment methods</p>
                     </div>
-
                 </div>
-
 
                 <div class="form-grid">
-
-
-                    <!-- BANK NAME -->
-
                     <div class="input-box">
-
-                        <label for="bankName">
-                            Bank Name
-                        </label>
-
+                        <label for="bankName">Bank Name</label>
                         <div class="input-wrapper">
-
                             <i class="fas fa-building-columns"></i>
-
-                            <input
-                                type="text"
-                                id="bankName"
-                                placeholder="Bank name"
-                            >
-
+                            <input type="text" id="bankName" placeholder="Bank name">
                         </div>
-
                     </div>
 
-
-                    <!-- ACCOUNT NUMBER -->
-
                     <div class="input-box">
-
-                        <label for="accountNumber">
-                            Account Number
-                        </label>
-
+                        <label for="accountNumber">Account Number</label>
                         <div class="input-wrapper">
-
                             <i class="fas fa-hashtag"></i>
-
-                            <input
-                                type="text"
-                                id="accountNumber"
-                                placeholder="Account number"
-                            >
-
+                            <input type="text" id="accountNumber" placeholder="Account number">
                         </div>
-
                     </div>
-
-
-                    <!-- IFSC -->
 
                     <div class="input-box">
-
-                        <label for="ifscCode">
-                            IFSC Code
-                        </label>
-
+                        <label for="ifscCode">IFSC Code</label>
                         <div class="input-wrapper">
-
                             <i class="fas fa-code"></i>
-
-                            <input
-                                type="text"
-                                id="ifscCode"
-                                placeholder="IFSC code"
-                            >
-
+                            <input type="text" id="ifscCode" placeholder="IFSC code">
                         </div>
-
                     </div>
-
                 </div>
 
-
-
-                <!-- =================================================
-                     DEPOSIT LIMITS
-                ================================================== -->
-
+                <!-- DEPOSIT LIMITS -->
                 <div class="section-title">
-
-                    <span>
-                        <i class="fas fa-indian-rupee-sign"></i>
-                    </span>
-
+                    <span><i class="fas fa-coins"></i></span>
                     <div>
-
-                        <h3>
-                            Deposit Limits
-                        </h3>
-
-                        <p>
-                            Set minimum and maximum deposit amounts
-                        </p>
-
+                        <h3>Deposit Limits</h3>
+                        <p>Set minimum and maximum deposit amounts in USDT</p>
                     </div>
-
                 </div>
-
 
                 <div class="form-grid">
-
-
                     <div class="input-box">
-
-                        <label for="minimumDeposit">
-                            Minimum Deposit
-                        </label>
-
+                        <label for="minimumDeposit">Minimum Deposit (USDT)</label>
                         <div class="input-wrapper">
-
-                            <i class="fas fa-indian-rupee-sign"></i>
-
+                            <i class="fas fa-coins"></i>
                             <input
                                 type="number"
                                 id="minimumDeposit"
-                                min="1"
-                                placeholder="500"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="50"
                             >
-
                         </div>
-
                     </div>
 
-
                     <div class="input-box">
-
-                        <label for="maximumDeposit">
-                            Maximum Deposit
-                        </label>
-
+                        <label for="maximumDeposit">Maximum Deposit (USDT)</label>
                         <div class="input-wrapper">
-
-                            <i class="fas fa-indian-rupee-sign"></i>
-
+                            <i class="fas fa-coins"></i>
                             <input
                                 type="number"
                                 id="maximumDeposit"
-                                min="1"
+                                min="0.01"
+                                step="0.01"
                                 placeholder="100000"
                             >
-
                         </div>
-
                     </div>
-
                 </div>
 
-
-
-                <!-- =================================================
-                     INSTRUCTIONS
-                ================================================== -->
-
+                <!-- PAYMENT INSTRUCTIONS -->
                 <div class="section-title">
-
-                    <span>
-                        <i class="fas fa-message"></i>
-                    </span>
-
+                    <span><i class="fas fa-message"></i></span>
                     <div>
-
-                        <h3>
-                            Payment Instructions
-                        </h3>
-
-                        <p>
-                            Instructions displayed to users
-                        </p>
-
+                        <h3>Payment Instructions</h3>
+                        <p>Instructions displayed to users before submitting a deposit</p>
                     </div>
-
                 </div>
-
 
                 <div class="input-box full-width">
-
-                    <label for="depositInstruction">
-                        Deposit Instructions
-                    </label>
-
+                    <label for="depositInstruction">Deposit Instructions</label>
                     <textarea
                         id="depositInstruction"
                         rows="5"
-                        placeholder="Enter payment instructions..."
+                        placeholder="Example: Scan the Binance Pay QR code and pay the exact USDT amount shown. Submit your transaction reference and payment screenshot after completing payment."
                     ></textarea>
-
                 </div>
 
-
-
-                <!-- =================================================
-                     QR CODE
-                ================================================== -->
-
+                <!-- QR CODE UPLOAD -->
                 <div class="section-title">
-
-                    <span>
-                        <i class="fas fa-qrcode"></i>
-                    </span>
-
+                    <span><i class="fas fa-qrcode"></i></span>
                     <div>
-
-                        <h3>
-                            QR Code
-                        </h3>
-
-                        <p>
-                            Upload the QR code users can scan
-                        </p>
-
+                        <h3>Binance Pay QR Code</h3>
+                        <p>Upload the QR code users should scan to make their payment</p>
                     </div>
-
                 </div>
-
 
                 <div class="qr-card">
-
-
                     <div class="qr-preview-box">
-
                         <img
                             id="qrPreview"
-                            src="qr.jpeg"
-                            alt="QR Code Preview"
+                            src=""
+                            alt="Binance Pay QR Code Preview"
+                            style="display: none;"
                         >
 
-                        <div
-                            class="qr-loading"
-                            id="qrPreviewLoading"
-                        >
-
-                            <i class="fas fa-spinner fa-spin"></i>
-
-                            Loading...
-
+                        <div class="qr-loading" id="qrPreviewLoading">
+                            <i class="fas fa-qrcode"></i>
+                            <span>No QR code loaded</span>
                         </div>
-
                     </div>
 
-
                     <div class="qr-upload">
-
-
                         <div class="upload-icon">
-
                             <i class="fas fa-cloud-arrow-up"></i>
-
                         </div>
 
+                        <h4>Upload Binance Pay QR Code</h4>
+                        <p>PNG, JPG or WEBP · Maximum 5 MB</p>
 
-                        <h4>
-                            Upload New QR Code
-                        </h4>
-
-
-                        <p>
-                            PNG, JPG or JPEG
-                        </p>
-
-
-                        <label
-                            for="qrImage"
-                            class="upload-btn"
-                        >
-
+                        <label for="qrImage" class="upload-btn">
                             <i class="fas fa-image"></i>
-
                             Choose QR Image
-
                         </label>
-
 
                         <input
                             type="file"
                             id="qrImage"
-                            accept="image/png,image/jpeg,image/jpg"
+                            name="qrImage"
+                            accept="image/png,image/jpeg,image/webp"
                             hidden
                         >
 
-
-                        <small id="qrFileName">
-                            No new image selected
-                        </small>
-
+                        <small id="qrFileName">No new image selected</small>
                     </div>
-
                 </div>
 
-
-
-                <!-- =================================================
-                     SAVE BUTTON
-                ================================================== -->
-
+                <!-- FORM ACTIONS -->
                 <div class="form-actions">
-
                     <button
                         type="button"
                         class="cancel-btn"
                         id="resetPaymentBtn"
                     >
-
                         <i class="fas fa-rotate-left"></i>
-
                         Reset
-
                     </button>
-
 
                     <button
                         type="submit"
                         class="save-btn"
                         id="savePaymentBtn"
                     >
-
                         <i class="fas fa-floppy-disk"></i>
-
-                        <span>
-                            Save Payment Settings
-                        </span>
-
+                        <span>Save Payment Settings</span>
                     </button>
-
                 </div>
 
-
             </form>
-
         </div>
-
-
     </section>
-
 </main>
 
-
-
-<!-- =====================================================
-     TOAST
-===================================================== -->
-
-<div
-    id="toast"
-    class="toast"
-    aria-hidden="true"
->
-
-    <i
-        id="toastIcon"
-        class="fas fa-circle-check"
-    ></i>
-
-    <span id="toastMessage">
-        Settings saved successfully
-    </span>
-
+<!-- TOAST -->
+<div id="toast" class="toast" aria-hidden="true">
+    <i id="toastIcon" class="fas fa-circle-check"></i>
+    <span id="toastMessage">Settings saved successfully</span>
 </div>
-
-
-
-<!-- =====================================================
-     JAVASCRIPT
-===================================================== -->
 
 <script src="js/payment-setting.js"></script>
 
-
 </body>
-
 </html>

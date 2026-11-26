@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transaction Review | Tesla Wealth</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #030b08;
+    --card: #0b1b13;
+    --card2: #10251a;
+    --border: rgba(95,180,125,.18);
+    --green: #39e995;
+    --gold: #e6c77b;
+    --red: #ff7777;
+    --text: #f4fff8;
+    --muted: #91aa9a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, sans-serif;
+    background:
+        radial-gradient(circle at top right, #14291c, transparent 35%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 25px 15px 50px;
+}
+
+.container {
+    max-width: 850px;
+    margin: auto;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.logo {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.logo span {
+    color: var(--green);
+}
+
+.back {
+    color: var(--green);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 11px 15px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.hero {
+    background: linear-gradient(135deg, #271a13, #0b1710);
+    border: 1px solid rgba(255,120,100,.18);
+    border-radius: 22px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.eyebrow {
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+}
+
+h1 {
+    font-size: clamp(24px, 5vw, 34px);
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 19px;
+    padding: 24px;
+    margin-bottom: 18px;
+}
+
+.card h2 {
+    font-size: 17px;
+    margin-bottom: 18px;
+}
+
+.status {
+    display: inline-block;
+    padding: 9px 14px;
+    background: rgba(255,100,100,.1);
+    border: 1px solid rgba(255,100,100,.2);
+    border-radius: 30px;
+    color: var(--red);
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+}
+
+.info {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 13px;
+    min-width: 0;
+}
+
+.label {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 9px;
+}
+
+.value {
+    font-size: 14px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.message {
+    background: rgba(255,100,100,.06);
+    border: 1px solid rgba(255,100,100,.18);
+    padding: 18px;
+    border-radius: 13px;
+    color: #ffd2ca;
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.document {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.document strong {
+    font-size: 13px;
+}
+
+.document small {
+    display: block;
+    color: var(--muted);
+    margin-top: 7px;
+}
+
+.notice {
+    padding: 17px;
+    background: rgba(57,233,149,.07);
+    border: 1px solid rgba(57,233,149,.18);
+    color: #b7e9cc;
+    font-size: 12px;
+    line-height: 1.8;
+    border-radius: 13px;
+}
+
+.error {
+    color: #ffaaaa;
+    background: rgba(255,100,100,.08);
+    border: 1px solid rgba(255,100,100,.2);
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.loading {
+    text-align: center;
+    padding: 45px 15px;
+    color: var(--muted);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.footer {
+    text-align: center;
+    color: #698174;
+    font-size: 11px;
+    margin-top: 30px;
+}
+
+@media(max-width:550px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero, .card {
+        padding: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topbar">
+        <div class="logo">TESLA <span>WEALTH</span></div>
+        <a href="withdraw.html" class="back">← Withdrawals</a>
+    </div>
+
+    <section class="hero">
+        <div class="eyebrow">TRANSACTION VERIFICATION</div>
+
+        <h1>Transaction Review</h1>
+
+        <p>
+            Review the transaction issue reported by the
+            administration. Check the explanation and supporting
+            documents associated with your withdrawal.
+        </p>
+    </section>
+
+    <div id="loading" class="loading">
+        Loading transaction information...
+    </div>
+
+    <div id="error" class="error hidden"></div>
+
+    <div id="content" class="hidden">
+
+        <section class="card">
+            <h2>Transaction Status</h2>
+
+            <div class="status" id="status">
+                Transaction Issue
+            </div>
+
+            <div class="grid">
+
+                <div class="info">
+                    <div class="label">Withdrawal Amount</div>
+                    <div class="value" id="amount">₹0.00</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Net Amount</div>
+                    <div class="value" id="netAmount">₹0.00</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Withdrawal ID</div>
+                    <div class="value" id="withdrawalId">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Payment Method</div>
+                    <div class="value" id="paymentMethod">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Request Date</div>
+                    <div class="value" id="requestDate">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Review Date</div>
+                    <div class="value" id="reviewDate">-</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Administrator Explanation</h2>
+
+            <div class="message" id="explanation">
+                No transaction explanation available.
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Transaction Verification</h2>
+
+            <div class="grid">
+
+                <div class="info">
+                    <div class="label">Transaction Status</div>
+                    <div class="value" id="transactionStatus">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Eligibility</div>
+                    <div class="value" id="eligibility">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Review Status</div>
+                    <div class="value" id="reviewStatus">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Transaction Amount</div>
+                    <div class="value" id="transactionAmount">₹0.00</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Supporting Evidence</h2>
+            <div id="documents"></div>
+        </section>
+
+        <section class="card">
+            <h2>Resolution Instructions</h2>
+
+            <div class="notice" id="resolution">
+                Please review the information provided by the administrator.
+            </div>
+        </section>
+
+    </div>
+
+    <div class="footer">
+        Tesla Wealth · Transaction Review Centre
+    </div>
+
+</div>
+
+<script>
+"use strict";
+
+const API_BASE = [
+    "localhost",
+    "127.0.0.1"
+].includes(location.hostname)
+    ? "http://localhost:5000/api"
+    : "https://tesla-wealth.onrender.com/api";
+
+const API = `${API_BASE}/withdrawals`;
+
+const token =
+    localStorage.getItem("ki_token") ||
+    localStorage.getItem("token");
+
+const params = new URLSearchParams(location.search);
+
+const withdrawalId =
+    params.get("id") ||
+    params.get("withdrawalId");
+
+const $ = id => document.getElementById(id);
+
+function money(value) {
+    return "₹" + Number(value || 0).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function date(value) {
+    if (!value) return "-";
+
+    const parsed = new Date(value);
+
+    return Number.isNaN(parsed.getTime())
+        ? "-"
+        : parsed.toLocaleString("en-IN");
+}
+
+function setText(id, value) {
+    $(id).textContent =
+        value === undefined || value === null || value === ""
+            ? "-"
+            : String(value);
+}
+
+function showError(message) {
+    $("loading").classList.add("hidden");
+    $("content").classList.add("hidden");
+    $("error").textContent = message;
+    $("error").classList.remove("hidden");
+}
+
+async function loadWithdrawal() {
+    if (!token) {
+        location.href = "auth.html";
+        return;
+    }
+
+    if (!withdrawalId) {
+        showError("Withdrawal ID is missing.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API}/my`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message || "Unable to load transaction."
+            );
+        }
+
+        const item = (data.withdrawals || []).find(
+            row => String(row.id || row._id) === withdrawalId
+        );
+
+        if (!item) {
+            throw new Error("Withdrawal not found.");
+        }
+
+        if (item.status !== "Transaction Issue") {
+            throw new Error(
+                "This withdrawal does not have a transaction issue."
+            );
+        }
+
+        render(item);
+
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+function render(item) {
+    const review = item.review || {};
+
+    setText("status", item.status);
+
+    setText("amount", money(item.amount));
+    setText("netAmount", money(item.netAmount));
+
+    setText("withdrawalId", item.id);
+    setText("paymentMethod", item.paymentMethod);
+
+    setText("requestDate", date(item.createdAt));
+    setText("reviewDate", date(item.updatedAt));
+
+    setText(
+        "explanation",
+        review.investorMessage ||
+        review.resolutionNote ||
+        "No transaction explanation available."
+    );
+
+    setText("transactionStatus", review.transactionStatus);
+    setText("eligibility", review.eligibility);
+    setText("reviewStatus", review.status);
+
+    setText(
+        "transactionAmount",
+        money(review.transactionAmount)
+    );
+
+    setText(
+        "resolution",
+        review.resolutionNote ||
+        review.investorMessage ||
+        "Please contact the official support team for clarification."
+    );
+
+    const documents = item.documents || [];
+
+    $("documents").replaceChildren();
+
+    if (!documents.length) {
+        const empty = document.createElement("div");
+        empty.className = "notice";
+        empty.textContent =
+            "No supporting evidence has been attached yet.";
+        $("documents").appendChild(empty);
+    } else {
+        documents.forEach(doc => {
+            const row = document.createElement("div");
+            row.className = "document";
+
+            const name = document.createElement("strong");
+            name.textContent = doc.name || "Transaction Evidence";
+
+            const detail = document.createElement("small");
+            detail.textContent =
+                `${doc.documentType || "Document"} · ${date(doc.uploadedAt)}`;
+
+            row.append(name, detail);
+            $("documents").appendChild(row);
+        });
+    }
+
+    $("loading").classList.add("hidden");
+    $("error").classList.add("hidden");
+    $("content").classList.remove("hidden");
+}
+
+loadWithdrawal();
+</script>
+
+</body>
+</html>

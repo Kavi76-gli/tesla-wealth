@@ -271,25 +271,13 @@ function createReferralLink(
 // ======================================================
 // FORMAT MONEY
 // ======================================================
-
 function formatMoney(amount) {
-
-    const number =
-        Number(amount || 0);
-
-    return (
-        "₹" +
-        number.toLocaleString(
-            "en-IN",
-            {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }
-        )
-    );
-
+    return "$" +
+        Number(amount || 0).toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
 }
-
 
 // ======================================================
 // RENDER REFERRAL HISTORY

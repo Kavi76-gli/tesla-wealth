@@ -2,436 +2,338 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#e8f8ee">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Deposit | Tesla Wealth</title>
 
-    <meta
-        name="theme-color"
-        content="#ffffff"
-    >
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 
-    <meta
-        name="description"
-        content="Secure and fast deposit page"
-    >
-
-    <title>Deposit Money</title>
-
-
-    <!-- =====================================================
-         FONT AWESOME
-    ====================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-    >
-
-
-    <!-- =====================================================
-         DEPOSIT CSS
-    ====================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="css/deposite.css"
-    >
-
+    <link rel="stylesheet" href="css/deposite.css">
 </head>
-
 
 <body>
 
-
-<!-- =========================================================
-     PAGE
-========================================================= -->
-
 <div class="deposit-page">
 
-
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
+    <!-- HEADER -->
     <header class="header">
-
         <div class="header-top">
 
-
-            <button
-                class="back-btn"
-                type="button"
-                onclick="history.back()"
-                aria-label="Go back"
-            >
-
+            <button class="back-btn" onclick="history.back()" aria-label="Go back">
                 <i class="fa-solid fa-arrow-left"></i>
-
             </button>
 
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
 
-            <div class="header-title">
-
-                <i class="fa-solid fa-circle-plus"></i>
-
-                <span>
-                    Deposit Money
-                </span>
-
+                <div>
+                    <h1>Tesla Wealth</h1>
+                    <span>Secure Deposit Center</span>
+                </div>
             </div>
 
+            <div class="secure-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+                Secure
+            </div>
 
         </div>
 
-
-        <p>
-            Fast • Secure • Verified Payments
-        </p>
-
+        <div class="header-content">
+            <span class="header-label">WALLET SERVICES</span>
+            <h2>Add USDT to Your Wallet</h2>
+            <p>Submit your Binance Pay deposit for verification.</p>
+        </div>
     </header>
 
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
 
-
-    <!-- =====================================================
-         PAYMENT CARD
-    ====================================================== -->
-
-    <section
-        class="payment-card"
-        aria-labelledby="paymentTitle"
-    >
-
-
-        <h2 id="paymentTitle">
-
-            <i class="fas fa-qrcode"></i>
-
-            Scan &amp; Pay
-
-        </h2>
-
-
-
-        <!-- =================================================
-             QR
-        ================================================== -->
-
-        <div class="qr-wrapper">
-
-
-            <div
-                class="qr-loading"
-                id="qrLoading"
-                aria-live="polite"
-            >
-
-                Loading QR...
-
+        <!-- DEPOSIT INFORMATION -->
+        <section class="info-banner">
+            <div class="info-icon">
+                <i class="fa-solid fa-circle-info"></i>
             </div>
 
+            <div>
+                <strong>Important Payment Information</strong>
+                <p>
+                    Pay using the Binance Pay QR code shown in the payment window.
+                    Enter the correct transaction reference and upload your payment
+                    screenshot. Your deposit is credited after admin approval.
+                </p>
+            </div>
+        </section>
 
-            <img
-                id="qrImage"
-                class="qr"
-                alt="Payment QR Code"
-                decoding="async"
-                loading="eager"
-            >
+        <!-- AMOUNT SECTION -->
+        <section class="deposit-card">
 
+            <div class="section-heading">
+                <div>
+                    <span class="step-label">STEP 01</span>
+                    <h2>Select Deposit Amount</h2>
+                    <p>Choose an amount or enter your own in USDT.</p>
+                </div>
 
-        </div>
-
-
-
-        <!-- =================================================
-             PAYMENT INFORMATION
-        ================================================== -->
-
-        <div class="payment-info">
-
-
-            <!-- UPI -->
-
-            <div class="row">
-
-                <span>
-                    UPI ID
-                </span>
-
-
-                <strong id="upiId">
-                    Loading...
-                </strong>
-
+                <div class="heading-icon">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
             </div>
 
+            <div class="amount-display">
+                <span>Deposit Amount</span>
 
-
-            <!-- COPY UPI -->
-
-            <button
-                id="copyUpi"
-                type="button"
-            >
-
-                <i class="fas fa-copy"></i>
-
-                Copy UPI
-
-            </button>
-
-
-
-            
-
-            <!-- LIMITS -->
-
-            <div class="row">
-
-                <span>
-                    Deposit Limits
-                </span>
-
-
-                <strong id="limits">
-                    ₹100 - ₹100000
-                </strong>
-
-            </div>
-
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         DEPOSIT FORM
-    ====================================================== -->
-
-    <section class="deposit-form">
-
-
-        <h2>
-            Submit Deposit
-        </h2>
-
-
-
-        <form
-            id="depositForm"
-            novalidate
-        >
-
-
-            <!-- =================================================
-                 AMOUNT
-            ================================================== -->
-
-            <div class="form-group">
-
-                <label
-                    for="amount"
-                    class="sr-only"
-                >
-                    Deposit Amount
-                </label>
-
-
-                <input
-                    type="number"
-                    id="amount"
-                    name="amount"
-                    placeholder="Deposit Amount"
-                    min="100"
-                    step="1"
-                    inputmode="decimal"
-                    autocomplete="off"
-                    required
-                >
-
-            </div>
-
-
-
-            <!-- =================================================
-                 UTR
-            ================================================== -->
-
-            <div class="form-group">
-
-                <label
-                    for="utr"
-                    class="sr-only"
-                >
-                    UTR / Transaction ID
-                </label>
-
-
-                <input
-                    type="text"
-                    id="utr"
-                    name="utr"
-                    placeholder="UTR / Transaction ID"
-                    autocomplete="off"
-                    autocapitalize="characters"
-                    spellcheck="false"
-                    maxlength="50"
-                    required
-                >
-
-            </div>
-
-
-
-            <!-- =================================================
-                 SCREENSHOT UPLOAD
-            ================================================== -->
-
-            <div class="form-group">
-
-
-                <label
-                    class="upload-box"
-                    for="screenshot"
-                >
-
+                <div class="amount-input-wrapper">
+                    <span>USDT</span>
 
                     <input
-                        type="file"
-                        id="screenshot"
-                        name="screenshot"
-                        accept="image/jpeg,image/png,image/webp"
-                        hidden
+                        type="number"
+                        id="amount"
+                        placeholder="Enter amount"
+                        min="50"
+                        step="0.01"
+                        inputmode="decimal"
                     >
-
-
-                    <i
-                        class="fas fa-cloud-upload-alt"
-                        aria-hidden="true"
-                    ></i>
-
-
-                    <span>
-                        Upload Payment Screenshot
-                    </span>
-
-
-                    <small>
-                        JPG, PNG or WEBP • Max 3MB
-                    </small>
-
-
-                </label>
-
-
+                </div>
             </div>
 
+            <div class="preset-title">
+                Quick Select
+            </div>
 
+            <div class="preset-grid">
+                <button type="button" class="preset-btn" data-amount="50">
+                    50 USDT
+                </button>
 
-            <!-- =================================================
-                 IMAGE PREVIEW
-            ================================================== -->
+                <button type="button" class="preset-btn" data-amount="100">
+                    100 USDT
+                </button>
 
-            <img
-                id="preview"
-                class="preview"
-                alt="Payment Screenshot Preview"
-                style="display:none;"
-                decoding="async"
-            >
+                <button type="button" class="preset-btn" data-amount="200">
+                    200 USDT
+                </button>
 
+                <button type="button" class="preset-btn" data-amount="500">
+                    500 USDT
+                </button>
 
+                <button type="button" class="preset-btn" data-amount="1000">
+                    1,000 USDT
+                </button>
 
-            <!-- =================================================
-                 SUBMIT
-            ================================================== -->
+                <button type="button" class="preset-btn" data-amount="2500">
+                    2,500 USDT
+                </button>
+            </div>
+
+            <div class="limits-box">
+                <i class="fa-solid fa-circle-check"></i>
+
+                <span id="limits">
+                    Minimum 50 USDT · Maximum 100,000 USDT
+                </span>
+            </div>
 
             <button
-                type="submit"
-                id="submitDeposit"
+                type="button"
+                id="continuePayment"
+                class="primary-btn"
             >
-
-                <i
-                    class="fa-solid fa-paper-plane"
-                    aria-hidden="true"
-                ></i>
-
-                <span>
-                    Submit Deposit
-                </span>
-
+                <span>Continue to Binance Pay</span>
+                <i class="fa-solid fa-arrow-right"></i>
             </button>
 
+        </section>
 
-        </form>
+        <!-- PAYMENT HISTORY -->
+        <section class="history-card">
 
+            <div class="section-heading">
+                <div>
+                    <span class="step-label">ACTIVITY</span>
+                    <h2>Deposit History</h2>
+                    <p>Track your previous deposit requests.</p>
+                </div>
 
-    </section>
+                <div class="heading-icon">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+            </div>
 
+            <div id="historyList">
+                <div class="history-loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Loading deposit history...
+                </div>
+            </div>
 
+        </section>
 
-    <!-- =====================================================
-         DEPOSIT HISTORY
-    ====================================================== -->
+    </main>
 
-    <section class="history">
+    <!-- PAYMENT MODAL -->
+    <div class="modal-overlay" id="paymentModal">
 
+        <div class="payment-modal">
 
-        <h2>
+            <div class="modal-handle"></div>
 
-            <i class="fa-solid fa-clock-rotate-left"></i>
+            <button
+                type="button"
+                class="modal-close"
+                id="closeModal"
+                aria-label="Close payment modal"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-            Deposit History
+            <div class="modal-header">
+                <div class="modal-success-icon">
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
 
-        </h2>
+                <h2>Complete Your Binance Pay</h2>
+                <p>Scan this QR code using the Binance app.</p>
+            </div>
 
+            <!-- PAYMENT AMOUNT -->
+            <div class="payment-amount-box">
+                <span>Payable Amount</span>
 
-        <div
-            id="historyList"
-            aria-live="polite"
-        >
+                <strong id="modalAmount">0 USDT</strong>
 
-            <div class="history-loading">
+                <small>
+                    <i class="fa-solid fa-lock"></i>
+                    Binance Pay · USDT
+                </small>
+            </div>
 
-                <i class="fa-solid fa-spinner fa-spin"></i>
+            <!-- QR CODE -->
+            <div class="qr-section">
+                <div class="qr-frame">
 
-                <span>
-                    Loading history...
+                    <div id="qrLoading">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        Loading Binance Pay QR...
+                    </div>
+
+                    <img
+                        id="qrImage"
+                        alt="Binance Pay deposit QR"
+                    >
+
+                </div>
+
+                <span class="scan-text">
+                    Scan QR code with Binance Pay
                 </span>
+            </div>
 
+            <!-- BINANCE PAY DETAILS -->
+            <div class="upi-box">
+                <div>
+                    <span>Binance Pay Details</span>
+                    <strong id="upiId">Loading...</strong>
+                </div>
+
+                <button type="button" id="copyUpi">
+                    <i class="fa-regular fa-copy"></i>
+                    Copy
+                </button>
+            </div>
+
+            <a
+                href="#"
+                id="upiPayButton"
+                class="upi-button"
+            >
+                <i class="fa-solid fa-mobile-screen-button"></i>
+                Open Binance App
+            </a>
+
+            <!-- PAYMENT FORM -->
+            <div class="payment-divider">
+                <span>AFTER MAKING PAYMENT</span>
+            </div>
+
+            <form id="depositForm" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label for="utr">
+                        Binance Pay Transaction Reference
+                    </label>
+
+                    <input
+                        type="text"
+                        id="utr"
+                        name="utr"
+                        placeholder="Enter Binance Pay transaction reference"
+                        maxlength="100"
+                        autocomplete="off"
+                        autocapitalize="characters"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="screenshot">Payment Screenshot</label>
+
+                    <label class="upload-box" for="screenshot">
+                        <input
+                            type="file"
+                            id="screenshot"
+                            name="screenshot"
+                            accept="image/jpeg,image/png,image/webp"
+                            hidden
+                            required
+                        >
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                        <strong>Upload Binance Pay Screenshot</strong>
+
+                        <span>JPG, PNG or WEBP · Maximum 3MB</span>
+                    </label>
+
+                    <img
+                        id="preview"
+                        class="preview"
+                        alt="Payment screenshot preview"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    id="submitDeposit"
+                    class="primary-btn submit-btn"
+                >
+                    <span>Submit Deposit Request</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+
+            </form>
+
+            <div class="security-note">
+                <i class="fa-solid fa-shield-halved"></i>
+                Your deposit remains pending until payment verification.
+                Approved USDT deposits are credited at 1 USDT = $1.00.
             </div>
 
         </div>
+    </div>
 
-
-    </section>
-
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
 
 </div>
 
-
-
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
-
-<script
-    src="js/deposite.js"
-    defer
-></script>
-
+<script src="js/deposite.js" defer></script>
 
 </body>
-
 </html>

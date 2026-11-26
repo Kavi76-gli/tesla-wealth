@@ -64,7 +64,6 @@ router.get(
     depositController.getPaymentSettings
 );
 
-
 router.put(
     "/payment-settings",
     auth,
@@ -72,5 +71,4 @@ router.put(
     upload.single("qrImage"),
     depositController.updatePaymentSettings
 );
-
 module.exports = router;

@@ -150,25 +150,14 @@ async function apiFetch(
 // =========================================================
 // MONEY
 // =========================================================
-
 function money(value) {
+    const amount = Number(value || 0);
 
-    const amount =
-        Number(value || 0);
-
-
-    return "₹" +
-        amount.toLocaleString(
-            "en-IN",
-            {
-
-                minimumFractionDigits: 0,
-
-                maximumFractionDigits: 2
-
-            }
-        );
-
+    return "$" +
+        amount.toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
 }
 
 
@@ -2522,13 +2511,13 @@ document.addEventListener("DOMContentLoaded", () => {
     /* =====================================================
        FORMAT MONEY
        ===================================================== */
-
-    function formatEarning(value) {
-
-        return "₹" +
-            Number(value).toLocaleString("en-IN");
-
-    }
+function formatEarning(value) {
+    return "$" +
+        Number(value || 0).toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+}
 
 
     /* =====================================================
@@ -3928,8 +3917,8 @@ function createWinnerActivity() {
         <div class="activity-right">
 
             <strong class="activity-amount">
-                ₹${amount.toLocaleString("en-IN")}
-            </strong>
+    $${Number(amount).toLocaleString("en-US")}
+</strong>
 
 
             <span class="activity-status">

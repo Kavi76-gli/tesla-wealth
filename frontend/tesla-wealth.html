@@ -47,7 +47,67 @@ function lifetimeCount(plan){const p=permissionFor(plan);return Number(p.lifetim
 function renderUserPermissions(){const box=$('userPlanGrid');if(!selectedUser){box.innerHTML='<div class="empty">No investor selected.</div>';return}if(!plans.length){box.innerHTML='<div class="empty">No plans were returned by GET /api/investment/plans. Check that endpoint.</div>';return}box.innerHTML=plans.map(p=>{const perm=permissionFor(p),pid=idOf(p),count=lifetimeCount(p);return `<div class="plan-card" data-plan-id="${esc(pid)}"><div class="plan-top"><div><h3>${esc(p.name||p.planName||'Investment plan')}</h3><div class="sub">${money(p.price??p.amount)} · ${esc(p.days??p.duration??'—')} days</div></div><label class="switch" title="Allow this user to purchase this plan"><input class="perm-enabled" type="checkbox" ${perm.enabled!==false?'checked':''}><span class="slider"></span></label></div><div class="plan-meta">Plan ID: ${esc(pid)}<br>Lifetime purchases recorded: <b>${count}</b></div><div class="field"><label>Lifetime purchase limit (0 = unlimited)</label><input class="input perm-limit" type="number" min="0" step="1" value="${esc(perm.maxLifetimePurchases??0)}"></div><div class="field"><label>Restriction note</label><input class="input perm-note" maxlength="500" value="${esc(perm.restrictionNote||'')}" placeholder="Optional note"></div><div class="sub">${Number(perm.maxLifetimePurchases)>0?`Remaining by configured cap: ${Math.max(0,Number(perm.maxLifetimePurchases)-count)}`:'No lifetime cap configured'}</div></div>`}).join('');$('planPermissionMessage').textContent='Loaded '+plans.length+' plan(s). Changes are saved per investor.';$('statPlans').textContent=plans.filter(p=>permissionFor(p).enabled!==false).length+'/'+plans.length}
 async function loadUserPermissions(){if(!selectedUser)return;const uid=encodeURIComponent(idOf(selectedUser));let d;try{d=await api('/investment/admin/users/'+uid+'/plans')}catch(e){// Some backend versions return permissions from the settings endpoint; do not silently invent server state.
  userPermissions=[];renderUserPermissions();throw new Error('Could not load per-user plan permissions. Expected GET /api/investment/admin/users/:userId/plans. '+e.message)}userPermissions=unwrapList(d,'permissions','plans','userPlanPermissions','data');if(!plans.length)await loadPlans();renderUserPermissions()}
-async function saveAllPermissions(){if(!selectedUser)return notify('Select a user first.','err');const cards=[...$('userPlanGrid').querySelectorAll('.plan-card')];if(!cards.length)return notify('No plan cards to save.','err');const failures=[];for(const card of cards){const pid=card.dataset.planId;const payload={enabled:card.querySelector('.perm-enabled').checked,maxLifetimePurchases:Math.max(0,Number(card.querySelector('.perm-limit').value)||0),restrictionNote:card.querySelector('.perm-note').value.trim()};try{await api('/investment/admin/users/'+encodeURIComponent(idOf(selectedUser))+'/plans/'+encodeURIComponent(pid),{method:'PATCH',body:JSON.stringify(payload)})}catch(e){failures.push(pid+': '+e.message)}}if(failures.length){notify('Some plan permissions could not be saved: '+failures.join(' | '),'err')}else{notify('All per-user plan permissions saved.');await loadUserPermissions()}}
+
+async function saveAllPermissions() {
+    if (!selectedUser) {
+        return notify('Select a user first.', 'err');
+    }
+
+    const cards = [
+        ...$('userPlanGrid').querySelectorAll('.plan-card')
+    ];
+
+    if (!cards.length) {
+        return notify('No plan cards to save.', 'err');
+    }
+
+    const failures = [];
+
+    for (const card of cards) {
+        const pid = card.dataset.planId;
+
+        const payload = {
+            enabled: card.querySelector('.perm-enabled').checked,
+
+            maxLifetimePurchases: Math.max(
+                0,
+                Number(card.querySelector('.perm-limit').value) || 0
+            ),
+
+            restrictionNote: card.querySelector('.perm-note').value.trim()
+        };
+
+        try {
+            await api(
+                '/investment/admin/users/' +
+                encodeURIComponent(idOf(selectedUser)) +
+                '/plans/' +
+                encodeURIComponent(pid) +
+                '/permission',
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify(payload)
+                }
+            );
+        } catch (e) {
+            failures.push(pid + ': ' + e.message);
+        }
+    }
+
+    if (failures.length) {
+        notify(
+            'Some plan permissions could not be saved: ' +
+            failures.join(' | '),
+            'err'
+        );
+    } else {
+        notify('All per-user plan permissions saved successfully.');
+
+        await loadUserPermissions();
+    }
+}
+
+
 function statusBadge(s){const x=String(s||'—');const cls=/running|approved|active|success/i.test(x)?'green':/reject|cancel|fail|blocked/i.test(x)?'red':/pending|hold/i.test(x)?'amber':'';return `<span class="badge ${cls}">${esc(x)}</span>`}
 function table(headers,rows,empty='No records found.'){if(!rows.length)return `<div class="empty">${esc(empty)}</div>`;return `<table><thead><tr>${headers.map(h=>'<th>'+esc(h)+'</th>').join('')}</tr></thead><tbody>${rows.join('')}</tbody></table>`}
 function investmentRows(list){return list.map(i=>{const user=i.user&&typeof i.user==='object'?userName(i.user):(i.userName||i.name||'—');return `<tr><td>${esc(i.planName||i.plan?.name||i.name||'Plan')}</td><td>${esc(user)}</td><td>${money(i.amount??i.investmentAmount)}</td><td>${money(i.earned??i.totalEarned??0)}</td><td>${esc(i.purchaseDate?new Date(i.purchaseDate).toLocaleDateString():i.createdAt?new Date(i.createdAt).toLocaleDateString():'—')}</td><td>${statusBadge(i.status)}</td><td>${esc(idOf(i).slice(-8)||'—')}</td></tr>`})}

@@ -2,20 +2,23 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     >
 
-   <title>Customer Support | Bitcoin Invest</title>
+    <meta name="theme-color" content="#f4f8f5">
 
-    <link 
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
+    <meta
+        name="description"
+        content="Contact Tesla Wealth customer support for assistance with your account."
     >
+
+    <title>Customer Support | Tesla Wealth</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <link
         rel="preconnect"
@@ -24,7 +27,7 @@
     >
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
 
@@ -33,11 +36,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     >
 
-    <link
-        rel="stylesheet"
-        href="css/support.css"
-    >
-
+    <link rel="stylesheet" href="css/support.css">
 </head>
 
 <body>
@@ -45,7 +44,6 @@
 <div class="app-shell">
 
     <!-- HEADER -->
-
     <header class="top-header">
 
         <div class="header-left">
@@ -54,20 +52,14 @@
                 class="back-button"
                 type="button"
                 onclick="goBack()"
+                aria-label="Go back"
             >
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
 
             <div class="page-heading">
-
-                <span>
-                    We're Here To Help
-                </span>
-
-                <h1>
-                    Customer Support
-                </h1>
-
+                <span>TESLA WEALTH SERVICES</span>
+                <h1>Customer Support</h1>
             </div>
 
         </div>
@@ -82,54 +74,70 @@
     <main class="main-content">
 
         <!-- SUPPORT HERO -->
-
         <section class="support-hero">
 
-            <div class="hero-glow glow-one"></div>
-            <div class="hero-glow glow-two"></div>
+            <div class="hero-decoration hero-decoration-one"></div>
+            <div class="hero-decoration hero-decoration-two"></div>
 
-            <div class="support-icon">
-                <i class="fa-solid fa-headset"></i>
+            <div class="hero-top">
+
+                <div class="support-icon">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+
+                <span class="online-badge">
+                    <span class="online-dot"></span>
+                    Support Available
+                </span>
+
             </div>
 
-            <span class="online-badge">
-                <span class="online-dot"></span>
-                Support Available
-            </span>
+            <div class="hero-content">
 
-            <h2>
-                How can we
-                <strong>help you?</strong>
-            </h2>
+                <span class="hero-label">
+                    WE ARE HERE FOR YOU
+                </span>
 
-            <p>
-                If you have questions about your account,
-                deposits, withdrawals or investments,
-                our support team is here to assist you.
-            </p>
+                <h2>
+                    How can we
+                    <strong>help you?</strong>
+                </h2>
+
+                <p>
+                    Have a question about your account or need assistance?
+                    Contact our support team through your preferred channel.
+                    We're here to help you find the right information.
+                </p>
+
+            </div>
+
+            <div class="hero-footer">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Customer assistance and account guidance</span>
+            </div>
 
         </section>
 
 
         <!-- CONTACT OPTIONS -->
-
         <section class="contact-section">
 
             <div class="section-title">
 
-                <span>
-                    GET IN TOUCH
-                </span>
+                <span class="section-label">GET IN TOUCH</span>
 
-                <h2>
-                    Choose a support option
-                </h2>
+                <h2>Contact Our Team</h2>
+
+                <p>
+                    Choose your preferred way to contact our support team.
+                </p>
 
             </div>
 
 
             <div class="contact-grid">
 
+                <!-- WHATSAPP -->
                 <button
                     class="contact-card"
                     type="button"
@@ -142,14 +150,16 @@
 
                     <div class="contact-content">
 
-                        <h3>
-                            WhatsApp Support
-                        </h3>
+                        <h3>WhatsApp Support</h3>
 
                         <p>
-                            Chat with our support team
-                            for quick assistance.
+                            Contact our team through WhatsApp.
                         </p>
+
+                        <span class="contact-action">
+                            Start Chat
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </span>
 
                     </div>
 
@@ -158,6 +168,7 @@
                 </button>
 
 
+                <!-- TELEGRAM -->
                 <button
                     class="contact-card"
                     type="button"
@@ -170,14 +181,16 @@
 
                     <div class="contact-content">
 
-                        <h3>
-                            Telegram Support
-                        </h3>
+                        <h3>Telegram Support</h3>
 
                         <p>
-                            Contact our support team
-                            through Telegram.
+                            Reach our team through Telegram.
                         </p>
+
+                        <span class="contact-action">
+                            Open Telegram
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </span>
 
                     </div>
 
@@ -186,6 +199,7 @@
                 </button>
 
 
+                <!-- EMAIL -->
                 <button
                     class="contact-card"
                     type="button"
@@ -198,18 +212,20 @@
 
                     <div class="contact-content">
 
-                        <h3>
-                            Email Support
-                        </h3>
+                        <h3>Email Support</h3>
 
                         <p>
-                            Send us your questions and
-                            account-related concerns.
+                            Send us your questions and concerns.
                         </p>
+
+                        <span class="contact-action">
+                            Copy Email
+                            <i class="fa-solid fa-copy"></i>
+                        </span>
 
                     </div>
 
-                    <i class="fa-solid fa-copy arrow"></i>
+                    <i class="fa-solid fa-chevron-right arrow"></i>
 
                 </button>
 
@@ -219,18 +235,17 @@
 
 
         <!-- FAQ -->
-
         <section class="faq-section">
 
             <div class="section-title">
 
-                <span>
-                    QUICK HELP
-                </span>
+                <span class="section-label">HELP CENTER</span>
 
-                <h2>
-                    Frequently Asked Questions
-                </h2>
+                <h2>Frequently Asked Questions</h2>
+
+                <p>
+                    Find helpful information about your account and transactions.
+                </p>
 
             </div>
 
@@ -240,19 +255,20 @@
                 <details class="faq-card">
 
                     <summary>
-
                         <span>
+                            <i class="fa-solid fa-wallet"></i>
                             How can I make a deposit?
                         </span>
 
-                        <i class="fa-solid fa-plus"></i>
-
+                        <i class="fa-solid fa-plus faq-toggle"></i>
                     </summary>
 
                     <p>
-                        Open the Deposit section from the
-                        dashboard and follow the available
-                        payment instructions.
+                        Open the Deposit section from your dashboard and follow
+                        the payment instructions displayed in your account.
+                        Always verify the payment details before making a
+                        transaction. Keep your payment confirmation for
+                        reference.
                     </p>
 
                 </details>
@@ -261,19 +277,19 @@
                 <details class="faq-card">
 
                     <summary>
-
                         <span>
+                            <i class="fa-solid fa-money-bill-transfer"></i>
                             How can I withdraw my balance?
                         </span>
 
-                        <i class="fa-solid fa-plus"></i>
-
+                        <i class="fa-solid fa-plus faq-toggle"></i>
                     </summary>
 
                     <p>
-                        Open the Withdraw section and enter
-                        the required withdrawal information.
-                        Make sure your account details are correct.
+                        Visit the Withdraw section, review the applicable
+                        withdrawal requirements and submit your request using
+                        your correct payment details. You can check the
+                        request status in your account.
                     </p>
 
                 </details>
@@ -282,18 +298,18 @@
                 <details class="faq-card">
 
                     <summary>
-
                         <span>
+                            <i class="fa-solid fa-chart-line"></i>
                             Where can I see my investments?
                         </span>
 
-                        <i class="fa-solid fa-plus"></i>
-
+                        <i class="fa-solid fa-plus faq-toggle"></i>
                     </summary>
 
                     <p>
-                        You can view your active and completed
-                        investments from the My Investments page.
+                        Open the My Investments section to review your
+                        investment records, active plans and completed
+                        investments.
                     </p>
 
                 </details>
@@ -302,19 +318,37 @@
                 <details class="faq-card">
 
                     <summary>
-
                         <span>
+                            <i class="fa-solid fa-user-shield"></i>
                             I have a problem with my account.
                         </span>
 
-                        <i class="fa-solid fa-plus"></i>
-
+                        <i class="fa-solid fa-plus faq-toggle"></i>
                     </summary>
 
                     <p>
-                        Contact customer support and provide
-                        the relevant account information so our
-                        support team can assist you.
+                        Contact customer support using one of the available
+                        contact methods. Never share your password, OTP,
+                        MPIN or private authentication codes.
+                    </p>
+
+                </details>
+
+
+                <details class="faq-card">
+
+                    <summary>
+                        <span>
+                            <i class="fa-solid fa-clock"></i>
+                            How can I check transaction status?
+                        </span>
+
+                        <i class="fa-solid fa-plus faq-toggle"></i>
+                    </summary>
+
+                    <p>
+                        Visit your Transactions section to review available
+                        transaction records and their current status.
                     </p>
 
                 </details>
@@ -325,23 +359,22 @@
 
 
         <!-- SECURITY NOTICE -->
-
         <section class="security-card">
 
             <div class="security-icon">
                 <i class="fa-solid fa-shield-halved"></i>
             </div>
 
-            <div>
+            <div class="security-content">
 
-                <h3>
-                    Stay Safe
-                </h3>
+                <span>SECURITY NOTICE</span>
+
+                <h3>Your Security Matters</h3>
 
                 <p>
-                    Never share your password, OTP,
-                    verification code or other confidential
-                    account information with anyone.
+                    Never share your password, OTP, verification code,
+                    MPIN or confidential account information with anyone,
+                    including people claiming to be support representatives.
                 </p>
 
             </div>
@@ -354,12 +387,12 @@
     </main>
 
 
-    <!-- BOTTOM NAV -->
-
+    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
 
         <button
             class="nav-item"
+            type="button"
             onclick="goTo('home.html')"
         >
             <div class="nav-icon">
@@ -371,6 +404,7 @@
 
         <button
             class="nav-item"
+            type="button"
             onclick="goTo('my-investment.html')"
         >
             <div class="nav-icon">
@@ -382,6 +416,7 @@
 
         <button
             class="nav-item nav-center"
+            type="button"
             onclick="goTo('deposite.html')"
         >
             <div class="center-nav-button">
@@ -393,6 +428,7 @@
 
         <button
             class="nav-item"
+            type="button"
             onclick="goTo('withdraw.html')"
         >
             <div class="nav-icon">
@@ -404,6 +440,7 @@
 
         <button
             class="nav-item"
+            type="button"
             onclick="goTo('profile.html')"
         >
             <div class="nav-icon">
@@ -414,84 +451,335 @@
 
     </nav>
 
+
+    <!-- TOAST -->
+    <div
+        class="toast-message"
+        id="toastMessage"
+        role="status"
+        aria-live="polite"
+    >
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastText">Success</span>
+    </div>
+
 </div>
 
+
+<!-- JAVASCRIPT -->
 <script>
 
+/* =====================================================
+   TESLA WEALTH
+   CUSTOMER SUPPORT JAVASCRIPT
+===================================================== */
+
+
+/* =====================================================
+   SUPPORT CONFIGURATION
+===================================================== */
+
+// Verify these are the official Tesla Wealth contacts
+// before publishing the page.
+
 const SUPPORT_WHATSAPP = "917073082091";
-const SUPPORT_TELEGRAM = "https://t.me/Bitcoin_Investment_Supportt";
-const SUPPORT_EMAIL = "bitcoininvestment000007@gmail.com";
+
+const SUPPORT_TELEGRAM =
+    "https://t.me/Bitcoin_Investment_Supportt";
+
+const SUPPORT_EMAIL =
+    "bitcoininvestment000007@gmail.com";
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
 
 function goTo(page) {
+
+    if (!page) return;
+
     window.location.href = page;
+
 }
 
+
 function goBack() {
+
     if (window.history.length > 1) {
+
         window.history.back();
+
     } else {
+
         window.location.href = "home.html";
+
     }
+
 }
+
+
+/* =====================================================
+   TOAST MESSAGE
+===================================================== */
+
+let toastTimer;
+
+function showMessage(message, type = "success") {
+
+    const toast = document.getElementById("toastMessage");
+
+    const toastText = document.getElementById("toastText");
+
+    if (!toast || !toastText) {
+
+        alert(message);
+
+        return;
+
+    }
+
+    const icon = toast.querySelector("i");
+
+    toastText.textContent = message;
+
+    toast.classList.remove("show", "error");
+
+    if (type === "error") {
+
+        toast.classList.add("error");
+
+        icon.className = "fa-solid fa-circle-exclamation";
+
+    } else {
+
+        icon.className = "fa-solid fa-circle-check";
+
+    }
+
+    requestAnimationFrame(() => {
+
+        toast.classList.add("show");
+
+    });
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 3000);
+
+}
+
+
+/* =====================================================
+   WHATSAPP SUPPORT
+===================================================== */
 
 function openWhatsApp() {
 
-    if (!SUPPORT_WHATSAPP) {
-        showMessage("WhatsApp support number is not configured yet.");
+    const number = SUPPORT_WHATSAPP.replace(/\D/g, "");
+
+    if (!number) {
+
+        showMessage(
+            "WhatsApp support is not configured.",
+            "error"
+        );
+
         return;
+
     }
 
-    window.open(
-        "https://wa.me/" + SUPPORT_WHATSAPP,
-        "_blank"
+    const message = encodeURIComponent(
+        "Hello Tesla Wealth Support, I need assistance with my account."
     );
+
+    const url = `https://wa.me/${number}?text=${message}`;
+
+    window.open(url, "_blank", "noopener,noreferrer");
+
 }
+
+
+/* =====================================================
+   TELEGRAM SUPPORT
+===================================================== */
 
 function openTelegram() {
 
     if (!SUPPORT_TELEGRAM) {
-        showMessage("Telegram support link is not configured yet.");
+
+        showMessage(
+            "Telegram support is not configured.",
+            "error"
+        );
+
         return;
+
     }
 
     window.open(
         SUPPORT_TELEGRAM,
-        "_blank"
+        "_blank",
+        "noopener,noreferrer"
     );
+
 }
+
+
+/* =====================================================
+   COPY SUPPORT EMAIL
+===================================================== */
 
 async function copySupportEmail() {
 
     if (!SUPPORT_EMAIL) {
-        showMessage("Support email is not configured yet.");
+
+        showMessage(
+            "Support email is not configured.",
+            "error"
+        );
+
         return;
+
     }
 
     try {
 
-        await navigator.clipboard.writeText(
-            SUPPORT_EMAIL
-        );
+        await navigator.clipboard.writeText(SUPPORT_EMAIL);
 
-        showMessage(
-            "Support email copied."
-        );
+        showMessage("Support email copied successfully.");
 
     } catch (error) {
 
-        showMessage(
-            SUPPORT_EMAIL
-        );
+        const input = document.createElement("textarea");
+
+        input.value = SUPPORT_EMAIL;
+
+        input.style.position = "fixed";
+        input.style.opacity = "0";
+
+        document.body.appendChild(input);
+
+        input.select();
+
+        try {
+
+            const copied = document.execCommand("copy");
+
+            if (copied) {
+
+                showMessage("Support email copied successfully.");
+
+            } else {
+
+                showMessage(
+                    "Please copy manually: " + SUPPORT_EMAIL,
+                    "error"
+                );
+
+            }
+
+        } catch (fallbackError) {
+
+            showMessage(
+                "Please copy manually: " + SUPPORT_EMAIL,
+                "error"
+            );
+
+        }
+
+        input.remove();
 
     }
+
 }
 
-function showMessage(message) {
-    alert(message);
+
+/* =====================================================
+   FAQ ACCORDION
+===================================================== */
+
+function setupFAQ() {
+
+    const faqItems = document.querySelectorAll(".faq-card");
+
+    faqItems.forEach(item => {
+
+        item.addEventListener("toggle", () => {
+
+            if (!item.open) return;
+
+            faqItems.forEach(otherItem => {
+
+                if (otherItem !== item) {
+
+                    otherItem.open = false;
+
+                }
+
+            });
+
+        });
+
+    });
+
 }
+
+
+/* =====================================================
+   BOTTOM NAVIGATION ACTIVE STATE
+===================================================== */
+
+function setupBottomNavigation() {
+
+    const currentPage = (
+        window.location.pathname.split("/").pop() || "index.html"
+    ).toLowerCase();
+
+    const navButtons = document.querySelectorAll(".nav-item");
+
+    navButtons.forEach(button => {
+
+        button.classList.remove("active");
+
+        const onclickValue = button.getAttribute("onclick") || "";
+
+        const match = onclickValue.match(/goTo\(['"](.+?)['"]\)/);
+
+        if (!match) return;
+
+        const targetPage = match[1].toLowerCase();
+
+        if (targetPage === currentPage) {
+
+            button.classList.add("active");
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   PAGE INITIALIZATION
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    setupFAQ();
+
+    setupBottomNavigation();
+
+    document.body.classList.add("page-loaded");
+
+});
 
 </script>
-
 
 </body>
 </html>

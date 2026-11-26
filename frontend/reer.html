@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,252 +5,1133 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Invite Friends | Bitcoin Invest</title>
+    <meta name="theme-color" content="#e5f7eb">
+
+    <title>Referral Rewards | Bitcoin Invest</title>
 
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
 
-    <!-- KEEPING YOUR EXISTING THEME -->
-    <link
-        rel="stylesheet"
-        href="css/reer.css"
-    >
+    <link rel="stylesheet" href="css/reer.css">
+
+    <style>
+
+        /* =========================================
+           PREMIUM WHITE + LIGHT GREEN THEME
+        ========================================= */
+
+        :root {
+            --green: #20a875;
+            --green-dark: #176b4b;
+            --green-light: #e6f7ed;
+            --green-soft: #f5fbf7;
+            --text: #193b2c;
+            --muted: #84958b;
+            --border: #e8f0ea;
+            --white: #ffffff;
+            --shadow: 0 8px 28px rgba(30, 110, 75, .07);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f7faf8 !important;
+            color: var(--text);
+            font-family: Inter, Poppins, Arial, sans-serif;
+        }
+
+        .page {
+            max-width: 600px;
+            margin: auto;
+            padding-bottom: 110px;
+        }
+
+        /* HEADER */
+
+        .top-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            padding: 22px 18px !important;
+
+            background: linear-gradient(
+                135deg,
+                #e7f8ed,
+                #d3f1df
+            ) !important;
+
+            border-radius: 0 0 25px 25px;
+
+            border-bottom: 1px solid #d9eee0;
+
+            box-shadow: 0 5px 20px rgba(32,168,117,.06);
+        }
+
+        .top-header h1 {
+            color: var(--green-dark) !important;
+            font-size: 21px;
+            font-weight: 800;
+            margin: 0 0 4px;
+        }
+
+        .top-header p {
+            color: #688b78 !important;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .back-btn {
+            width: 43px;
+            height: 43px;
+            min-width: 43px;
+
+            border-radius: 13px !important;
+
+            background: #ffffff !important;
+            color: var(--green) !important;
+
+            border: 1px solid #dceee2 !important;
+        }
+
+        /* GENERAL CARDS */
+
+        .premium-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            padding: 19px;
+            margin-top: 17px;
+            box-shadow: var(--shadow);
+        }
+
+        /* HERO */
+
+        .invite-hero {
+            background: linear-gradient(
+                145deg,
+                #ffffff,
+                #f0faf4
+            ) !important;
+
+            border: 1px solid #e4f1e8;
+            border-radius: 22px !important;
+
+            padding: 25px 20px !important;
+            margin-top: 19px;
+
+            box-shadow: var(--shadow);
+        }
+
+        .hero-icon {
+            width: 60px;
+            height: 60px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: auto auto 12px;
+
+            background: #e1f6e9 !important;
+            color: var(--green) !important;
+
+            border-radius: 19px;
+            font-size: 25px;
+        }
+
+        .invite-hero h2 {
+            color: var(--green-dark) !important;
+            font-size: 23px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .invite-hero p {
+            color: var(--muted) !important;
+            font-size: 13px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        /* STATS */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 17px;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            background: white !important;
+            border: 1px solid var(--border);
+            border-radius: 17px !important;
+
+            padding: 16px !important;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            width: 43px;
+            height: 43px;
+            min-width: 43px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 13px;
+            background: var(--green-light) !important;
+            color: var(--green) !important;
+        }
+
+        .stat-card span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .stat-card strong {
+            display: block;
+            color: var(--green-dark) !important;
+            font-size: 19px;
+            margin-top: 4px;
+        }
+
+        /* SECTION TITLES */
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            color: var(--green-dark);
+            font-weight: 800;
+            font-size: 15px;
+            margin-bottom: 14px;
+        }
+
+        .section-title i {
+            color: var(--green);
+        }
+
+        /* CODE AND LINK */
+
+        .code-box,
+        .link-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+
+            padding: 13px;
+
+            background: #f3faf5 !important;
+            border: 1px solid #e1f0e6 !important;
+            border-radius: 12px;
+        }
+
+        .code-box strong {
+            color: var(--green-dark);
+            letter-spacing: 1px;
+        }
+
+        .link-box span {
+            font-size: 11px;
+            color: #658574;
+            overflow-wrap: anywhere;
+        }
+
+        .code-box button,
+        .link-box button {
+            width: 35px;
+            height: 35px;
+            min-width: 35px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #e0f5e8;
+            color: var(--green);
+        }
+
+        .share-main {
+            width: 100%;
+            margin-top: 13px;
+            padding: 14px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: linear-gradient(
+                135deg,
+                #29b77d,
+                #168d60
+            );
+
+            color: white;
+            font-weight: 800;
+        }
+
+        /* SHARE BUTTONS */
+
+        .share-section {
+            margin-top: 20px;
+        }
+
+        .share-section h3 {
+            color: var(--green-dark);
+            font-size: 16px;
+        }
+
+        .share-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 9px;
+        }
+
+        .share-btn {
+            padding: 12px 5px;
+            border: none;
+            border-radius: 11px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .share-btn.whatsapp {
+            background: #e5f8eb;
+            color: #16894e;
+        }
+
+        .share-btn.telegram {
+            background: #e6f3fb;
+            color: #2588bd;
+        }
+
+        .share-btn.copy {
+            background: #f0f3f1;
+            color: #52675b;
+        }
+
+        /* =========================================
+           ACHIEVEMENTS
+        ========================================= */
+
+        .achievement-section {
+            margin-top: 22px;
+        }
+
+        .achievement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .achievement-header h3 {
+            color: var(--green-dark);
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .achievement-header i {
+            color: #d7a532;
+            font-size: 21px;
+        }
+
+        .achievement-subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 9px;
+        }
+
+        /* PROGRESS */
+
+        .progress-card {
+            background: #f2faf5;
+            border: 1px solid #e3f1e8;
+            padding: 15px;
+            border-radius: 14px;
+            margin-top: 17px;
+        }
+
+        .progress-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 11px;
+            font-size: 12px;
+        }
+
+        .progress-top strong {
+            color: var(--green-dark);
+        }
+
+        .progress-top span {
+            color: var(--green);
+            font-weight: 800;
+        }
+
+        .progress-track {
+            height: 9px;
+            background: #dceee3;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                #40cb91,
+                #159563
+            );
+            border-radius: 20px;
+            transition: width .7s ease;
+        }
+
+        /* ACHIEVEMENT LIST */
+
+        .achievement-list {
+            display: grid;
+            gap: 13px;
+            margin-top: 17px;
+        }
+
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 14px;
+
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+
+            box-shadow: 0 4px 13px rgba(30,110,75,.035);
+        }
+
+        .achievement-badge {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 15px;
+
+            background: #f0f2f1;
+            color: #929c96;
+
+            font-size: 21px;
+        }
+
+        .achievement-item.bronze .achievement-badge {
+            background: #f7e6d8;
+            color: #a86636;
+        }
+
+        .achievement-item.silver .achievement-badge {
+            background: #e9edf1;
+            color: #78899a;
+        }
+
+        .achievement-item.gold .achievement-badge {
+            background: #fff2ce;
+            color: #d39c17;
+        }
+
+        .achievement-item.special .achievement-badge {
+            background: #eee9ff;
+            color: #8063ca;
+        }
+
+        .achievement-item.vip .achievement-badge {
+            background: #fde7f3;
+            color: #c44c8f;
+        }
+
+        .achievement-item.premium .achievement-badge {
+            background: #dff5ed;
+            color: #16865d;
+        }
+
+        .achievement-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .achievement-info h4 {
+            color: var(--text);
+            font-size: 13px;
+            margin: 0 0 5px;
+        }
+
+        .achievement-info p {
+            color: var(--muted);
+            font-size: 11px;
+            margin: 0;
+        }
+
+        .achievement-status {
+            font-size: 10px;
+            font-weight: 800;
+            color: #a0aaa4;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .achievement-status.unlocked {
+            color: var(--green);
+        }
+
+        .achievement-status.pending {
+            color: #c18a20;
+        }
+
+        .achievement-status.rewarded {
+            color: #16865d;
+        }
+
+        .mystery-button {
+            margin-top: 9px;
+            padding: 9px 12px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: linear-gradient(
+                135deg,
+                #25b77c,
+                #168b5d
+            );
+
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        .mystery-button:disabled {
+            background: #b7c8bd;
+            cursor: not-allowed;
+        }
+
+        .achievement-note {
+            margin-top: 17px;
+            padding: 13px;
+
+            border-radius: 12px;
+
+            background: #fff9e9;
+            color: #8a702f;
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        /* =========================================
+           MYSTERY BOX MODAL
+        ========================================= */
+
+        .mystery-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(12, 35, 24, .72);
+            backdrop-filter: blur(7px);
+        }
+
+        .mystery-modal.active {
+            display: flex;
+        }
+
+        .mystery-content {
+            position: relative;
+
+            width: 100%;
+            max-width: 360px;
+
+            padding: 28px 20px;
+
+            background: #ffffff;
+            border-radius: 25px;
+
+            text-align: center;
+
+            box-shadow: 0 20px 70px rgba(0,0,0,.2);
+
+            animation: modalEnter .4s ease;
+        }
+
+        @keyframes modalEnter {
+            from {
+                opacity: 0;
+                transform: translateY(25px) scale(.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+
+            width: 32px;
+            height: 32px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: #f0f5f1;
+            color: #60766a;
+        }
+
+        .mystery-content h2 {
+            color: var(--green-dark);
+            font-size: 21px;
+            margin: 5px 0 7px;
+        }
+
+        .mystery-content > p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* BOX */
+
+        .mystery-box-stage {
+            height: 175px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 12px 0;
+        }
+
+        .mystery-box {
+            position: relative;
+
+            width: 125px;
+            height: 115px;
+
+            transform-origin: bottom center;
+        }
+
+        .box-base {
+            position: absolute;
+            bottom: 0;
+
+            width: 125px;
+            height: 85px;
+
+            background: linear-gradient(
+                135deg,
+                #32bd84,
+                #148454
+            );
+
+            border-radius: 9px 9px 15px 15px;
+
+            box-shadow: 0 12px 20px rgba(20,132,84,.2);
+        }
+
+        .box-base::before {
+            content: "";
+            position: absolute;
+
+            left: 48px;
+            top: 0;
+
+            width: 28px;
+            height: 100%;
+
+            background: #f5d36e;
+        }
+
+        .box-lid {
+            position: absolute;
+            z-index: 2;
+
+            top: 18px;
+            left: -8px;
+
+            width: 141px;
+            height: 30px;
+
+            background: linear-gradient(
+                135deg,
+                #46d397,
+                #209c69
+            );
+
+            border-radius: 7px;
+
+            transform-origin: 10% 90%;
+            transition: transform .7s ease;
+        }
+
+        .box-lid::before {
+            content: "";
+            position: absolute;
+
+            left: 57px;
+            top: 0;
+
+            width: 28px;
+            height: 100%;
+
+            background: #f5d36e;
+        }
+
+        .box-lid::after {
+            content: "★";
+
+            position: absolute;
+            top: -26px;
+            left: 55px;
+
+            color: #f4d26d;
+            font-size: 27px;
+        }
+
+        .mystery-box.shake {
+            animation: boxShake .55s ease;
+        }
+
+        @keyframes boxShake {
+            0%, 100% { transform: rotate(0); }
+            20% { transform: rotate(-9deg); }
+            40% { transform: rotate(9deg); }
+            60% { transform: rotate(-7deg); }
+            80% { transform: rotate(7deg); }
+        }
+
+        .mystery-box.opened .box-lid {
+            transform: translate(12px, -65px) rotate(25deg);
+        }
+
+        .mystery-box.opened .box-base {
+            box-shadow: 0 0 35px rgba(49, 201, 137, .5);
+        }
+
+        .mystery-sparkle {
+            position: absolute;
+            color: #e7b83e;
+            font-size: 20px;
+            opacity: 0;
+        }
+
+        .mystery-box.opened .sparkle-one {
+            animation: sparkle .9s ease forwards;
+            left: -35px;
+            top: 15px;
+        }
+
+        .mystery-box.opened .sparkle-two {
+            animation: sparkle .9s .2s ease forwards;
+            right: -35px;
+            top: 10px;
+        }
+
+        @keyframes sparkle {
+            0% {
+                opacity: 0;
+                transform: scale(.2) translateY(15px);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(.8) translateY(-30px);
+            }
+        }
+
+        /* REVEAL */
+
+        .reward-result {
+            display: none;
+            padding: 16px;
+
+            background: #f0faf4;
+            border: 1px solid #dcefe3;
+            border-radius: 15px;
+
+            animation: revealEnter .6s ease;
+        }
+
+        .reward-result.active {
+            display: block;
+        }
+
+        @keyframes revealEnter {
+            from {
+                opacity: 0;
+                transform: scale(.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .reward-result i {
+            color: #d5a52d;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .reward-result h3 {
+            color: var(--green-dark);
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .reward-result p {
+            color: #6e8879;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .modal-action {
+            width: 100%;
+            padding: 13px;
+
+            border: none;
+            border-radius: 11px;
+
+            background: linear-gradient(
+                135deg,
+                #2bb87d,
+                #168d60
+            );
+
+            color: white;
+            font-weight: 800;
+
+            margin-top: 15px;
+        }
+
+        /* REFERRAL HISTORY */
+
+        .steps-card,
+        .history-section {
+            margin-top: 18px;
+            padding: 19px !important;
+
+            background: white !important;
+            border: 1px solid var(--border);
+            border-radius: 18px !important;
+            box-shadow: var(--shadow);
+        }
+
+        .steps-card h3,
+        .history-title h3 {
+            color: var(--green-dark);
+        }
+
+        .step-number {
+            background: #e4f7eb !important;
+            color: var(--green) !important;
+            border-radius: 11px !important;
+        }
+
+        .step p {
+            color: var(--muted);
+        }
+
+        /* BOTTOM NAV */
+
+        .bottom-nav {
+            background: rgba(255,255,255,.97) !important;
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -5px 20px rgba(30,110,75,.06);
+            backdrop-filter: blur(15px);
+        }
+
+        .bottom-nav a.active {
+            color: var(--green) !important;
+        }
+
+        .nav-main-icon {
+            background: var(--green-light) !important;
+            color: var(--green) !important;
+            border-radius: 13px;
+        }
+
+        /* TOAST */
+
+        .toast {
+            background: var(--green-dark) !important;
+            color: white !important;
+            border-radius: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #c54b4b;
+            padding: 15px;
+            font-size: 12px;
+        }
+
+        @media(max-width: 380px) {
+
+            .achievement-item {
+                gap: 8px;
+                padding: 11px;
+            }
+
+            .achievement-badge {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+                font-size: 18px;
+            }
+
+            .achievement-status {
+                font-size: 9px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
-
 <body>
-
 
 <div class="page">
 
-
-    <!-- ==================================================
-         HEADER
-    =================================================== -->
+    <!-- HEADER -->
 
     <header class="top-header">
 
-        <button
-            class="back-btn"
-            onclick="goBack()"
-        >
-
+        <button class="back-btn" onclick="goBack()">
             <i class="fa-solid fa-arrow-left"></i>
-
         </button>
 
-
         <div>
-
-            <h1>Invite Friends</h1>
-
-            <p>
-                Invite friends and earn rewards
-            </p>
-
+            <h1>Referral Rewards</h1>
+            <p>Invite friends. Unlock achievements.</p>
         </div>
 
     </header>
 
 
-
-    <!-- ==================================================
-         HERO
-    =================================================== -->
+    <!-- HERO -->
 
     <section class="invite-hero">
 
         <div class="hero-icon">
-
             <i class="fa-solid fa-gift"></i>
-
         </div>
 
-
-        <h2>
-            Invite & Earn
-        </h2>
-
+        <h2>Invite & Earn</h2>
 
         <p>
-            Share your referral link with friends
-            and earn 5% from qualifying deposits
-            made by your referred users.
+            Grow your referral team, unlock special
+            achievements and discover exciting rewards.
         </p>
 
     </section>
 
 
-
-    <!-- ==================================================
-         STATISTICS
-    =================================================== -->
+    <!-- STATISTICS -->
 
     <section class="stats-grid">
 
-
         <div class="stat-card">
 
-            <div class="stat-icon users">
-
+            <div class="stat-icon">
                 <i class="fa-solid fa-users"></i>
-
             </div>
 
-
             <div>
-
-                <span>
-                    Total Invites
-                </span>
-
-
-                <strong
-                    id="referralCount"
-                >
-                    0
-                </strong>
-
+                <span>Total Invites</span>
+                <strong id="referralCount">0</strong>
             </div>
 
         </div>
-
 
 
         <div class="stat-card">
 
-            <div class="stat-icon money">
-
-                <i
-                    class="fa-solid fa-indian-rupee-sign"
-                ></i>
-
+            <div class="stat-icon">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
             </div>
 
-
             <div>
-
-                <span>
-                    Referral Earnings
-                </span>
-
-
-                <strong
-                    id="referralEarnings"
-                >
-                    ₹0
-                </strong>
-
+                <span>Referral Earnings</span>
+                <strong id="referralEarnings">₹0</strong>
             </div>
 
         </div>
-
 
     </section>
 
 
+    <!-- ACHIEVEMENTS -->
 
-    <!-- ==================================================
-         REFERRAL CODE
-    =================================================== -->
+    <section class="premium-card achievement-section">
 
-    <section class="referral-card">
+        <div class="achievement-header">
 
+            <h3>
+                <i class="fa-solid fa-trophy"></i>
+                My Achievements
+            </h3>
+
+            <i class="fa-solid fa-crown"></i>
+
+        </div>
+
+        <p class="achievement-subtitle">
+            Complete referral milestones and open your mystery boxes
+            to discover the rewards issued to you.
+        </p>
+
+
+        <div class="progress-card">
+
+            <div class="progress-top">
+
+                <strong>Overall Progress</strong>
+
+                <span id="achievementProgressText">
+                    0 / 100
+                </span>
+
+            </div>
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-fill"
+                    id="achievementProgressFill"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="achievement-list"
+            id="achievementList"
+        >
+
+            <div class="loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Loading achievements...
+            </div>
+
+        </div>
+
+
+        <div class="achievement-note">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            Only qualifying completed referrals count toward
+            achievements. Rewards requiring admin approval will
+            be revealed after they are issued.
+
+        </div>
+
+    </section>
+
+
+    <!-- REFERRAL CODE -->
+
+    <section class="premium-card">
 
         <div class="section-title">
 
             <i class="fa-solid fa-ticket"></i>
 
-            <span>
-                Your Referral Code
-            </span>
+            Your Referral Code
 
         </div>
-
-
 
         <div class="code-box">
 
+            <strong id="inviteCode">Loading...</strong>
 
-            <strong
-                id="inviteCode"
-            >
-                Loading...
-            </strong>
-
-
-            <button
-                type="button"
-                onclick="copyReferralCode()"
-                title="Copy referral code"
-            >
-
+            <button onclick="copyReferralCode()">
                 <i class="fa-solid fa-copy"></i>
-
             </button>
 
-
         </div>
-
 
     </section>
 
 
+    <!-- REFERRAL LINK -->
 
-    <!-- ==================================================
-         REFERRAL LINK
-    =================================================== -->
-
-    <section class="referral-card">
-
+    <section class="premium-card">
 
         <div class="section-title">
 
             <i class="fa-solid fa-link"></i>
 
-            <span>
-                Your Referral Link
-            </span>
+            Your Referral Link
 
         </div>
-
-
 
         <div class="link-box">
 
+            <span id="referralLink">Loading...</span>
 
-            <span
-                id="referralLink"
-            >
-                Loading...
-            </span>
-
-
-            <button
-                type="button"
-                onclick="copyReferralLink()"
-                title="Copy referral link"
-            >
-
+            <button onclick="copyReferralLink()">
                 <i class="fa-solid fa-copy"></i>
-
             </button>
-
 
         </div>
 
-
-
         <button
-            type="button"
             class="share-main"
             onclick="shareReferral()"
         >
@@ -262,356 +1142,1705 @@
 
         </button>
 
-
     </section>
 
 
-
-    <!-- ==================================================
-         SHARE BUTTONS
-    =================================================== -->
+    <!-- SHARE -->
 
     <section class="share-section">
 
-
-        <h3>
-            Share With Friends
-        </h3>
-
-
+        <h3>Share With Friends</h3>
 
         <div class="share-buttons">
 
-
             <button
-                type="button"
                 class="share-btn whatsapp"
                 onclick="shareWhatsApp()"
             >
-
-                <i
-                    class="fa-brands fa-whatsapp"
-                ></i>
-
+                <i class="fa-brands fa-whatsapp"></i>
                 WhatsApp
-
             </button>
 
-
-
             <button
-                type="button"
                 class="share-btn telegram"
                 onclick="shareTelegram()"
             >
-
-                <i
-                    class="fa-brands fa-telegram"
-                ></i>
-
+                <i class="fa-brands fa-telegram"></i>
                 Telegram
-
             </button>
 
-
-
             <button
-                type="button"
                 class="share-btn copy"
                 onclick="copyReferralLink()"
             >
-
-                <i
-                    class="fa-solid fa-copy"
-                ></i>
-
+                <i class="fa-solid fa-copy"></i>
                 Copy
-
             </button>
 
-
         </div>
-
 
     </section>
 
 
-
-    <!-- ==================================================
-         REFERRAL PROGRAM
-    =================================================== -->
+    <!-- REFERRAL PROGRAM -->
 
     <section class="steps-card">
 
-
         <h3>
-
             <i class="fa-solid fa-circle-info"></i>
-
             Referral Program
-
         </h3>
 
-
-
         <div class="step">
 
-
-            <div class="step-number">
-                1
-            </div>
-
+            <div class="step-number">1</div>
 
             <div>
-
-                <strong>
-                    Share Your Link
-                </strong>
-
-
-                <p>
-                    Send your personal referral
-                    link to friends.
-                </p>
-
+                <strong>Share Your Link</strong>
+                <p>Send your personal referral link to friends.</p>
             </div>
-
 
         </div>
 
-
-
         <div class="step">
 
-
-            <div class="step-number">
-                2
-            </div>
-
+            <div class="step-number">2</div>
 
             <div>
-
-                <strong>
-                    Friend Registers
-                </strong>
-
-
-                <p>
-                    Your friend creates an account
-                    using your referral link.
-                </p>
-
+                <strong>Friend Registers</strong>
+                <p>Your friend creates an account using your referral link.</p>
             </div>
-
 
         </div>
 
-
-
         <div class="step">
 
-
-            <div class="step-number">
-                3
-            </div>
-
+            <div class="step-number">3</div>
 
             <div>
-
-                <strong>
-                    ₹12 Welcome Bonus
-                </strong>
-
-
-                <p>
-                    The newly registered referred
-                    user receives a ₹12 welcome bonus.
-                </p>
-
+                <strong>₹12 Welcome Bonus</strong>
+                <p>The newly registered referred user receives a ₹12 welcome bonus.</p>
             </div>
-
 
         </div>
 
-
-
         <div class="step">
 
-
-            <div class="step-number">
-                4
-            </div>
-
+            <div class="step-number">4</div>
 
             <div>
-
-                <strong>
-                    Earn 5% Commission
-                </strong>
-
-
-                <p>
-                    When your referred user makes
-                    a qualifying deposit, you receive
-                    5% of that deposit amount.
-                </p>
-
+                <strong>Earn 5% Commission</strong>
+                <p>Earn 5% commission on qualifying deposits, subject to your program rules.</p>
             </div>
 
-
         </div>
-
-
 
     </section>
 
 
-
-    <!-- ==================================================
-         REFERRAL HISTORY
-    =================================================== -->
+    <!-- HISTORY -->
 
     <section class="history-section">
 
-
         <div class="history-title">
 
+            <h3>Referral History</h3>
 
-            <h3>
-                Referral History
-            </h3>
-
-
-            <span
-                id="historyCount"
-            >
-                0
-            </span>
-
+            <span id="historyCount">0</span>
 
         </div>
 
-
-
-        <div
-            id="referralHistory"
-        >
+        <div id="referralHistory">
 
             <div class="loading">
-
                 Loading referral history...
-
             </div>
 
         </div>
 
-
     </section>
-
-
 
 </div>
 
 
+<!-- =========================================
+     MYSTERY BOX MODAL
+========================================= -->
 
-<!-- ======================================================
-     BOTTOM NAVIGATION
-====================================================== -->
+<div
+    class="mystery-modal"
+    id="mysteryModal"
+>
+
+    <div class="mystery-content">
+
+        <button
+            class="modal-close"
+            onclick="closeMysteryBox()"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+
+        <h2 id="mysteryTitle">
+            Your Mystery Reward
+        </h2>
+
+        <p id="mysteryDescription">
+            Your achievement is waiting!
+        </p>
+
+
+        <div class="mystery-box-stage">
+
+            <div
+                class="mystery-box"
+                id="mysteryBox"
+            >
+
+                <div class="box-base"></div>
+
+                <div class="box-lid"></div>
+
+                <i class="fa-solid fa-star mystery-sparkle sparkle-one"></i>
+
+                <i class="fa-solid fa-star mystery-sparkle sparkle-two"></i>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="reward-result"
+            id="rewardResult"
+        >
+
+            <i
+                class="fa-solid fa-gift"
+                id="rewardIcon"
+            ></i>
+
+            <h3 id="rewardName">
+                Reward
+            </h3>
+
+            <p id="rewardDescription">
+                Your reward details will appear here.
+            </p>
+
+        </div>
+
+
+        <button
+            class="modal-action"
+            id="openBoxButton"
+            onclick="openMysteryBox()"
+        >
+
+            <i class="fa-solid fa-box-open"></i>
+
+            Open Mystery Box
+
+        </button>
+
+
+        <button
+            class="modal-action"
+            id="closeBoxButton"
+            onclick="closeMysteryBox()"
+            style="display:none"
+        >
+            Continue
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- BOTTOM NAVIGATION -->
 
 <nav class="bottom-nav">
 
-
     <a href="home.html">
-
         <i class="fa-solid fa-house"></i>
-
-        <span>
-            Home
-        </span>
-
+        <span>Home</span>
     </a>
-
-
 
     <a href="investments.html">
-
         <i class="fa-solid fa-chart-line"></i>
-
-        <span>
-            Invest
-        </span>
-
+        <span>Invest</span>
     </a>
 
-
-
     <a
-        href="invite.html"
+        href="referral-achievements.html"
         class="active"
     >
 
         <div class="nav-main-icon">
-
             <i class="fa-solid fa-gift"></i>
-
         </div>
 
-        <span>
-            Invite
-        </span>
+        <span>Invite</span>
 
     </a>
-
-
 
     <a href="deposite.html">
-
         <i class="fa-solid fa-circle-plus"></i>
-
-        <span>
-            Deposit
-        </span>
-
+        <span>Deposit</span>
     </a>
-
-
 
     <a href="profile.html">
-
         <i class="fa-solid fa-user"></i>
-
-        <span>
-            Profile
-        </span>
-
+        <span>Profile</span>
     </a>
-
 
 </nav>
 
 
+<!-- TOAST -->
 
-<!-- ======================================================
-     TOAST
-====================================================== -->
-
-<div
-    id="toast"
-    class="toast"
->
-    Copied successfully
+<div id="toast" class="toast">
+    Successfully copied!
 </div>
 
 
-
-<!-- ======================================================
-     REFERRAL JAVASCRIPT
-====================================================== -->
+<!-- EXISTING REFERRAL JS -->
 
 <script src="js/reer.js"></script>
 
 
+<!-- =========================================
+     ACHIEVEMENT JAVASCRIPT
+========================================= -->
+
+<script>
+"use strict";
+
+/* =========================================
+   CONFIGURATION
+========================================= */
+
+const API_BASE = "https://tesla-wealth.onrender.com/api";
+
+const token =
+    localStorage.getItem("ki_token") ||
+    localStorage.getItem("token");
+
+const REWARD_API = "/referral-rewards";
+
+
+/* =========================================
+   GLOBAL VARIABLES
+========================================= */
+
+let currentReward = null;
+let boxOpening = false;
+let achievementData = [];
+let rewardHistoryData = [];
+
+
+/* =========================================
+   HTML ESCAPE
+========================================= */
+
+function escapeHTML(value) {
+
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+
+    })[char]);
+
+}
+
+
+/* =========================================
+   API REQUEST
+========================================= */
+
+async function apiRequest(endpoint, options = {}) {
+
+    if (!token) {
+
+        throw new Error("Please login to continue.");
+
+    }
+
+    const response = await fetch(
+        `${API_BASE}${endpoint}`,
+        {
+            ...options,
+
+            headers: {
+
+                "Content-Type": "application/json",
+
+                "Authorization": `Bearer ${token}`,
+
+                ...(options.headers || {})
+
+            }
+        }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            `API request failed (${response.status}).`
+        );
+
+    }
+
+    return data;
+
+}
+
+
+/* =========================================
+   NORMALIZE BACKEND RESPONSE
+========================================= */
+
+function getRewardList(data) {
+
+    if (!data) return [];
+
+    // Actual backend response:
+    // { success: true, achievements: [...] }
+
+    if (Array.isArray(data.achievements)) {
+
+        return data.achievements;
+
+    }
+
+    if (Array.isArray(data.data?.achievements)) {
+
+        return data.data.achievements;
+
+    }
+
+    return [];
+
+}
+
+
+function getRewardHistory(data) {
+
+    if (!data) return [];
+
+    // Actual backend response:
+    // { success: true, claims: [...] }
+
+    if (Array.isArray(data.claims)) {
+
+        return data.claims;
+
+    }
+
+    if (Array.isArray(data.data?.claims)) {
+
+        return data.data.claims;
+
+    }
+
+    return [];
+
+}
+
+
+function getTeamCount(data) {
+
+    return Math.max(
+        0,
+        Number(data?.summary?.totalTeamMembers ?? 0)
+    );
+
+}
+
+
+/* =========================================
+   GET CLAIM REWARD ID
+========================================= */
+
+function getClaimRewardId(claim) {
+
+    if (!claim) return "";
+
+    const reward = claim.reward;
+
+    if (reward && typeof reward === "object") {
+
+        return String(reward._id || reward.id || "");
+
+    }
+
+    return String(reward || "");
+
+}
+
+
+/* =========================================
+   GET CLAIM FOR ACHIEVEMENT
+========================================= */
+
+function getMatchingClaim(achievement, history) {
+
+    const achievementId = String(
+        achievement.id ||
+        achievement._id ||
+        ""
+    );
+
+    return history.find(claim => {
+
+        const claimRewardId = getClaimRewardId(claim);
+
+        return (
+            claimRewardId &&
+            claimRewardId === achievementId
+        );
+
+    }) || null;
+
+}
+
+
+/* =========================================
+   GET ISSUED REWARD
+========================================= */
+
+function getIssuedReward(item) {
+
+    if (!item) return null;
+
+    const claim = item.claim || {};
+
+    return (
+
+        item.issuedReward ||
+        item.rewardDetails ||
+        item.claim?.issuedReward ||
+        item.claim?.rewardDetails ||
+        item.issuedRewardSnapshot ||
+        claim.issuedRewardSnapshot ||
+        null
+
+    );
+
+}
+
+
+/* =========================================
+   GET CLAIM STATUS
+========================================= */
+
+function getClaimStatus(item) {
+
+    if (!item) return "";
+
+    const claim = item.claim || {};
+
+    return String(
+
+        item.claimStatus ||
+        claim.status ||
+        item.status ||
+        ""
+
+    ).toLowerCase();
+
+}
+
+
+/* =========================================
+   CHECK BACKEND ELIGIBILITY
+========================================= */
+
+function isUnlocked(item) {
+
+    // Eligibility must come from the backend.
+    // Do not calculate eligibility using the browser.
+
+    return item?.eligible === true;
+
+}
+
+
+/* =========================================
+   LOAD REFERRAL ACHIEVEMENTS
+========================================= */
+
+async function loadReferralAchievements() {
+
+    const list = document.getElementById("achievementList");
+
+    if (!list) return;
+
+    list.innerHTML = `
+
+        <div class="loading-message">
+
+            <i class="fa-solid fa-spinner fa-spin"></i>
+
+            Loading your achievements...
+
+        </div>
+
+    `;
+
+    try {
+
+        /* =====================================
+           1. LOAD REFERRAL TEAM
+        ===================================== */
+
+        const teamResponse = await apiRequest(
+            `${REWARD_API}/my-team`
+        );
+
+        console.log(
+            "REFERRAL TEAM RESPONSE:",
+            teamResponse
+        );
+
+
+        /* =====================================
+           2. LOAD CLAIM HISTORY
+        ===================================== */
+
+        let historyResponse = {};
+
+        try {
+
+            historyResponse = await apiRequest(
+                `${REWARD_API}/history`
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Reward history unavailable:",
+                error.message
+            );
+
+        }
+
+
+        /* =====================================
+           3. EXTRACT BACKEND DATA
+        ===================================== */
+
+        const rewards = getRewardList(teamResponse);
+
+        const history = getRewardHistory(historyResponse);
+
+        const teamCount = getTeamCount(teamResponse);
+
+        rewardHistoryData = history;
+
+
+        console.log(
+            "TOTAL TEAM MEMBERS:",
+            teamCount
+        );
+
+        console.log(
+            "BACKEND ACHIEVEMENTS:",
+            rewards
+        );
+
+        console.log(
+            "REWARD HISTORY:",
+            history
+        );
+
+
+        /* =====================================
+           4. UPDATE PROGRESS
+        ===================================== */
+
+        updateProgress(teamCount);
+
+
+        /* =====================================
+           5. MAP BACKEND ACHIEVEMENTS
+        ===================================== */
+
+        achievementData = rewards.map(item => {
+
+            const matchingClaim = getMatchingClaim(
+                item,
+                history
+            );
+
+            const rewardId = String(
+                item.id ||
+                item._id ||
+                ""
+            );
+
+            const claimStatus = (
+
+                item.claimStatus ||
+                matchingClaim?.status ||
+                ""
+
+            ).toLowerCase();
+
+
+            return {
+
+                ...item,
+
+                id: rewardId,
+
+                _id: rewardId,
+
+                threshold: Number(
+                    item.milestone ?? item.threshold ?? 0
+                ),
+
+                eligible: item.eligible === true,
+
+                claimStatus: claimStatus,
+
+                claimId:
+                    item.claimId ||
+                    matchingClaim?._id ||
+                    matchingClaim?.id ||
+                    null,
+
+                claim: matchingClaim,
+
+                issuedReward:
+                    item.issuedReward ||
+                    matchingClaim?.issuedReward ||
+                    matchingClaim?.rewardDetails ||
+                    null
+
+            };
+
+        });
+
+
+        /* =====================================
+           6. DISPLAY ACHIEVEMENTS
+        ===================================== */
+
+        if (!achievementData.length) {
+
+            list.innerHTML = `
+
+                <div class="error-message">
+
+                    <i class="fa-solid fa-gift"></i>
+
+                    No achievement milestones are currently available.
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        list.innerHTML = achievementData
+            .map(renderAchievement)
+            .join("");
+
+
+        console.log(
+            "FINAL ACHIEVEMENT DATA:",
+            achievementData
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "ACHIEVEMENT LOADING ERROR:",
+            error
+        );
+
+        list.innerHTML = `
+
+            <div class="error-message">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                ${escapeHTML(error.message)}
+
+                <button
+                    onclick="loadReferralAchievements()"
+                    class="mystery-button"
+                >
+
+                    Try Again
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================
+   UPDATE PROGRESS
+========================================= */
+
+function updateProgress(count) {
+
+    const maximum = 100;
+
+    const percentage = Math.min(
+        100,
+        Math.max(0, (count / maximum) * 100)
+    );
+
+    const progressText = document.getElementById(
+        "achievementProgressText"
+    );
+
+    const progressFill = document.getElementById(
+        "achievementProgressFill"
+    );
+
+    if (progressText) {
+
+        progressText.textContent = `${count} / ${maximum}`;
+
+    }
+
+    if (progressFill) {
+
+        progressFill.style.width = percentage + "%";
+
+    }
+
+}
+
+
+/* =========================================
+   ACHIEVEMENT STATUS
+========================================= */
+
+function getAchievementStatus(item) {
+
+    const status = getClaimStatus(item);
+
+    if (
+        status === "rewarded" ||
+        status === "issued" ||
+        status === "completed"
+    ) {
+
+        return "rewarded";
+
+    }
+
+    if (
+        status === "pending" ||
+        status === "under_review"
+    ) {
+
+        return "pending";
+
+    }
+
+    if (status === "approved") {
+
+        return "approved";
+
+    }
+
+    if (status === "rejected") {
+
+        return "rejected";
+
+    }
+
+    if (isUnlocked(item)) {
+
+        return "unlocked";
+
+    }
+
+    return "locked";
+
+}
+
+
+/* =========================================
+   RENDER ACHIEVEMENT
+========================================= */
+
+function renderAchievement(item) {
+
+    const threshold = Number(
+        item.threshold || 0
+    );
+
+    const status = getAchievementStatus(item);
+
+    const rewarded = status === "rewarded";
+
+    const pending = status === "pending";
+
+    const approved = status === "approved";
+
+    const rejected = status === "rejected";
+
+    const unlocked = status === "unlocked";
+
+    const rewardId = String(
+        item.id || item._id || ""
+    );
+
+    const safeId = escapeHTML(rewardId);
+
+    let statusText = "LOCKED";
+
+    if (rewarded) {
+
+        statusText = "REWARDED";
+
+    } else if (pending) {
+
+        statusText = "PENDING";
+
+    } else if (approved) {
+
+        statusText = "APPROVED";
+
+    } else if (rejected) {
+
+        statusText = "REJECTED";
+
+    } else if (unlocked) {
+
+        statusText = "UNLOCKED";
+
+    }
+
+
+    /* =====================================
+       BUTTON
+    ===================================== */
+
+    let button = "";
+
+
+    if (rewarded) {
+
+        button = `
+
+            <button
+                class="mystery-button"
+                onclick="showIssuedReward('${safeId}')"
+            >
+
+                <i class="fa-solid fa-gift"></i>
+
+                Open My Reward
+
+            </button>
+
+        `;
+
+    } else if (pending || approved) {
+
+        button = `
+
+            <button
+                class="mystery-button"
+                onclick="showPendingReward('${safeId}')"
+            >
+
+                <i class="fa-solid fa-box"></i>
+
+                View Mystery Box
+
+            </button>
+
+        `;
+
+    } else if (rejected && item.eligible === true) {
+
+        button = `
+
+            <button
+                class="mystery-button"
+                onclick="claimAchievement('${safeId}')"
+            >
+
+                <i class="fa-solid fa-rotate"></i>
+
+                Submit Again
+
+            </button>
+
+        `;
+
+    } else if (unlocked) {
+
+        button = `
+
+            <button
+                class="mystery-button"
+                onclick="claimAchievement('${safeId}')"
+            >
+
+                <i class="fa-solid fa-gift"></i>
+
+                Claim & Open Box
+
+            </button>
+
+        `;
+
+    }
+
+
+    /* =====================================
+       ACHIEVEMENT HTML
+    ===================================== */
+
+    return `
+
+        <div class="achievement-item ${escapeHTML(item.badge || "bronze")}">
+
+            <div class="achievement-badge">
+
+                <i class="fa-solid ${escapeHTML(item.icon || getAchievementIcon(item.badge))}"></i>
+
+            </div>
+
+            <div class="achievement-info">
+
+                <h4>
+
+                    ${escapeHTML(item.title || "Achievement")}
+
+                </h4>
+
+                <p>
+
+                    ${threshold} completed referrals
+
+                </p>
+
+                ${item.description ? `
+
+                    <p class="achievement-description">
+
+                        ${escapeHTML(item.description)}
+
+                    </p>
+
+                ` : ""}
+
+                ${button}
+
+            </div>
+
+            <span class="achievement-status ${status}">
+
+                ${statusText}
+
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================
+   ACHIEVEMENT ICON
+========================================= */
+
+function getAchievementIcon(badge) {
+
+    const icons = {
+
+        bronze: "fa-medal",
+
+        silver: "fa-medal",
+
+        gold: "fa-trophy",
+
+        special: "fa-gift",
+
+        vip: "fa-crown",
+
+        premium: "fa-gem"
+
+    };
+
+    return icons[String(badge || "").toLowerCase()] ||
+        "fa-medal";
+
+}
+
+
+/* =========================================
+   CLAIM ACHIEVEMENT
+========================================= */
+
+async function claimAchievement(rewardId) {
+
+    if (!rewardId) {
+
+        showToast("Achievement ID missing.");
+
+        return;
+
+    }
+
+    try {
+
+        const data = await apiRequest(
+
+            `${REWARD_API}/claim`,
+
+            {
+
+                method: "POST",
+
+                body: JSON.stringify({
+
+                    rewardId: rewardId
+
+                })
+
+            }
+
+        );
+
+
+        console.log(
+            "CLAIM RESPONSE:",
+            data
+        );
+
+
+        const claim = data.claim ||
+            data.data?.claim ||
+            data;
+
+
+        currentReward = {
+
+            ...claim,
+
+            status: claim.status || "pending"
+
+        };
+
+
+        showMysteryModal();
+
+
+        document.getElementById(
+            "mysteryTitle"
+        ).textContent = "Congratulations!";
+
+
+        document.getElementById(
+            "mysteryDescription"
+        ).textContent =
+            "Your achievement claim has been submitted. Open your mystery box.";
+
+
+        document.getElementById(
+            "rewardResult"
+        ).classList.remove("active");
+
+
+        const openButton = document.getElementById(
+            "openBoxButton"
+        );
+
+        if (openButton) {
+
+            openButton.style.display = "block";
+
+            openButton.disabled = false;
+
+            openButton.textContent = "Open Mystery Box";
+
+        }
+
+
+        const closeButton = document.getElementById(
+            "closeBoxButton"
+        );
+
+        if (closeButton) {
+
+            closeButton.style.display = "none";
+
+        }
+
+
+        resetMysteryBox();
+
+        await loadReferralAchievements();
+
+
+    } catch (error) {
+
+        console.error(
+            "CLAIM ERROR:",
+            error
+        );
+
+        showToast(error.message);
+
+    }
+
+}
+
+
+/* =========================================
+   SHOW MYSTERY MODAL
+========================================= */
+
+function showMysteryModal() {
+
+    const modal = document.getElementById(
+        "mysteryModal"
+    );
+
+    if (modal) {
+
+        modal.classList.add("active");
+
+    }
+
+}
+
+
+/* =========================================
+   RESET MYSTERY BOX
+========================================= */
+
+function resetMysteryBox() {
+
+    boxOpening = false;
+
+    const box = document.getElementById(
+        "mysteryBox"
+    );
+
+    if (!box) return;
+
+    box.classList.remove(
+        "shake",
+        "opened"
+    );
+
+}
+
+
+/* =========================================
+   OPEN MYSTERY BOX
+========================================= */
+
+async function openMysteryBox() {
+
+    if (boxOpening) return;
+
+    boxOpening = true;
+
+    const box = document.getElementById(
+        "mysteryBox"
+    );
+
+    const button = document.getElementById(
+        "openBoxButton"
+    );
+
+    if (!box || !button) {
+
+        boxOpening = false;
+
+        return;
+
+    }
+
+    button.disabled = true;
+
+    button.textContent = "Opening...";
+
+
+    box.classList.add("shake");
+
+
+    await new Promise(resolve =>
+
+        setTimeout(resolve, 650)
+
+    );
+
+
+    box.classList.remove("shake");
+
+    box.classList.add("opened");
+
+
+    await new Promise(resolve =>
+
+        setTimeout(resolve, 850)
+
+    );
+
+
+    revealReward();
+
+    boxOpening = false;
+
+}
+
+
+/* =========================================
+   REVEAL REWARD
+========================================= */
+
+function revealReward() {
+
+    const result = document.getElementById(
+        "rewardResult"
+    );
+
+    const button = document.getElementById(
+        "openBoxButton"
+    );
+
+    const closeButton = document.getElementById(
+        "closeBoxButton"
+    );
+
+    if (!result || !button || !closeButton) return;
+
+
+    const issued = getIssuedReward(
+        currentReward || {}
+    );
+
+
+    const status = String(
+
+        currentReward?.status ||
+        currentReward?.claimStatus ||
+        ""
+
+    ).toLowerCase();
+
+
+    const rewardIssued = (
+
+        status === "rewarded" ||
+        status === "issued" ||
+        status === "completed"
+
+    );
+
+
+    if (rewardIssued && issued) {
+
+        const rewardType = issued.type ||
+            issued.rewardType ||
+            "custom";
+
+
+        document.getElementById(
+            "rewardIcon"
+        ).className = getRewardIcon(rewardType);
+
+
+        document.getElementById(
+            "rewardName"
+        ).textContent =
+            issued.title || "Congratulations!";
+
+
+        document.getElementById(
+            "rewardDescription"
+        ).textContent =
+
+            issued.description ||
+
+            (
+                issued.amount
+                    ? `Reward amount: ₹${Number(issued.amount).toLocaleString("en-IN")}`
+                    : "Your achievement reward has been issued."
+            );
+
+
+    } else {
+
+        document.getElementById(
+            "rewardIcon"
+        ).className =
+            "fa-solid fa-hourglass-half";
+
+
+        document.getElementById(
+            "rewardName"
+        ).textContent =
+            "Claim Submitted!";
+
+
+        document.getElementById(
+            "rewardDescription"
+        ).textContent =
+            "Your mystery box has been registered. Your reward is waiting for admin review and approval.";
+
+    }
+
+
+    result.classList.add("active");
+
+    button.style.display = "none";
+
+    closeButton.style.display = "block";
+
+}
+
+
+/* =========================================
+   REWARD ICON
+========================================= */
+
+function getRewardIcon(type) {
+
+    const icons = {
+
+        cash: "fa-solid fa-money-bill-wave",
+
+        vip_plan: "fa-solid fa-crown",
+
+        custom: "fa-solid fa-gift",
+
+        badge: "fa-solid fa-medal"
+
+    };
+
+    return icons[type] || "fa-solid fa-gift";
+
+}
+
+
+/* =========================================
+   SHOW ISSUED REWARD
+========================================= */
+
+async function showIssuedReward(rewardId) {
+
+    try {
+
+        // Use the latest data loaded from the backend.
+        // Do not search for a generic rewards array.
+
+        const reward = achievementData.find(item =>
+
+            String(item.id || item._id) ===
+            String(rewardId)
+
+        );
+
+
+        if (!reward) {
+
+            showToast(
+                "Achievement information unavailable."
+            );
+
+            return;
+
+        }
+
+
+        const issued = getIssuedReward(reward);
+
+        if (!issued) {
+
+            showToast(
+                "Reward details are not available yet. Please check with admin."
+            );
+
+            return;
+
+        }
+
+
+        currentReward = {
+
+            ...reward,
+
+            status: "rewarded",
+
+            issuedReward: issued
+
+        };
+
+
+        showMysteryModal();
+
+
+        document.getElementById(
+            "mysteryTitle"
+        ).textContent = "Your Reward!";
+
+
+        document.getElementById(
+            "mysteryDescription"
+        ).textContent =
+            "Your achievement reward is ready.";
+
+
+        document.getElementById(
+            "rewardResult"
+        ).classList.remove("active");
+
+
+        const button = document.getElementById(
+            "openBoxButton"
+        );
+
+        button.style.display = "block";
+
+        button.disabled = false;
+
+        button.textContent = "Open My Reward";
+
+
+        document.getElementById(
+            "closeBoxButton"
+        ).style.display = "none";
+
+
+        resetMysteryBox();
+
+
+    } catch (error) {
+
+        console.error(
+            "SHOW ISSUED REWARD ERROR:",
+            error
+        );
+
+        showToast(error.message);
+
+    }
+
+}
+
+
+/* =========================================
+   SHOW PENDING REWARD
+========================================= */
+
+function showPendingReward(rewardId) {
+
+    const reward = achievementData.find(item =>
+
+        String(item.id || item._id) ===
+        String(rewardId)
+
+    );
+
+
+    if (!reward) {
+
+        showToast(
+            "Achievement information unavailable."
+        );
+
+        return;
+
+    }
+
+
+    currentReward = {
+
+        ...reward,
+
+        status: getClaimStatus(reward) || "pending"
+
+    };
+
+
+    showMysteryModal();
+
+
+    document.getElementById(
+        "mysteryTitle"
+    ).textContent = "Mystery Box";
+
+
+    document.getElementById(
+        "mysteryDescription"
+    ).textContent =
+        "Your achievement claim is under review. Please wait for the admin to issue your reward.";
+
+
+    document.getElementById(
+        "rewardResult"
+    ).classList.remove("active");
+
+
+    const button = document.getElementById(
+        "openBoxButton"
+    );
+
+    button.style.display = "block";
+
+    button.disabled = false;
+
+    button.textContent = "View Box";
+
+
+    document.getElementById(
+        "closeBoxButton"
+    ).style.display = "none";
+
+
+    resetMysteryBox();
+
+}
+
+
+/* =========================================
+   CLOSE MYSTERY MODAL
+========================================= */
+
+function closeMysteryBox() {
+
+    const modal = document.getElementById(
+        "mysteryModal"
+    );
+
+    if (modal) {
+
+        modal.classList.remove("active");
+
+    }
+
+    resetMysteryBox();
+
+}
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+function showToast(message) {
+
+    const toast = document.getElementById(
+        "toast"
+    );
+
+    if (!toast) {
+
+        alert(message);
+
+        return;
+
+    }
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 3000);
+
+}
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+function goBack() {
+
+    if (window.history.length > 1) {
+
+        window.history.back();
+
+    } else {
+
+        window.location.href = "home.html";
+
+    }
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadReferralAchievements
+);
+
+
+/* =========================================
+   CLOSE MODAL ON OUTSIDE CLICK
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const modal = document.getElementById(
+            "mysteryModal"
+        );
+
+        if (!modal) return;
+
+        modal.addEventListener(
+            "click",
+            function(event) {
+
+                if (event.target === this) {
+
+                    closeMysteryBox();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
 </body>
-
 </html>
-

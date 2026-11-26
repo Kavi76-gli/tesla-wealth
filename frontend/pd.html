@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bitcoin Investment | Premium Investor Report</title>
+
+<meta name="theme-color" content="#071d17">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* =====================================================
+   PREMIUM DESIGN SYSTEM
+===================================================== */
+
+:root {
+
+    --dark:#071d17;
+    --dark2:#102b22;
+
+    --green:#147a50;
+    --green2:#1ca36a;
+
+    --gold:#c6a45c;
+    --gold-light:#f3e7c7;
+
+    --bg:#f3f6f3;
+    --white:#ffffff;
+
+    --text:#19382c;
+    --muted:#75877d;
+
+    --border:#e2eae4;
+
+    --shadow:0 15px 45px rgba(7,29,23,.08);
+
+}
+
+* {
+    box-sizing:border-box;
+}
+
+body {
+
+    margin:0;
+
+    padding:35px 18px;
+
+    background:
+    radial-gradient(circle at top left,#e1f1e6,transparent 35%),
+    #f3f6f3;
+
+    font-family:'DM Sans',sans-serif;
+
+    color:var(--text);
+
+}
+
+button,
+input,
+select,
+textarea {
+    font-family:inherit;
+}
+
+.page {
+
+    max-width:1050px;
+
+    margin:auto;
+
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.topbar {
+
+    background:linear-gradient(120deg,#071d17,#123b2c);
+
+    padding:30px 35px;
+
+    border-radius:20px 20px 0 0;
+
+    color:white;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.topbar::after {
+
+    content:"₿";
+
+    position:absolute;
+
+    right:35px;
+
+    top:-30px;
+
+    font-size:170px;
+
+    color:rgba(255,255,255,.045);
+
+    font-weight:800;
+
+}
+
+.brand {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    position:relative;
+
+    z-index:1;
+
+}
+
+.brand-icon {
+
+    width:46px;
+
+    height:46px;
+
+    border-radius:14px;
+
+    background:linear-gradient(135deg,#e7c77d,#b38a3e);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#10251c;
+
+    font-size:25px;
+
+    font-weight:800;
+
+}
+
+.brand-name {
+
+    font-size:18px;
+
+    font-weight:800;
+
+    letter-spacing:1.2px;
+
+}
+
+.brand-caption {
+
+    color:#b9d0c1;
+
+    font-size:11px;
+
+    margin-top:3px;
+
+    letter-spacing:2px;
+
+}
+
+.top-heading {
+
+    margin-top:35px;
+
+    position:relative;
+
+    z-index:1;
+
+}
+
+.top-heading h1 {
+
+    font-family:'Playfair Display',serif;
+
+    font-size:34px;
+
+    margin:0 0 8px;
+
+    font-weight:700;
+
+}
+
+.top-heading p {
+
+    color:#c3d6ca;
+
+    font-size:14px;
+
+    margin:0;
+
+}
+
+/* =====================================================
+   MAIN PANEL
+===================================================== */
+
+.panel {
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+
+}
+
+.content {
+
+    padding:35px;
+
+}
+
+.section-heading {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:25px;
+
+}
+
+.section-icon {
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:12px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#e8f5ed;
+
+    color:var(--green);
+
+    font-size:19px;
+
+}
+
+.section-heading h2 {
+
+    margin:0;
+
+    font-size:19px;
+
+    font-weight:800;
+
+}
+
+.section-heading p {
+
+    margin:4px 0 0;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+}
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.grid {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:20px;
+
+}
+
+.field {
+
+    margin-bottom:5px;
+
+}
+
+.full {
+
+    grid-column:1/-1;
+
+}
+
+label {
+
+    display:block;
+
+    font-size:12px;
+
+    font-weight:800;
+
+    margin-bottom:9px;
+
+    color:#385447;
+
+}
+
+input,
+select,
+textarea {
+
+    width:100%;
+
+    padding:14px 15px;
+
+    border:1px solid #dce7df;
+
+    border-radius:11px;
+
+    background:#fbfdfb;
+
+    color:var(--text);
+
+    font-size:14px;
+
+    outline:none;
+
+    transition:.25s;
+
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+
+    border-color:var(--green);
+
+    background:white;
+
+    box-shadow:0 0 0 4px rgba(20,122,80,.08);
+
+}
+
+textarea {
+
+    min-height:105px;
+
+    resize:vertical;
+
+    line-height:1.6;
+
+}
+
+.hint {
+
+    font-size:11px;
+
+    color:var(--muted);
+
+    margin-top:8px;
+
+    line-height:1.6;
+
+}
+
+/* =====================================================
+   DIVIDER
+===================================================== */
+
+.divider {
+
+    height:1px;
+
+    background:var(--border);
+
+    margin:30px 0;
+
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.actions {
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+    margin-top:28px;
+
+}
+
+button {
+
+    border:0;
+
+    padding:14px 22px;
+
+    border-radius:11px;
+
+    cursor:pointer;
+
+    font-size:13px;
+
+    font-weight:800;
+
+    transition:.25s;
+
+}
+
+button:hover {
+
+    transform:translateY(-2px);
+
+}
+
+.primary {
+
+    color:white;
+
+    background:linear-gradient(120deg,#147a50,#209968);
+
+    box-shadow:0 7px 18px rgba(20,122,80,.2);
+
+}
+
+.secondary {
+
+    color:#24543d;
+
+    background:#eaf4ed;
+
+}
+
+.gold-btn {
+
+    background:linear-gradient(120deg,#d9bd7b,#b78d42);
+
+    color:#17291e;
+
+}
+
+/* =====================================================
+   REPORT
+===================================================== */
+
+.report {
+
+    display:none;
+
+    margin-top:30px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+}
+
+.report-header {
+
+    padding:35px;
+
+    background:linear-gradient(120deg,#071d17,#123b2c);
+
+    color:white;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.report-header::after {
+
+    content:"₿";
+
+    position:absolute;
+
+    right:35px;
+
+    top:-35px;
+
+    font-size:180px;
+
+    color:rgba(255,255,255,.04);
+
+}
+
+.report-brand {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    position:relative;
+
+    z-index:1;
+
+}
+
+.report-brand-icon {
+
+    width:42px;
+
+    height:42px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:12px;
+
+    background:var(--gold);
+
+    color:#13281e;
+
+    font-size:23px;
+
+    font-weight:800;
+
+}
+
+.report-brand strong {
+
+    display:block;
+
+    font-size:16px;
+
+    letter-spacing:1px;
+
+}
+
+.report-brand small {
+
+    color:#b8d1c0;
+
+    font-size:10px;
+
+    letter-spacing:2px;
+
+}
+
+.report-body {
+
+    padding:35px;
+
+}
+
+.report-title {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    gap:20px;
+
+    padding-bottom:25px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.report-title h2 {
+
+    font-family:'Playfair Display',serif;
+
+    font-size:29px;
+
+    margin:5px 0;
+
+}
+
+.report-title small {
+
+    color:var(--muted);
+
+    font-size:12px;
+
+}
+
+.report-tag {
+
+    background:var(--gold-light);
+
+    color:#755b29;
+
+    padding:9px 14px;
+
+    border-radius:30px;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+    white-space:nowrap;
+
+}
+
+/* =====================================================
+   INVESTOR DETAILS
+===================================================== */
+
+.details {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:14px;
+
+    margin:25px 0;
+
+}
+
+.detail {
+
+    background:#f7faf7;
+
+    border:1px solid #e7eee8;
+
+    border-radius:12px;
+
+    padding:17px;
+
+}
+
+.detail small {
+
+    display:block;
+
+    color:var(--muted);
+
+    font-size:11px;
+
+    margin-bottom:8px;
+
+}
+
+.detail strong {
+
+    font-size:14px;
+
+    font-weight:800;
+
+    overflow-wrap:anywhere;
+
+}
+
+.status-badge {
+
+    display:inline-block;
+
+    padding:7px 12px;
+
+    border-radius:20px;
+
+    background:#fff1d9;
+
+    color:#94620e;
+
+    font-size:11px;
+
+    font-weight:800;
+
+}
+
+/* =====================================================
+   REPORT SECTIONS
+===================================================== */
+
+.report-section {
+
+    margin-top:27px;
+
+}
+
+.report-section h3 {
+
+    font-size:14px;
+
+    color:var(--green);
+
+    font-weight:800;
+
+    margin:0 0 12px;
+
+}
+
+.report-section p {
+
+    font-size:13px;
+
+    line-height:1.85;
+
+    color:#53675c;
+
+    margin:0;
+
+    white-space:pre-wrap;
+
+}
+
+.next-box {
+
+    background:linear-gradient(120deg,#edf8f0,#f7fbf7);
+
+    border-left:4px solid var(--green);
+
+    border-radius:12px;
+
+    padding:20px;
+
+}
+
+.next-box h3 {
+
+    color:var(--green);
+
+}
+
+/* =====================================================
+   VIP SECTION
+===================================================== */
+
+.vip-box {
+
+    background:linear-gradient(120deg,#fffaf0,#f9f0d9);
+
+    border:1px solid #eadbb7;
+
+    border-radius:14px;
+
+    padding:22px;
+
+}
+
+.vip-box h3 {
+
+    color:#99732e;
+
+}
+
+.vip-box p {
+
+    color:#746343;
+
+}
+
+/* =====================================================
+   SIGNATURES
+===================================================== */
+
+.signatures {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:50px;
+
+    margin-top:65px;
+
+}
+
+.signature {
+
+    border-top:1px solid #aab8ae;
+
+    padding-top:12px;
+
+    color:var(--muted);
+
+    font-size:11px;
+
+}
+
+.signature strong {
+
+    display:block;
+
+    margin-top:7px;
+
+    color:var(--text);
+
+}
+
+/* =====================================================
+   DISCLAIMER
+===================================================== */
+
+.notice {
+
+    background:#f7f9f7;
+
+    border:1px solid var(--border);
+
+    padding:16px;
+
+    border-radius:11px;
+
+    font-size:10px;
+
+    color:#718078;
+
+    line-height:1.8;
+
+    margin-top:35px;
+
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.report-footer {
+
+    border-top:1px solid var(--border);
+
+    margin-top:30px;
+
+    padding-top:18px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    color:var(--muted);
+
+    font-size:10px;
+
+}
+
+.screen-actions {
+
+    justify-content:center;
+
+    margin:25px 0;
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:650px) {
+
+    body {
+        padding:10px;
+    }
+
+    .topbar {
+        padding:24px;
+    }
+
+    .top-heading h1 {
+        font-size:27px;
+    }
+
+    .content,
+    .report-body {
+        padding:22px;
+    }
+
+    .grid,
+    .details,
+    .signatures {
+        grid-template-columns:1fr;
+    }
+
+    .report-header {
+        padding:25px;
+    }
+
+    .report-title {
+        flex-direction:column;
+    }
+
+    .report-title h2 {
+        font-size:25px;
+    }
+
+    .actions button {
+        width:100%;
+    }
+
+    .signatures {
+        gap:35px;
+    }
+
+    .report-footer {
+        flex-direction:column;
+    }
+
+}
+
+/* =====================================================
+   PRINT / PDF
+===================================================== */
+
+@media print {
+
+    @page {
+        size:A4;
+        margin:12mm;
+    }
+
+    body {
+        padding:0;
+        background:white;
+        print-color-adjust:exact;
+        -webkit-print-color-adjust:exact;
+    }
+
+    .form-panel,
+    .screen-actions {
+        display:none !important;
+    }
+
+    .page {
+        max-width:none;
+    }
+
+    .report {
+        display:block !important;
+        margin:0;
+        border:0;
+        border-radius:0;
+        box-shadow:none;
+    }
+
+    .report-header {
+        padding:25px;
+    }
+
+    .report-body {
+        padding:25px;
+    }
+
+    .detail,
+    .next-box,
+    .vip-box,
+    .notice {
+        break-inside:avoid;
+    }
+
+    .report-section,
+    .signatures {
+        break-inside:avoid;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+<!-- ===================================================
+     FORM PANEL
+=================================================== -->
+
+<section class="panel form-panel">
+
+    <div class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">₿</div>
+
+            <div>
+
+                <div class="brand-name">
+                    BITCOIN INVESTMENT
+                </div>
+
+                <div class="brand-caption">
+                    INVESTOR RELATIONS
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="top-heading">
+
+            <h1>Investor Transaction Report</h1>
+
+            <p>
+                Professional investor account communication
+                and transaction reporting.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="content">
+
+        <div class="section-heading">
+
+            <div class="section-icon">✦</div>
+
+            <div>
+
+                <h2>Investor Information</h2>
+
+                <p>Enter the investor's verified account details.</p>
+
+            </div>
+
+        </div>
+
+        <div class="grid">
+
+            <div class="field">
+
+                <label>INVESTOR NAME</label>
+
+                <input
+                    id="investor"
+                    placeholder="Enter investor full name"
+                    required
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>MOBILE NUMBER</label>
+
+                <input
+                    id="mobile"
+                    type="tel"
+                    placeholder="Enter mobile number"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>CURRENT INVESTMENT PLAN</label>
+
+                <select id="plan">
+
+                    <option>Silver Plan</option>
+                    <option>Gold Plan</option>
+                    <option>Diamond Plan</option>
+                    <option>VIP Plan</option>
+                    <option>Other / Not specified</option>
+
+                </select>
+
+            </div>
+
+            <div class="field">
+
+                <label>WITHDRAW AMOUNT</label>
+
+                <input
+                    id="amount"
+                    placeholder="Example: ₹10,000"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>WITHDRAW STATUS</label>
+
+                <select id="status">
+
+                    <option>Pending review</option>
+                    <option>Under verification</option>
+                    <option>Processing</option>
+                    <option>Completed</option>
+                    <option>Rejected</option>
+                    <option>Other</option>
+
+                </select>
+
+            </div>
+
+            <div class="field">
+
+                <label>REPORT DATE</label>
+
+                <input id="date" type="date">
+
+            </div>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-heading">
+
+            <div class="section-icon">▤</div>
+
+            <div>
+
+                <h2>Transaction Explanation</h2>
+
+                <p>Provide accurate information about the transaction.</p>
+
+            </div>
+
+        </div>
+
+        <div class="grid">
+
+            <div class="field full">
+
+                <label>REASON FOR CURRENT STATUS</label>
+
+                <textarea
+                    id="reason"
+                    placeholder="Explain the verified reason for the current transaction status."
+                ></textarea>
+
+            </div>
+
+            <div class="field full">
+
+                <label>RECOMMENDED NEXT ACTION</label>
+
+                <select id="next" onchange="toggleCustom()">
+
+                    <option value="Withdrawal request received — transaction pending">
+                        WITHDRAWAL REQUEST — TRANSACTION PENDING
+                    </option>
+
+                    <option value="Contact official support for a transaction review">
+                        Contact official support for a transaction review
+                    </option>
+
+                    <option value="Complete the pending account verification">
+                        Complete the pending account verification
+                    </option>
+
+                    <option value="Review available investment plans">
+                        Review available investment plans
+                    </option>
+
+                    <option value="Check withdrawal eligibility under the published plan terms">
+                        Check withdrawal eligibility under the published plan terms
+                    </option>
+
+                    <option value="Start Investment in VIP Plan">
+                        START INVESTMENT IN VIP PLAN 
+                    </option>
+
+                    <option value="Other">
+                        Other — Custom Instructions
+                    </option>
+
+                </select>
+
+                <div class="hint">
+
+                    Any additional investment is optional and must be
+                    treated as a separate investment decision.
+                    It must not be presented as a condition for releasing
+                    an existing withdrawal.
+
+                </div>
+
+            </div>
+
+            <div class="field full" id="customWrap" style="display:none">
+
+                <label>CUSTOM INSTRUCTIONS</label>
+
+                <textarea
+                    id="custom"
+                    placeholder="Enter clear and accurate instructions."
+                ></textarea>
+
+            </div>
+
+            <div class="field full">
+
+                <label>ADDITIONAL INFORMATION</label>
+
+                <textarea
+                    id="extra"
+                    placeholder="Additional transaction details, applicable terms, or support information."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-heading">
+
+            <div class="section-icon">♙</div>
+
+            <div>
+
+                <h2>Authorization Details</h2>
+
+                <p>Identify the authorized representative.</p>
+
+            </div>
+
+        </div>
+
+        <div class="grid">
+
+            <div class="field full">
+
+                <label>AUTHORIZED REPRESENTATIVE</label>
+
+                <input
+                    id="representative"
+                    placeholder="Enter representative name / support team"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+            <button class="primary" onclick="generateReport()">
+
+                ✦ Generate Premium Report
+
+            </button>
+
+            <button class="secondary" onclick="resetForm()">
+
+                Reset Form
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================
+     GENERATED REPORT
+=================================================== -->
+
+<section class="report" id="report">
+
+    <div class="report-header">
+
+        <div class="report-brand">
+
+            <div class="report-brand-icon">₿</div>
+
+            <div>
+
+                <strong>BITCOIN INVESTMENT</strong>
+
+                <small>INVESTOR RELATIONS</small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="report-body">
+
+        <div class="report-title">
+
+            <div>
+
+                <div class="brand" style="font-size:10px">
+                    ACCOUNT STATEMENT
+                </div>
+
+                <h2>Investor Transaction Report</h2>
+
+                <small id="rdate"></small>
+
+            </div>
+
+            <div class="report-tag">
+                OFFICIAL INVESTOR COPY
+            </div>
+
+        </div>
+
+
+        <!-- INVESTOR DETAILS -->
+
+        <div class="details">
+
+            <div class="detail">
+
+                <small>INVESTOR NAME</small>
+
+                <strong id="rinvestor">—</strong>
+
+            </div>
+
+            <div class="detail">
+
+                <small>MOBILE NUMBER</small>
+
+                <strong id="rmobile">—</strong>
+
+            </div>
+
+            <div class="detail">
+
+                <small>INVESTMENT PLAN</small>
+
+                <strong id="rplan">—</strong>
+
+            </div>
+
+            <div class="detail">
+
+                <small>TRANSACTION AMOUNT</small>
+
+                <strong id="ramount">Not provided</strong>
+
+            </div>
+
+            <div class="detail">
+
+                <small>TRANSACTION STATUS</small>
+
+                <strong>
+
+                    <span class="status-badge" id="rstatus">
+                        Pending review
+                    </span>
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- REASON -->
+
+        <div class="report-section">
+
+            <h3>01 — Transaction Status Explanation</h3>
+
+            <p id="rreason">—</p>
+
+        </div>
+
+
+        <!-- NEXT ACTION -->
+
+        <div class="report-section next-box">
+
+            <h3>02 — Recommended Next Action</h3>
+
+            <p id="rnext">—</p>
+
+        </div>
+
+
+       
+        <!-- WITHDRAWAL PENDING INFORMATION -->
+
+        <div
+            class="report-section"
+            id="withdrawalPendingInfo"
+            style="display:none"
+        >
+
+            <h3>03 — Withdrawal Request Status</h3>
+
+            <p>
+                Your withdrawal request has been received, but the
+                transaction is not yet marked as completed. Its current
+                status should be checked against the official transaction
+                records and the published withdrawal-processing timeline.
+            </p>
+
+            <p>
+                Please contact official support for a status update and
+                retain your withdrawal request or transaction reference.
+                Do not make an additional deposit or purchase a separate
+                investment plan merely to release this pending withdrawal.
+            </p>
+
+        </div>
+
+
+        <!-- ADDITIONAL INFORMATION -->
+
+        <div
+            class="report-section"
+            id="rextraWrap"
+            style="display:none"
+        >
+
+            <h3>Additional Information</h3>
+
+            <p id="rextra"></p>
+
+        </div>
+
+
+        <!-- REPRESENTATIVE -->
+
+        <div class="report-section">
+
+            <h3>Authorized Representative</h3>
+
+            <p id="rrepresentative">—</p>
+
+        </div>
+
+
+        
+
+
+        <!-- DISCLAIMER -->
+
+
+
+        <!-- FOOTER -->
+
+        <div class="report-footer">
+
+            <span>
+                BITCOIN INVESTMENT • INVESTOR RELATIONS
+            </span>
+
+            <span>
+                Confidential Investor Communication
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- REPORT ACTIONS -->
+
+<div
+    class="actions screen-actions"
+    id="reportActions"
+    style="display:none"
+>
+
+    <button class="gold-btn" onclick="window.print()">
+
+        ↓ Print / Save PDF
+
+    </button>
+
+    <button class="secondary" onclick="editDetails()">
+
+        ✎ Edit Information
+
+    </button>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   INITIAL DATE
+===================================================== */
+
+document.getElementById("date").value =
+    new Date().toLocaleDateString("en-CA");
+
+
+/* =====================================================
+   CUSTOM INSTRUCTIONS
+===================================================== */
+
+function toggleCustom() {
+
+    const value = document.getElementById("next").value;
+
+    document.getElementById("customWrap").style.display =
+        value === "Other" ? "block" : "none";
+
+}
+
+
+/* =====================================================
+   GET VALUE
+===================================================== */
+
+function val(id, fallback = "—") {
+
+    const element = document.getElementById(id);
+
+    const value = element.value.trim();
+
+    return value || fallback;
+
+}
+
+
+/* =====================================================
+   GENERATE REPORT
+===================================================== */
+
+function generateReport() {
+
+    const investor = val("investor", "");
+
+    if (!investor) {
+
+        alert("Please enter the investor name.");
+
+        document.getElementById("investor").focus();
+
+        return;
+
+    }
+
+    const nextChoice = val("next");
+
+    const isVip = nextChoice === "Start Investment in VIP Plan";
+
+    const isWithdrawalPending =
+        nextChoice === "Withdrawal request received — transaction pending";
+
+    let nextText = nextChoice;
+
+    if (nextChoice === "Other") {
+
+        nextText = val(
+            "custom",
+            "Custom instructions have not been provided."
+        );
+
+    }
+
+    /* INVESTOR DETAILS */
+
+    document.getElementById("rinvestor").textContent =
+        investor;
+
+    document.getElementById("rmobile").textContent =
+        val("mobile");
+
+    document.getElementById("rplan").textContent =
+        val("plan");
+
+    document.getElementById("ramount").textContent =
+        val("amount", "Not provided");
+
+    document.getElementById("rstatus").textContent =
+        val("status");
+
+
+    /* EXPLANATION */
+
+    document.getElementById("rreason").textContent =
+        val("reason", "No explanation provided.");
+
+
+    /* NEXT ACTION */
+
+    document.getElementById("rnext").textContent =
+        nextText;
+
+
+    /* DATE */
+
+    const dateValue = val("date");
+
+    let formattedDate = dateValue;
+
+    if (dateValue !== "—") {
+
+        formattedDate = new Date(
+            dateValue + "T00:00:00"
+        ).toLocaleDateString("en-IN", {
+
+            day:"2-digit",
+            month:"long",
+            year:"numeric"
+
+        });
+
+    }
+
+    document.getElementById("rdate").textContent =
+        "Report Date: " + formattedDate;
+
+
+    
+
+    /* ADDITIONAL INFORMATION */
+
+    const extra = val("extra", "");
+
+    document.getElementById("rextraWrap").style.display =
+        extra ? "block" : "none";
+
+    document.getElementById("rextra").textContent =
+        extra;
+
+
+    /* REPRESENTATIVE */
+
+    document.getElementById("rrepresentative").textContent =
+        val("representative", "Authorized Support Team");
+
+
+    /* SHOW REPORT */
+
+    document.getElementById("report").style.display =
+        "block";
+
+    document.getElementById("reportActions").style.display =
+        "flex";
+
+
+    /* SCROLL */
+
+    document.getElementById("report").scrollIntoView({
+
+        behavior:"smooth",
+        block:"start"
+
+    });
+
+}
+
+
+/* =====================================================
+   EDIT DETAILS
+===================================================== */
+
+function editDetails() {
+
+    document.querySelector(".form-panel").scrollIntoView({
+
+        behavior:"smooth",
+        block:"start"
+
+    });
+
+}
+
+
+/* =====================================================
+   RESET FORM
+===================================================== */
+
+function resetForm() {
+
+    const confirmed = confirm(
+        "Are you sure you want to clear all entered information?"
+    );
+
+    if (!confirmed) return;
+
+    document.querySelectorAll(
+        ".form-panel input, .form-panel textarea"
+    ).forEach(element => {
+
+        element.value = "";
+
+    });
+
+    document.getElementById("date").value =
+        new Date().toLocaleDateString("en-CA");
+
+    document.getElementById("plan").selectedIndex = 0;
+
+    document.getElementById("status").selectedIndex = 0;
+
+    document.getElementById("next").selectedIndex = 0;
+
+    toggleCustom();
+
+    document.getElementById("report").style.display =
+        "none";
+
+    document.getElementById("reportActions").style.display =
+        "none";
+
+    window.scrollTo({
+
+        top:0,
+        behavior:"smooth"
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>

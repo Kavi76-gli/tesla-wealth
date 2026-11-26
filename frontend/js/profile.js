@@ -1,129 +1,344 @@
-// ======================================================
-// PROFILE PAGE
-// ======================================================
+"use strict";
+
+/* =========================================================
+   TESLA WEALTH — PROFILE PAGE
+   Premium Emerald & Gold Edition
+========================================================= */
+
+(() => {
+
+    // =====================================================
+    // BACKEND API
+    // =====================================================
+
+    const API_URL =
+        window.TESLA_API_BASE ||
+        "https://tesla-wealth.onrender.com/api";
+
+    const PROFILE_API =
+        `${API_URL}/auth/profile`;
 
 
-// ======================================================
-// BACKEND API
-// ======================================================
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
 
-const API_URL =
-    "https://tesla-wealth.onrender.com/api";
+    function getToken() {
 
-
-// ======================================================
-// GET JWT TOKEN
-// ======================================================
-
-const token =
-    localStorage.getItem("ki_token") ||
-    localStorage.getItem("token");
-
-
-// ======================================================
-// CHECK LOGIN
-// ======================================================
-
-if (!token) {
-
-    window.location.href =
-        "auth.html";
-
-}
-
-
-// ======================================================
-// MONEY FORMAT
-// ======================================================
-
-function formatMoney(amount) {
-
-    const number =
-        Number(amount || 0);
-
-    return (
-        "₹" +
-        number.toLocaleString(
-            "en-IN",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        )
-    );
-
-}
-
-
-// ======================================================
-// SAFE TEXT UPDATE
-// ======================================================
-
-function setText(id, value) {
-
-    const element =
-        document.getElementById(id);
-
-    if (!element) {
-
-        console.warn(
-            `Element #${id} not found.`
+        return (
+            localStorage.getItem("ki_token") ||
+            localStorage.getItem("token")
         );
-
-        return;
 
     }
 
-    element.textContent =
-        value;
 
+    function clearSession() {
+
+        [
+            "ki_token",
+            "token",
+            "ki_user",
+            "user"
+        ].forEach(key => {
+
+            localStorage.removeItem(key);
+
+        });
+
+    }
+
+
+    function redirectToLogin() {
+
+        clearSession();
+
+        window.location.replace("auth.html");
+
+    }
+
+
+    // =====================================================
+    // MONEY FORMAT
+    // =====================================================
+function formatMoney(amount) {
+    return "$" +
+        Number(amount || 0).toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
 }
 
 
-// ======================================================
-// LOAD PROFILE
-// ======================================================
+    // =====================================================
+    // SAFE HTML TEXT UPDATE
+    // =====================================================
 
-async function loadProfile() {
+    function setText(id, value) {
 
-    console.log(
-        "================================"
-    );
+        const element =
+            document.getElementById(id);
 
-    console.log(
-        "LOADING PROFILE"
-    );
+        if (!element) return;
 
-    console.log(
-        "================================"
-    );
+        element.textContent = value ?? "";
+
+    }
 
 
-    try {
+    // =====================================================
+    // TOAST NOTIFICATION
+    // =====================================================
+
+    let toastTimer;
+
+    function showToast(message, type = "success") {
+
+        const toast =
+            document.getElementById("toast");
+
+        if (!toast) {
+
+            console.log(message);
+
+            return;
+
+        }
+
+        toast.textContent = message;
+
+        toast.className = "toast";
+
+        if (type === "error") {
+
+            toast.classList.add("error");
+
+        }
+
+        toast.classList.add("show");
+
+        clearTimeout(toastTimer);
+
+        toastTimer = setTimeout(() => {
+
+            toast.classList.remove("show");
+
+        }, 3500);
+
+    }
 
 
-        // ==================================================
-        // TOKEN CHECK
-        // ==================================================
+    // =====================================================
+    // UPDATE PROFILE IMAGE
+    // =====================================================
+
+    function updateAvatar(user) {
+
+        const avatar =
+            document.getElementById("avatar");
+
+        if (!avatar) return;
+
+        const imageUrl =
+            String(user.profileImage || "").trim();
+
+        if (!imageUrl) {
+
+            avatar.innerHTML =
+                '<i class="fa-solid fa-user"></i>';
+
+            return;
+
+        }
+
+        avatar.replaceChildren();
+
+        const image =
+            document.createElement("img");
+
+        image.src = imageUrl;
+
+        image.alt = "Profile photo";
+
+        image.loading = "lazy";
+
+        image.referrerPolicy = "no-referrer";
+
+        image.onerror = () => {
+
+            avatar.innerHTML =
+                '<i class="fa-solid fa-user"></i>';
+
+        };
+
+        avatar.appendChild(image);
+
+    }
+
+
+    // =====================================================
+    // UPDATE ADMIN ACCESS
+    // =====================================================
+
+    function updateAdminArea(user) {
+
+        const adminArea =
+            document.getElementById("adminArea");
+
+        if (!adminArea) return;
+
+        adminArea.style.display =
+            user.isAdmin === true ? "block" : "none";
+
+    }
+
+
+    // =====================================================
+    // UPDATE PROFILE INFORMATION
+    // =====================================================
+
+    function updateProfileUI(user) {
+
+        // -----------------------------------------------
+        // PERSONAL INFORMATION
+        // -----------------------------------------------
+
+        setText(
+            "userName",
+            user.name || "New User"
+        );
+
+        setText(
+            "phone",
+            user.phone || "Phone not available"
+        );
+
+        setText(
+            "uid",
+            user.inviteCode || "------"
+        );
+
+
+        // -----------------------------------------------
+        // WALLET INFORMATION
+        // -----------------------------------------------
+
+        setText(
+            "walletBalance",
+            formatMoney(user.balance)
+        );
+
+        setText(
+            "depositBalance",
+            formatMoney(user.totalDeposit)
+        );
+
+        setText(
+            "withdrawBalance",
+            formatMoney(user.totalWithdraw)
+        );
+
+
+        // -----------------------------------------------
+        // FINANCIAL STATISTICS
+        // -----------------------------------------------
+
+        setText(
+            "totalDeposit",
+            formatMoney(user.totalDeposit)
+        );
+
+        setText(
+            "totalWithdraw",
+            formatMoney(user.totalWithdraw)
+        );
+
+
+        // -----------------------------------------------
+        // PROFILE IMAGE
+        // -----------------------------------------------
+
+        updateAvatar(user);
+
+
+        // -----------------------------------------------
+        // ADMIN AREA
+        // -----------------------------------------------
+
+        updateAdminArea(user);
+
+
+        // -----------------------------------------------
+        // SAVE USER CACHE
+        // -----------------------------------------------
+
+        try {
+
+            const userJSON =
+                JSON.stringify(user);
+
+            localStorage.setItem(
+                "ki_user",
+                userJSON
+            );
+
+            localStorage.setItem(
+                "user",
+                userJSON
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Unable to save user cache:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // =====================================================
+    // LOAD PROFILE FROM BACKEND
+    // =====================================================
+
+    async function loadProfile() {
+
+        console.log(
+            "================================"
+        );
+
+        console.log(
+            "TESLA WEALTH PROFILE LOADING"
+        );
+
+        console.log(
+            "================================"
+        );
+
+
+        const token = getToken();
 
         if (!token) {
 
-            window.location.href =
-                "auth.html";
+            redirectToLogin();
 
             return;
 
         }
 
 
-        // ==================================================
-        // API REQUEST
-        // ==================================================
+        try {
 
-        const response =
-            await fetch(
-                `${API_URL}/auth/profile`,
+            // -------------------------------------------
+            // API REQUEST
+            // -------------------------------------------
+
+            const response = await fetch(
+                PROFILE_API,
                 {
+
                     method: "GET",
 
                     headers: {
@@ -135,670 +350,274 @@ async function loadProfile() {
                             "application/json"
 
                     }
+
                 }
             );
 
 
-        // ==================================================
-        // READ RESPONSE
-        // ==================================================
+            // -------------------------------------------
+            // RESPONSE
+            // -------------------------------------------
 
-        const rawResponse =
-            await response.text();
+            const rawResponse =
+                await response.text();
 
-
-        console.log(
-            "PROFILE STATUS:",
-            response.status
-        );
-
-
-        console.log(
-            "PROFILE RESPONSE:",
-            rawResponse
-        );
-
-
-        // ==================================================
-        // EMPTY RESPONSE
-        // ==================================================
-
-        if (!rawResponse) {
-
-            throw new Error(
-                "Server returned an empty response."
-            );
-
-        }
-
-
-        // ==================================================
-        // PARSE JSON
-        // ==================================================
-
-        let data;
-
-        try {
-
-            data =
-                JSON.parse(
-                    rawResponse
-                );
-
-        } catch (jsonError) {
-
-            console.error(
-                "PROFILE API DID NOT RETURN JSON:",
-                rawResponse
-            );
-
-            throw new Error(
-                `Server returned ${response.status} instead of JSON.`
-            );
-
-        }
-
-
-        // ==================================================
-        // AUTH ERROR
-        // ==================================================
-
-        if (
-            response.status === 401 ||
-            response.status === 403
-        ) {
-
-            console.warn(
-                "PROFILE SESSION EXPIRED."
+            console.log(
+                "PROFILE STATUS:",
+                response.status
             );
 
 
-            localStorage.removeItem(
-                "ki_token"
-            );
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "ki_user"
-            );
-
-            localStorage.removeItem(
-                "user"
-            );
-
-
-            window.location.href =
-                "auth.html";
-
-            return;
-
-        }
-
-
-        // ==================================================
-        // API ERROR
-        // ==================================================
-
-        if (
-            !response.ok ||
-            !data.success
-        ) {
-
-            throw new Error(
-                data.message ||
-                "Unable to load profile."
-            );
-
-        }
-
-
-        // ==================================================
-        // USER DATA
-        // ==================================================
-
-        const user =
-            data.user || {};
-
-
-        console.log(
-            "PROFILE USER:",
-            user
-        );
-
-
-        // ==================================================
-        // USER NAME
-        // ==================================================
-        //
-        // IMPORTANT:
-        // HTML uses id="userName"
-        //
-        // Backend returns:
-        // user.name
-        //
-        // ==================================================
-
-        setText(
-            "userName",
-            user.name || "New User"
-        );
-
-
-        // ==================================================
-        // PHONE
-        // ==================================================
-
-        setText(
-            "phone",
-            user.phone || "No Phone"
-        );
-
-
-        // ==================================================
-        // INVITE CODE / UID
-        // ==================================================
-
-        setText(
-            "uid",
-            user.inviteCode || "------"
-        );
-
-
-        // ==================================================
-        // WALLET BALANCE
-        // ==================================================
-
-        setText(
-            "walletBalance",
-            formatMoney(
-                user.balance
-            )
-        );
-
-
-        // ==================================================
-        // DEPOSIT BALANCE
-        // ==================================================
-
-        setText(
-            "depositBalance",
-            formatMoney(
-                user.totalDeposit
-            )
-        );
-
-
-        // ==================================================
-        // WITHDRAW BALANCE
-        // ==================================================
-
-        setText(
-            "withdrawBalance",
-            formatMoney(
-                user.totalWithdraw
-            )
-        );
-
-
-        // ==================================================
-        // TOTAL DEPOSIT
-        // ==================================================
-
-        setText(
-            "totalDeposit",
-            formatMoney(
-                user.totalDeposit
-            )
-        );
-
-
-        // ==================================================
-        // TOTAL WITHDRAW
-        // ==================================================
-
-        setText(
-            "totalWithdraw",
-            formatMoney(
-                user.totalWithdraw
-            )
-        );
-
-
-        // ==================================================
-        // AVATAR
-        // ==================================================
-
-        const avatar =
-            document.getElementById(
-                "avatar"
-            );
-
-
-        if (avatar) {
-
-
-            // ----------------------------------------------
-            // PROFILE IMAGE EXISTS
-            // ----------------------------------------------
+            // -------------------------------------------
+            // AUTHENTICATION ERROR
+            // -------------------------------------------
 
             if (
-                user.profileImage &&
-                String(
-                    user.profileImage
-                ).trim() !== ""
+                response.status === 401 ||
+                response.status === 403
             ) {
 
-                const imageUrl =
-                    String(
-                        user.profileImage
-                    ).trim();
-
-
-                avatar.innerHTML = "";
-
-
-                const image =
-                    document.createElement(
-                        "img"
-                    );
-
-
-                image.src =
-                    imageUrl;
-
-
-                image.alt =
-                    "Profile";
-
-
-                image.loading =
-                    "lazy";
-
-
-                image.onerror =
-                    () => {
-
-                        console.warn(
-                            "Profile image failed:",
-                            imageUrl
-                        );
-
-
-                        avatar.innerHTML =
-                            '<i class="fa-solid fa-user"></i>';
-
-                    };
-
-
-                avatar.appendChild(
-                    image
+                console.warn(
+                    "Session expired."
                 );
 
-            }
-
-
-            // ----------------------------------------------
-            // NO PROFILE IMAGE
-            // ----------------------------------------------
-
-            else {
-
-                avatar.innerHTML =
-                    '<i class="fa-solid fa-user"></i>';
-
-            }
-
-        }
-
-
-        // ==================================================
-        // ADMIN AREA
-        // ==================================================
-
-        const adminArea =
-            document.getElementById(
-                "adminArea"
-            );
-
-
-        if (adminArea) {
-
-
-            if (
-                user.isAdmin === true
-            ) {
-
-                adminArea.style.display =
-                    "block";
-
-            } else {
-
-                adminArea.style.display =
-                    "none";
-
-            }
-
-        }
-
-
-        // ==================================================
-        // SAVE USER TO LOCAL STORAGE
-        // ==================================================
-        //
-        // Keep both names for compatibility
-        // with older pages.
-        //
-        // ==================================================
-
-        const userJSON =
-            JSON.stringify(
-                user
-            );
-
-
-        localStorage.setItem(
-            "ki_user",
-            userJSON
-        );
-
-
-        localStorage.setItem(
-            "user",
-            userJSON
-        );
-
-
-        // ==================================================
-        // SUCCESS
-        // ==================================================
-
-        console.log(
-            "PROFILE NAME:",
-            user.name
-        );
-
-
-        console.log(
-            "PROFILE PHONE:",
-            user.phone
-        );
-
-
-        console.log(
-            "PROFILE BALANCE:",
-            user.balance
-        );
-
-
-        console.log(
-            "PROFILE LOADED SUCCESSFULLY"
-        );
-
-
-    } catch (error) {
-
-
-        // ==================================================
-        // ERROR
-        // ==================================================
-
-        console.error(
-            "PROFILE ERROR:",
-            error
-        );
-
-
-        // ==================================================
-        // SESSION ERROR
-        // ==================================================
-
-        const errorMessage =
-            String(
-                error.message || ""
-            );
-
-
-        if (
-            errorMessage.includes("401") ||
-            errorMessage.includes("403") ||
-            errorMessage.includes("Unauthorized")
-        ) {
-
-
-            localStorage.removeItem(
-                "ki_token"
-            );
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "ki_user"
-            );
-
-            localStorage.removeItem(
-                "user"
-            );
-
-
-            window.location.href =
-                "auth.html";
-
-            return;
-
-        }
-
-
-        // ==================================================
-        // SHOW ERROR
-        // ==================================================
-
-        alert(
-            error.message ||
-            "Unable to load profile."
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// LOGOUT
-// ======================================================
-
-function setupLogout() {
-
-    const logoutBtn =
-        document.getElementById(
-            "logoutBtn"
-        );
-
-
-    if (!logoutBtn) {
-
-        return;
-
-    }
-
-
-    logoutBtn.addEventListener(
-        "click",
-        () => {
-
-
-            const confirmed =
-                confirm(
-                    "Are you sure you want to logout?"
-                );
-
-
-            if (!confirmed) {
+                redirectToLogin();
 
                 return;
 
             }
 
 
-            // ----------------------------------------------
-            // REMOVE AUTH
-            // ----------------------------------------------
+            // -------------------------------------------
+            // EMPTY RESPONSE
+            // -------------------------------------------
 
-            localStorage.removeItem(
-                "ki_token"
+            if (!rawResponse) {
+
+                throw new Error(
+                    "Server returned an empty response."
+                );
+
+            }
+
+
+            // -------------------------------------------
+            // PARSE JSON
+            // -------------------------------------------
+
+            let data;
+
+            try {
+
+                data = JSON.parse(rawResponse);
+
+            } catch (error) {
+
+                console.error(
+                    "Invalid API response:",
+                    rawResponse
+                );
+
+                throw new Error(
+                    "Invalid server response. Please try again."
+                );
+
+            }
+
+
+            // -------------------------------------------
+            // API ERROR
+            // -------------------------------------------
+
+            if (!response.ok || data.success !== true) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to load your profile."
+                );
+
+            }
+
+
+            // -------------------------------------------
+            // USER INFORMATION
+            // -------------------------------------------
+
+            const user =
+                data.user || {};
+
+            console.log(
+                "PROFILE USER:",
+                user
             );
 
-            localStorage.removeItem(
-                "token"
+
+            // -------------------------------------------
+            // UPDATE FRONTEND
+            // -------------------------------------------
+
+            updateProfileUI(user);
+
+
+            // -------------------------------------------
+            // SUCCESS
+            // -------------------------------------------
+
+            console.log(
+                "PROFILE LOADED SUCCESSFULLY"
             );
 
-
-            // ----------------------------------------------
-            // REMOVE USER CACHE
-            // ----------------------------------------------
-
-            localStorage.removeItem(
-                "ki_user"
+            showToast(
+                "Profile loaded successfully."
             );
 
-            localStorage.removeItem(
-                "user"
+        } catch (error) {
+
+            console.error(
+                "PROFILE ERROR:",
+                error
             );
 
-
-            // ----------------------------------------------
-            // REDIRECT
-            // ----------------------------------------------
-
-            window.location.href =
-                "auth.html";
+            showToast(
+                error.message ||
+                "Unable to connect to the server.",
+                "error"
+            );
 
         }
-    );
-
-}
-
-
-// ======================================================
-// BOTTOM NAVIGATION
-// ======================================================
-
-function setupBottomNavigation() {
-
-    const navItems =
-        document.querySelectorAll(
-            ".bottom-nav a"
-        );
-
-
-    if (!navItems.length) {
-
-        return;
 
     }
 
 
-    navItems.forEach(
-        item => {
+    // =====================================================
+    // LOGOUT
+    // =====================================================
 
+    function setupLogout() {
 
-            item.addEventListener(
-                "click",
-                () => {
+        const logoutBtn =
+            document.getElementById("logoutBtn");
 
+        if (!logoutBtn) return;
 
-                    navItems.forEach(
-                        nav => {
+        logoutBtn.addEventListener("click", () => {
 
-                            nav.classList.remove(
-                                "active"
-                            );
-
-                        }
-                    );
-
-
-                    item.classList.add(
-                        "active"
-                    );
-
-                }
+            const confirmed = window.confirm(
+                "Are you sure you want to logout from Tesla Wealth?"
             );
+
+            if (!confirmed) return;
+
+            clearSession();
+
+            window.location.replace("auth.html");
+
+        });
+
+    }
+
+
+    // =====================================================
+    // BOTTOM NAVIGATION
+    // =====================================================
+
+    function setupBottomNavigation() {
+
+        const navItems =
+            document.querySelectorAll(".bottom-nav a");
+
+        if (!navItems.length) return;
+
+        const currentPage =
+            window.location.pathname
+                .split("/")
+                .pop()
+                .toLowerCase();
+
+        navItems.forEach(item => {
+
+            const href =
+                (item.getAttribute("href") || "")
+                    .toLowerCase();
+
+            item.classList.toggle(
+                "active",
+                href === currentPage
+            );
+
+        });
+
+    }
+
+
+    // =====================================================
+    // DOWNLOAD BUTTON
+    // =====================================================
+
+    function setupDownloadButton() {
+
+        const button =
+            document.getElementById("downloadAppBtn");
+
+        if (!button) return;
+
+        button.addEventListener("click", event => {
+
+            const href =
+                button.getAttribute("href");
+
+            if (!href || href === "#") {
+
+                event.preventDefault();
+
+                showToast(
+                    "App download is currently unavailable.",
+                    "error"
+                );
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
+    // PAGE ANIMATION
+    // =====================================================
+
+    function startPageAnimation() {
+
+        document.body.classList.add(
+            "page-loaded"
+        );
+
+    }
+
+
+    // =====================================================
+    // INITIALIZE PROFILE PAGE
+    // =====================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            console.log(
+                "TESLA WEALTH PROFILE INITIALIZING"
+            );
+
+            startPageAnimation();
+
+            setupLogout();
+
+            setupBottomNavigation();
+
+            setupDownloadButton();
+
+            loadProfile();
 
         }
     );
 
-}
-
-
-// ======================================================
-// PAGE ANIMATION
-// ======================================================
-
-function startPageAnimation() {
-
-    document.body.classList.add(
-        "page-loaded"
-    );
-
-}
-
-
-// ======================================================
-// PAGE INITIALIZATION
-// ======================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-
-        console.log(
-            "================================"
-        );
-
-
-        console.log(
-            "PROFILE PAGE INITIALIZING"
-        );
-
-
-        console.log(
-            "================================"
-        );
-
-
-        // ----------------------------------------------
-        // LOAD PROFILE
-        // ----------------------------------------------
-
-        loadProfile();
-
-
-        // ----------------------------------------------
-        // LOGOUT
-        // ----------------------------------------------
-
-        setupLogout();
-
-
-        // ----------------------------------------------
-        // NAVIGATION
-        // ----------------------------------------------
-
-        setupBottomNavigation();
-
-
-        // ----------------------------------------------
-        // ANIMATION
-        // ----------------------------------------------
-
-        startPageAnimation();
-
-
-    }
-);
+})();

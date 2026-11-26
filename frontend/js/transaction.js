@@ -512,16 +512,12 @@ async function viewTransaction(id) {
 // ==========================================
 // HELPERS
 // ==========================================
-
 function formatMoney(amount) {
-
-    return "₹" +
-        Number(amount || 0)
-            .toLocaleString("en-IN", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-
+    return "$" +
+        Number(amount || 0).toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
 }
 
 

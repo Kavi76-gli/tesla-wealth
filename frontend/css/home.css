@@ -3586,4 +3586,514 @@ button:disabled {
         transition-duration: 0.01ms !important;
     }
 }
+/* =====================================================
+   USER REVIEWS — WHITE & LIGHT GREEN THEME
+===================================================== */
 
+#reviewsSlider {
+    position: relative;
+    width: 100%;
+}
+
+.review-card {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 28px;
+    border: 1px solid #dcefe3;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #ffffff, #f3fbf5);
+    color: #183b28;
+    box-shadow: 0 12px 30px rgba(35, 105, 63, 0.08);
+}
+
+.review-card.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    animation: reviewFadeIn 0.45s ease;
+}
+
+.review-quote {
+    color: #42a86b;
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 12px;
+}
+
+.review-text {
+    color: #40594a;
+    font-size: 15px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.review-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 18px;
+    border-top: 1px solid #e3eee6;
+}
+
+.review-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.review-initial {
+    display: grid;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: #e5f6eb;
+    border: 1px solid #c6e8d1;
+    color: #25834b;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.review-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.review-user-info strong {
+    color: #183b28;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.review-user-info span {
+    color: #789080;
+    font-size: 12px;
+}
+
+.review-stars {
+    color: #e5a923;
+    font-size: 17px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+#reviewsDots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.review-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbded0;
+    cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease;
+}
+
+.review-dot.active {
+    width: 24px;
+    border-radius: 10px;
+    background: #42a86b;
+}
+
+
+/* =====================================================
+   INVESTOR ACTIVITY — WHITE & LIGHT GREEN THEME
+===================================================== */
+
+#winnerActivityList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.winner-activity-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+    border: 1px solid #e0eee4;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #183b28;
+    box-shadow: 0 5px 16px rgba(35, 105, 63, 0.05);
+    animation: activitySlideIn 0.35s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.winner-activity-row:hover {
+    border-color: #b8dfc5;
+    box-shadow: 0 8px 20px rgba(35, 105, 63, 0.09);
+}
+
+.winner-activity-row .activity-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background: #eaf7ee;
+    color: #27864e;
+    font-size: 20px;
+}
+
+.activity-user {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-user-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #244331;
+    font-size: 14px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.activity-verified {
+    display: inline-grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: #42a86b;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.activity-uid {
+    margin-top: 4px;
+    color: #8a9b90;
+    font-size: 11px;
+}
+
+.activity-action {
+    margin-top: 5px;
+    color: #617768;
+    font-size: 12px;
+}
+
+.activity-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    flex: 0 0 auto;
+    text-align: right;
+}
+
+.activity-amount {
+    color: #27864e;
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.activity-status {
+    color: #31945a;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.activity-time {
+    color: #8a9b90;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.investment-return-row .activity-amount {
+    color: #3286c8;
+}
+
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
+@keyframes reviewFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes activitySlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =====================================================
+   MOBILE RESPONSIVE
+===================================================== */
+
+@media (max-width: 600px) {
+    .review-card {
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .review-text {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .review-bottom {
+        align-items: flex-start;
+    }
+
+    .review-stars {
+        font-size: 15px;
+    }
+
+    .winner-activity-row {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .winner-activity-row .activity-icon {
+        flex-basis: 36px;
+        width: 36px;
+        height: 36px;
+        font-size: 17px;
+    }
+
+    .activity-user-name {
+        font-size: 12px;
+    }
+
+    .activity-amount {
+        font-size: 13px;
+    }
+
+    .activity-status,
+    .activity-time,
+    .activity-uid,
+    .activity-action {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    .winner-activity-row {
+        flex-wrap: wrap;
+    }
+
+    .activity-right {
+        margin-left: auto;
+    }
+}
+/* =====================================================
+   INVESTOR LEADERBOARD — WHITE & LIGHT GREEN THEME
+===================================================== */
+
+#winnerRankingList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Remaining investors: rank 4 and below */
+.winner-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px 18px;
+    border: 1px solid #e0eee4;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #183b28;
+    box-shadow: 0 5px 16px rgba(35, 105, 63, 0.05);
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.winner-row:hover {
+    transform: translateY(-2px);
+    border-color: #b8dfc5;
+    box-shadow: 0 8px 20px rgba(35, 105, 63, 0.09);
+}
+
+/* Rank number */
+.winner-rank {
+    display: grid;
+    place-items: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: #eaf7ee;
+    color: #27864e;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+/* Investor name area */
+.winner-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.winner-name {
+    color: #244331;
+    font-size: 14px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+/* Earnings amount */
+.winner-amount {
+    flex: 0 0 auto;
+    color: #27864e;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* =====================================================
+   TOP 3 LEADERBOARD CARDS
+   These styles apply when your HTML uses these classes.
+===================================================== */
+
+.rank-card,
+.top-investor-card {
+    box-sizing: border-box;
+    padding: 22px;
+    border: 1px solid #dcefe3;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #ffffff, #f3fbf5);
+    color: #183b28;
+    box-shadow: 0 10px 26px rgba(35, 105, 63, 0.08);
+    text-align: center;
+}
+
+.rank-card .rank-name,
+.top-investor-card .rank-name {
+    color: #244331;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.rank-card .rank-amount,
+.top-investor-card .rank-amount {
+    margin-top: 8px;
+    color: #27864e;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+/* Optional first-place highlight */
+.rank-card.rank-1,
+.top-investor-card.rank-1 {
+    border-color: #b9df91;
+    background: linear-gradient(145deg, #ffffff, #f0f9df);
+}
+
+/* =====================================================
+   LEADERBOARD COUNTDOWN
+===================================================== */
+
+#leaderboardTimer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    padding: 8px 14px;
+    border: 1px solid #d5eadb;
+    border-radius: 10px;
+    background: #f0f9f3;
+    color: #27864e;
+    font-size: 14px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+}
+
+/* =====================================================
+   MOBILE RESPONSIVE
+===================================================== */
+
+@media (max-width: 600px) {
+    .winner-row {
+        gap: 10px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .winner-rank {
+        flex-basis: 32px;
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+
+    .winner-name {
+        font-size: 13px;
+    }
+
+    .winner-amount {
+        font-size: 13px;
+    }
+
+    .rank-card,
+    .top-investor-card {
+        padding: 16px;
+        border-radius: 15px;
+    }
+
+    .rank-card .rank-amount,
+    .top-investor-card .rank-amount {
+        font-size: 17px;
+    }
+}
+
+@media (max-width: 380px) {
+    .winner-row {
+        flex-wrap: wrap;
+    }
+
+    .winner-amount {
+        margin-left: auto;
+    }
+}

@@ -1,809 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#06130d">
+    <meta name="description" content="Manage your Tesla Wealth profile, wallet and account settings.">
+    <title>My Profile | Tesla Wealth</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>My Profile</title>
-
-
-    <!-- =================================================
-         GOOGLE FONT
-    ================================================== -->
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
-
-    <!-- =================================================
-         FONT AWESOME
-    ================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    >
-
-
-    <!-- =================================================
-         PROFILE CSS
-    ================================================== -->
-
-    <link
-        rel="stylesheet"
-        href="css/profile.css"
-    >
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="css/profile.css">
 </head>
-
-
 <body>
+<div class="app-shell">
 
+    <header class="topbar">
+        <a href="home.html" class="back-button" aria-label="Back to home">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <a href="home.html" class="brand-lockup" aria-label="Tesla Wealth home">
+            <span class="brand-mark">T</span>
+            <span class="brand-copy">
+                <strong>TESLA <b>WEALTH</b></strong>
+                <small>PREMIUM FINANCIAL SERVICES</small>
+            </span>
+        </a>
+        <div class="secure-pill"><span></span> Secure</div>
+        <button class="logout-button" id="logoutBtn" type="button" aria-label="Logout" title="Logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+    </header>
 
-    <!-- =================================================
-         MAIN PAGE
-    ================================================== -->
+    <main class="main-content">
 
-    <div class="page">
+        <section class="page-intro">
+            <div class="eyebrow"><span></span> ACCOUNT CENTER</div>
+            <h1>Your Profile<span>.</span></h1>
+            <p>Manage your account, monitor your wallet and access your financial services.</p>
+        </section>
 
-
-        <!-- =================================================
-             PROFILE HERO
-        ================================================== -->
-
-        <section class="profile-hero">
-
-
-            <!-- Decorative circles -->
-
-            <div class="hero-circle circle-one"></div>
-
-            <div class="hero-circle circle-two"></div>
-
-
-            <!-- =================================================
-                 HEADER
-            ================================================== -->
-
-            <div class="profile-header">
-
-
-                <!-- Back -->
-
-                <button
-                    type="button"
-                    class="header-button"
-                    onclick="window.location.href='home.html'"
-                    aria-label="Go back"
-                >
-
-                    <i class="fa-solid fa-arrow-left"></i>
-
-                </button>
-
-
-                <!-- Title -->
-
-                <div class="header-title">
-
-                    <span>ACCOUNT</span>
-
-                    <h1>My Profile</h1>
-
+        <section class="profile-card panel">
+            <div class="panel-kicker">01 / MEMBER PROFILE</div>
+            <div class="profile-main">
+                <div class="avatar-frame">
+                    <div class="avatar" id="avatar"><i class="fa-solid fa-user"></i></div>
+                    <span class="avatar-online"></span>
                 </div>
+                <div class="profile-details">
+                    <h2 id="userName">Loading profile...</h2>
+                    <p id="phone">Please wait</p>
+                    <div class="member-id"><span>MEMBER ID</span><strong id="uid">------</strong></div>
+                </div>
+                <div class="member-seal"><i class="fa-solid fa-shield-halved"></i></div>
+            </div>
+            <div class="profile-card-footer">
+                <span><i class="fa-solid fa-lock"></i> Your account is protected</span>
+                <span>TESLA WEALTH MEMBER</span>
+            </div>
+        </section>
 
-
-                <!-- Logout -->
-
-                <button
-                    type="button"
-                    class="header-button"
-                    id="logoutBtn"
-                    aria-label="Logout"
-                >
-
-                    <i class="fa-solid fa-right-from-bracket"></i>
-
-                </button>
-
+        <section class="section-block">
+            <div class="section-heading">
+                <div><div class="eyebrow"><span></span> FINANCIAL OVERVIEW</div><h2>Wallet Summary</h2></div>
+                <div class="heading-icon"><i class="fa-solid fa-wallet"></i></div>
             </div>
 
-
-            <!-- =================================================
-                 USER INFORMATION
-            ================================================== -->
-
-            <div class="profile-user">
-
-
-                <!-- Avatar -->
-
-                <div class="avatar-wrapper">
-
-
-                    <div class="avatar-ring"></div>
-
-
-                    <div
-                        class="avatar"
-                        id="avatar"
-                    >
-
-                        <i class="fa-solid fa-user"></i>
-
+            <div class="wallet-hero panel">
+                <div class="wallet-hero-top">
+                    <div>
+                        <span class="data-label">TOTAL WALLET BALANCE</span>
+                        <strong class="wallet-amount" id="walletBalance">₹0.00</strong>
                     </div>
-
-
-                    <span class="online-dot"></span>
-
+                    <div class="gold-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
                 </div>
-
-
-                <!-- User details -->
-
-                <div class="user-info">
-
-
-                    <!-- IMPORTANT:
-                         JavaScript fills this from user.name
-                    -->
-
-                    <h2 id="userName">
-                        Loading...
-                    </h2>
-
-
-                    <!-- Phone -->
-
-                    <p id="phone">
-                        Loading...
-                    </p>
-
-
-                    <!-- Invite / UID -->
-
-                    <div class="uid-badge">
-
-                        <i class="fa-solid fa-id-card"></i>
-
-                        UID:
-
-                        <span id="uid">
-                            ------
-                        </span>
-
-                    </div>
-
+                <div class="wallet-hero-bottom">
+                    <span><i class="fa-solid fa-circle-check"></i> Account wallet balance</span>
+                    <span class="wallet-brand">TESLA WEALTH</span>
                 </div>
-
+                <div class="wallet-orbit orbit-one"></div>
+                <div class="wallet-orbit orbit-two"></div>
             </div>
-
-
-            <!-- =================================================
-                 WALLET GRID
-            ================================================== -->
 
             <div class="wallet-grid">
-
-
-                <!-- Wallet -->
-
-                <div class="wallet-card">
-
-
-                    <div class="wallet-icon">
-
-                        <i class="fa-solid fa-wallet"></i>
-
-                    </div>
-
-
-                    <span>
-                        Wallet
-                    </span>
-
-
-                    <strong id="walletBalance">
-                        ₹0.00
-                    </strong>
-
-                </div>
-
-
-                <!-- Deposit -->
-
-                <div class="wallet-card">
-
-
-                    <div class="wallet-icon">
-
-                        <i class="fa-solid fa-arrow-down"></i>
-
-                    </div>
-
-
-                    <span>
-                        Deposit
-                    </span>
-
-
-                    <strong id="depositBalance">
-                        ₹0.00
-                    </strong>
-
-                </div>
-
-
-                <!-- Withdraw -->
-
-                <div class="wallet-card">
-
-
-                    <div class="wallet-icon">
-
-                        <i class="fa-solid fa-arrow-up"></i>
-
-                    </div>
-
-
-                    <span>
-                        Withdraw
-                    </span>
-
-
-                    <strong id="withdrawBalance">
-                        ₹0.00
-                    </strong>
-
-                </div>
-
+                <article class="metric-card panel">
+                    <div class="metric-top"><span class="metric-icon"><i class="fa-solid fa-arrow-down"></i></span><span class="data-label">TOTAL DEPOSITS</span></div>
+                    <strong id="depositBalance">₹0.00</strong>
+                    <small>Deposited into your account</small>
+                </article>
+                <article class="metric-card panel">
+                    <div class="metric-top"><span class="metric-icon withdraw"><i class="fa-solid fa-arrow-up"></i></span><span class="data-label">TOTAL WITHDRAWALS</span></div>
+                    <strong id="withdrawBalance">₹0.00</strong>
+                    <small>Withdrawals processed</small>
+                </article>
             </div>
-
         </section>
 
-
-        <!-- =================================================
-             STATISTICS
-        ================================================== -->
-
-        <section class="statistics">
-
-
-            <!-- Total Recharge -->
-
-            <div class="stat-card">
-
-
-                <div class="stat-icon deposit">
-
-                    <i class="fa-solid fa-circle-plus"></i>
-
-                </div>
-
-
-                <div>
-
-                    <span>
-                        Total Recharge
-                    </span>
-
-                    <strong id="totalDeposit">
-                        ₹0.00
-                    </strong>
-
-                </div>
-
+        <section class="section-block">
+            <div class="section-heading">
+                <div><div class="eyebrow"><span></span> ACCOUNT ACTIVITY</div><h2>Financial Statistics</h2></div>
             </div>
-
-
-            <!-- Total Withdraw -->
-
-            <div class="stat-card">
-
-
-                <div class="stat-icon withdraw">
-
-                    <i class="fa-solid fa-money-bill-transfer"></i>
-
-                </div>
-
-
-                <div>
-
-                    <span>
-                        Total Withdraw
-                    </span>
-
-                    <strong id="totalWithdraw">
-                        ₹0.00
-                    </strong>
-
-                </div>
-
+            <div class="statistics-grid">
+                <article class="stat-card panel">
+                    <div class="stat-top"><span class="stat-icon"><i class="fa-solid fa-coins"></i></span><span class="data-label">DEPOSIT RECORD</span></div>
+                    <strong id="totalDeposit">₹0.00</strong>
+                    <small>Total deposited amount</small>
+                </article>
+                <article class="stat-card panel">
+                    <div class="stat-top"><span class="stat-icon withdraw"><i class="fa-solid fa-money-bill-transfer"></i></span><span class="data-label">WITHDRAWAL RECORD</span></div>
+                    <strong id="totalWithdraw">₹0.00</strong>
+                    <small>Total withdrawn amount</small>
+                </article>
             </div>
-
         </section>
 
-
-        <!-- =================================================
-             FINANCIAL
-        ================================================== -->
-
-        <section class="menu-section">
-
-
-            <div class="section-title">
-
-                <span>
-                    FINANCIAL
-                </span>
-
-                <i class="fa-solid fa-wallet"></i>
-
+        <section class="section-block">
+            <div class="section-heading">
+                <div><div class="eyebrow"><span></span> FINANCIAL SERVICES</div><h2>Manage Your Money</h2></div>
             </div>
-
-
-            <div class="menu-card">
-
-
-                <!-- Recharge -->
-
-                <a href="deposite.html">
-
-
-                    <div class="menu-icon green">
-
-                        <i class="fa-solid fa-plus"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            Recharge
-                        </strong>
-
-                        <span>
-                            Add money to wallet
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
+            <div class="menu-list">
+                <a href="deposite.html" class="menu-card">
+                    <span class="menu-icon"><i class="fa-solid fa-circle-plus"></i></span>
+                    <span class="menu-copy"><strong>Recharge Wallet</strong><small>Add funds to your account</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
                 </a>
-
-
-                <!-- Recharge History -->
-
-                <a href="transactions.html">
-
-
-                    <div class="menu-icon blue">
-
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            Recharge History
-                        </strong>
-
-                        <span>
-                            View recharge records
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
+                <a href="transactions.html" class="menu-card">
+                    <span class="menu-icon violet"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                    <span class="menu-copy"><strong>Recharge History</strong><small>Review your deposit records</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
                 </a>
-
-
-                <!-- Withdraw -->
-
-                <a href="withdraw.html">
-
-
-                    <div class="menu-icon orange">
-
-                        <i class="fa-solid fa-arrow-up"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            Withdraw
-                        </strong>
-
-                        <span>
-                            Withdraw your balance
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
+                <a href="withdraw.html" class="menu-card">
+                    <span class="menu-icon gold"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                    <span class="menu-copy"><strong>Withdraw Funds</strong><small>Manage withdrawal requests</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
                 </a>
-
             </div>
-
         </section>
 
-
-        <!-- =================================================
-             INVESTMENT
-        ================================================== -->
-
-        <section class="menu-section">
-
-
-            <div class="section-title">
-
-                <span>
-                    INVESTMENT
-                </span>
-
-                <i class="fa-solid fa-chart-line"></i>
-
+        <section class="section-block">
+            <div class="section-heading">
+                <div><div class="eyebrow"><span></span> WEALTH MANAGEMENT</div><h2>My Investments</h2></div>
             </div>
-
-
-            <div class="menu-card">
-
-
-                <!-- My Investment -->
-
-                <a href="my-investment.html">
-
-
-                    <div class="menu-icon purple">
-
-                        <i class="fa-solid fa-chart-line"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            My Investment
-                        </strong>
-
-                        <span>
-                            View active investments
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
+            <div class="menu-list">
+                <a href="my-investment.html" class="menu-card">
+                    <span class="menu-icon"><i class="fa-solid fa-chart-line"></i></span>
+                    <span class="menu-copy"><strong>My Investments</strong><small>View your investment activity</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
                 </a>
-
-
-                <!-- Income History -->
-
-                <a href="transactions.html">
-
-
-                    <div class="menu-icon blue">
-
-                        <i class="fa-solid fa-file-lines"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            Income History
-                        </strong>
-
-                        <span>
-                            View transaction history
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
+                <a href="transactions.html" class="menu-card">
+                    <span class="menu-icon violet"><i class="fa-solid fa-receipt"></i></span>
+                    <span class="menu-copy"><strong>Income History</strong><small>Review your transaction records</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
                 </a>
-
             </div>
-
         </section>
 
-
-
-
-
-
-
-        <!-- =================================================
-     DOWNLOAD APP
-================================================== -->
-
-<section class="download-app-section">
-
-    <div class="download-app-card">
-
-        <div class="download-app-icon">
-            <i class="fa-solid fa-mobile-screen-button"></i>
-        </div>
-
-        <div class="download-app-content">
-
-            <span>GET THE APP</span>
-
-            <h3>Download Our App</h3>
-
-            <p>
-                Enjoy a faster and smoother experience on mobile.
-            </p>
-
-        </div>
-
-        <a
-            href="downloads/Bitcoin-Investment.apk"
-            class="download-app-btn"
-            id="downloadAppBtn"
-        >
-
-            <i class="fa-solid fa-download"></i>
-
-            <span>Download</span>
-
-        </a>
-
-    </div>
-
-</section>
-        <!-- =================================================
-             SETTINGS
-        ================================================== -->
-
-        <section class="menu-section">
-
-
-            <div class="section-title">
-
-                <span>
-                    SETTINGS
-                </span>
-
-                <i class="fa-solid fa-gear"></i>
-
+        <section class="app-promo panel">
+            <div class="promo-top">
+                <span class="promo-icon"><i class="fa-solid fa-mobile-screen-button"></i></span>
+                <div><div class="data-label">TESLA WEALTH MOBILE</div><h3>Wealth management, wherever you are.</h3></div>
             </div>
-
-
-            <div class="menu-card">
-
-
-                <!-- Change Password -->
-
-                <a href="change-password.html">
-
-
-                    <div class="menu-icon dark">
-
-                        <i class="fa-solid fa-lock"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            Change Password
-                        </strong>
-
-                        <span>
-                            Update your password
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
-                </a>
-
-
-                <!-- About -->
-
-                <a href="about.html">
-
-
-                    <div class="menu-icon blue">
-
-                        <i class="fa-solid fa-circle-info"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            About Us
-                        </strong>
-
-                        <span>
-                            Learn more about us
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
-                </a>
-
-
-                <!-- Support -->
-
-                <a href="support.html">
-
-
-                    <div class="menu-icon green">
-
-                        <i class="fa-solid fa-headset"></i>
-
-                    </div>
-
-
-                    <div class="menu-text">
-
-                        <strong>
-                            Customer Support
-                        </strong>
-
-                        <span>
-                            Get help and support
-                        </span>
-
-                    </div>
-
-
-                    <i class="fa-solid fa-chevron-right arrow"></i>
-
-                </a>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             ADMIN AREA
-        ================================================== -->
-
-        <section
-            id="adminArea"
-            class="admin-area"
-            style="display: none;"
-        >
-
-
-            <a href="admin.html">
-
-                <i class="fa-solid fa-crown"></i>
-
-                <span>
-                    Admin Panel
-                </span>
-
-                <i class="fa-solid fa-chevron-right"></i>
-
+            <p>Access your account through the Tesla Wealth mobile application.</p>
+            <a href="downloads/Tesla-Wealth.apk" class="primary-button" id="downloadAppBtn">
+                <i class="fa-solid fa-download"></i> Download App
             </a>
-
         </section>
 
+        <section class="section-block">
+            <div class="section-heading">
+                <div><div class="eyebrow"><span></span> PERSONAL PREFERENCES</div><h2>Account Settings</h2></div>
+            </div>
+            <div class="menu-list">
+                <a href="change-password.html" class="menu-card">
+                    <span class="menu-icon violet"><i class="fa-solid fa-lock"></i></span>
+                    <span class="menu-copy"><strong>Change Password</strong><small>Update your login security</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
+                </a>
+                <a href="about.html" class="menu-card">
+                    <span class="menu-icon"><i class="fa-solid fa-circle-info"></i></span>
+                    <span class="menu-copy"><strong>About Tesla Wealth</strong><small>Learn more about the platform</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
+                </a>
+                <a href="support.html" class="menu-card">
+                    <span class="menu-icon gold"><i class="fa-solid fa-headset"></i></span>
+                    <span class="menu-copy"><strong>Customer Support</strong><small>Get help with your account</small></span>
+                    <i class="fa-solid fa-chevron-right menu-arrow"></i>
+                </a>
+            </div>
+        </section>
 
-        <!-- =================================================
-             BOTTOM SPACE
-        ================================================== -->
+        <section class="admin-section panel" id="adminArea" style="display:none;">
+            <div class="eyebrow"><span></span> ADMINISTRATION</div>
+            <a href="admin.html" class="menu-card admin-card">
+                <span class="menu-icon gold"><i class="fa-solid fa-user-shield"></i></span>
+                <span class="menu-copy"><strong>Admin Dashboard</strong><small>Manage platform operations</small></span>
+                <i class="fa-solid fa-chevron-right menu-arrow"></i>
+            </a>
+        </section>
 
-        <div class="bottom-space"></div>
+        <footer class="page-footer">
+            <div class="footer-brand"><span class="brand-mark small">T</span><strong>TESLA <b>WEALTH</b></strong></div>
+            <p>PREMIUM FINANCIAL SERVICES</p>
+            <small>© 2026 Tesla Wealth. All rights reserved.</small>
+        </footer>
+    </main>
 
-
-    </div>
-
-
-    <!-- =================================================
-         BOTTOM NAVIGATION
-    ================================================== -->
-
-    <nav class="bottom-nav">
-
-
-        <a href="home.html">
-
-            <i class="fa-solid fa-house"></i>
-
-            <span>
-                Home
-            </span>
-
-        </a>
-
-
-        <a href="investments.html">
-
-            <i class="fa-solid fa-chart-line"></i>
-
-            <span>
-                Invest
-            </span>
-
-        </a>
-
-
-        <a href="deposite.html">
-
-            <i class="fa-solid fa-plus"></i>
-
-            <span>
-                Deposit
-            </span>
-
-        </a>
-
-
-        <a href="reer.html">
-
-            <i class="fa-solid fa-user-plus"></i>
-
-            <span>
-                Invite
-            </span>
-
-        </a>
-
-
-        <a
-            href="profile.html"
-            class="active"
-        >
-
-            <i class="fa-solid fa-user"></i>
-
-            <span>
-                Profile
-            </span>
-
-        </a>
-
-
+    <nav class="bottom-nav" aria-label="Main navigation">
+        <a href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="investments.html"><i class="fa-solid fa-chart-pie"></i><span>Invest</span></a>
+        <a href="deposite.html"><i class="fa-solid fa-wallet"></i><span>Deposit</span></a>
+        <a href="reer.html"><i class="fa-solid fa-users"></i><span>Team</span></a>
+        <a href="profile.html" class="active"><i class="fa-solid fa-user"></i><span>Profile</span></a>
     </nav>
+</div>
 
-
-    <!-- =================================================
-         PROFILE JAVASCRIPT
-         LOAD ONLY ONCE
-    ================================================== -->
-
-    <script src="js/profile.js"></script>
-
-
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="js/profile.js"></script>
 </body>
-
 </html>

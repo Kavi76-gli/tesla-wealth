@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GST Documentation | Tesla Wealth</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #030b08;
+    --card: #0b1b13;
+    --card2: #10251a;
+    --border: rgba(95, 180, 125, .18);
+    --green: #39e995;
+    --gold: #e6c77b;
+    --text: #f4fff8;
+    --muted: #91aa9a;
+    --warning: #f3b84b;
+    --red: #ff7777;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, sans-serif;
+    background:
+        radial-gradient(circle at top right, #102c1b 0, transparent 35%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 25px 15px 50px;
+}
+
+.container {
+    width: 100%;
+    max-width: 850px;
+    margin: auto;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.logo {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+.logo span {
+    color: var(--green);
+}
+
+.back {
+    color: var(--green);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    padding: 11px 16px;
+    border-radius: 12px;
+}
+
+.hero {
+    background: linear-gradient(135deg, #132c1d, #09150f);
+    border: 1px solid var(--border);
+    padding: 30px;
+    border-radius: 22px;
+    margin-bottom: 20px;
+}
+
+.eyebrow {
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+}
+
+h1 {
+    font-size: clamp(24px, 5vw, 34px);
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 13px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    border-radius: 19px;
+    margin-bottom: 18px;
+}
+
+.card h2 {
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.status {
+    display: inline-block;
+    background: rgba(243,184,75,.12);
+    color: var(--warning);
+    border: 1px solid rgba(243,184,75,.25);
+    padding: 8px 13px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 18px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+}
+
+.info {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 13px;
+    min-width: 0;
+}
+
+.label {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 9px;
+}
+
+.value {
+    font-size: 15px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.message {
+    background: rgba(230,199,123,.07);
+    border: 1px solid rgba(230,199,123,.2);
+    padding: 17px;
+    border-radius: 13px;
+    color: #ead8a7;
+    line-height: 1.7;
+    font-size: 13px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.document {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.document strong {
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.document small {
+    display: block;
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+.badge {
+    font-size: 10px;
+    color: var(--green);
+    white-space: nowrap;
+}
+
+.notice {
+    padding: 17px;
+    border-radius: 13px;
+    background: rgba(57,233,149,.07);
+    border: 1px solid rgba(57,233,149,.18);
+    color: #b7e9cc;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.error {
+    color: #ffaaaa;
+    background: rgba(255,100,100,.08);
+    border: 1px solid rgba(255,100,100,.2);
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.loading {
+    text-align: center;
+    padding: 45px 15px;
+    color: var(--muted);
+}
+
+.footer {
+    text-align: center;
+    color: #698174;
+    font-size: 11px;
+    margin-top: 30px;
+}
+
+@media(max-width:550px) {
+    .hero, .card {
+        padding: 20px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .document {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topbar">
+        <div class="logo">TESLA <span>WEALTH</span></div>
+        <a href="withdraw.html" class="back">← Withdrawals</a>
+    </div>
+
+    <section class="hero">
+        <div class="eyebrow">ACCOUNT DOCUMENTATION</div>
+        <h1>GST / Tax Documentation</h1>
+        <p>
+            Review the tax documentation information associated
+            with your withdrawal request. All applicable tax
+            requirements must be supported by valid documentation.
+        </p>
+    </section>
+
+    <div id="loading" class="loading">
+        Loading your withdrawal information...
+    </div>
+
+    <div id="error" class="error hidden"></div>
+
+    <div id="content" class="hidden">
+
+        <section class="card">
+            <h2>Withdrawal Status</h2>
+
+            <div id="status" class="status">
+                Tax Documentation Required
+            </div>
+
+            <div class="grid">
+                <div class="info">
+                    <div class="label">Withdrawal Amount</div>
+                    <div class="value" id="amount">₹0.00</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Net Withdrawal Amount</div>
+                    <div class="value" id="netAmount">₹0.00</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Withdrawal ID</div>
+                    <div class="value" id="withdrawalId">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Request Date</div>
+                    <div class="value" id="requestDate">-</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Tax Assessment Details</h2>
+
+            <div class="grid">
+                <div class="info">
+                    <div class="label">Tax Status</div>
+                    <div class="value" id="taxStatus">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Company Name</div>
+                    <div class="value" id="companyName">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">GSTIN</div>
+                    <div class="value" id="gstin">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Invoice Number</div>
+                    <div class="value" id="invoiceNumber">-</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Taxable Amount</div>
+                    <div class="value" id="taxableAmount">₹0.00</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Tax Rate</div>
+                    <div class="value" id="taxRate">0%</div>
+                </div>
+
+                <div class="info">
+                    <div class="label">Tax Amount</div>
+                    <div class="value" id="taxAmount">₹0.00</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Administrator Explanation</h2>
+            <div class="message" id="explanation">
+                No explanation has been provided.
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Supporting Documents</h2>
+            <div id="documents"></div>
+        </section>
+
+        <section class="card">
+            <h2>Payment / Verification Information</h2>
+
+            <div class="notice">
+                This page displays documentation supplied for your
+                withdrawal. A tax amount must only be settled when
+                supported by a genuine applicable assessment or
+                invoice. Verify the issuing authority and payment
+                destination independently.
+
+                Do not transfer money to a personal account or
+                unofficial UPI ID to release a withdrawal.
+            </div>
+
+            <div id="paymentInfo" class="message" style="margin-top:15px">
+                No verified tax payment information is available.
+            </div>
+        </section>
+
+    </div>
+
+    <div class="footer">
+        Tesla Wealth · Secure Account Documentation
+    </div>
+
+</div>
+
+<script>
+"use strict";
+
+const API_BASE = [
+    "localhost",
+    "127.0.0.1"
+].includes(location.hostname)
+    ? "http://localhost:5000/api"
+    : "https://tesla-wealth.onrender.com/api";
+
+const API = `${API_BASE}/withdrawals`;
+
+const token =
+    localStorage.getItem("ki_token") ||
+    localStorage.getItem("token");
+
+const params = new URLSearchParams(location.search);
+
+const withdrawalId =
+    params.get("id") ||
+    params.get("withdrawalId");
+
+const $ = id => document.getElementById(id);
+
+function money(value) {
+    return "₹" + Number(value || 0).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function date(value) {
+    if (!value) return "-";
+
+    const parsed = new Date(value);
+
+    return Number.isNaN(parsed.getTime())
+        ? "-"
+        : parsed.toLocaleString("en-IN");
+}
+
+function showError(message) {
+    $("loading").classList.add("hidden");
+    $("content").classList.add("hidden");
+    $("error").textContent = message;
+    $("error").classList.remove("hidden");
+}
+
+function setText(id, value) {
+    $(id).textContent =
+        value === undefined || value === null || value === ""
+            ? "-"
+            : String(value);
+}
+
+async function loadWithdrawal() {
+    if (!token) {
+        location.href = "auth.html";
+        return;
+    }
+
+    if (!withdrawalId) {
+        showError("Withdrawal ID is missing.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API}/my`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Unable to load withdrawal.");
+        }
+
+        const rows = data.withdrawals || [];
+
+        const item = rows.find(
+            row => String(row.id || row._id) === withdrawalId
+        );
+
+        if (!item) {
+            throw new Error(
+                "Withdrawal not found in your account."
+            );
+        }
+
+        if (item.status !== "Tax Documentation Required") {
+            throw new Error(
+                "This withdrawal does not currently have a GST documentation requirement."
+            );
+        }
+
+        render(item);
+
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+function render(item) {
+    const tax = item.tax || {};
+    const review = item.review || {};
+
+    setText("status", item.status);
+
+    setText("amount", money(item.amount));
+    setText("netAmount", money(item.netAmount));
+    setText("withdrawalId", item.id);
+    setText("requestDate", date(item.createdAt));
+
+    setText("taxStatus", tax.status);
+    setText("companyName", tax.companyName);
+    setText("gstin", tax.companyGstin);
+    setText("invoiceNumber", tax.invoiceNumber);
+
+    setText("taxableAmount", money(tax.taxableAmount));
+    setText("taxRate", `${Number(tax.taxRate || 0)}%`);
+    setText("taxAmount", money(tax.taxAmount));
+
+    setText(
+        "explanation",
+        review.investorMessage ||
+        tax.description ||
+        review.resolutionNote ||
+        "No explanation has been provided."
+    );
+
+    const documents = item.documents || [];
+
+    $("documents").replaceChildren();
+
+    if (!documents.length) {
+        const empty = document.createElement("div");
+        empty.className = "notice";
+        empty.textContent =
+            "No supporting document has been attached to this withdrawal yet.";
+        $("documents").appendChild(empty);
+    } else {
+        documents.forEach(doc => {
+            const row = document.createElement("div");
+            row.className = "document";
+
+            const info = document.createElement("div");
+
+            const name = document.createElement("strong");
+            name.textContent = doc.name || "Supporting document";
+
+            const type = document.createElement("small");
+            type.textContent =
+                `${doc.documentType || "Document"} · ${date(doc.uploadedAt)}`;
+
+            info.append(name, type);
+
+            const badge = document.createElement("span");
+            badge.className = "badge";
+            badge.textContent = "DOCUMENT RECORDED";
+
+            row.append(info, badge);
+            $("documents").appendChild(row);
+        });
+    }
+
+    const taxInfo = tax.paymentReference
+        ? `Payment reference: ${tax.paymentReference}`
+        : "No verified tax payment reference is available.";
+
+    $("paymentInfo").textContent = taxInfo;
+
+    $("loading").classList.add("hidden");
+    $("error").classList.add("hidden");
+    $("content").classList.remove("hidden");
+}
+
+loadWithdrawal();
+</script>
+
+</body>
+</html>

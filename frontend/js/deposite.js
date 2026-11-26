@@ -1,1966 +1,594 @@
-// ============================================================
-// DEPOSIT PAGE
-// FAST / MOBILE OPTIMIZED VERSION
-// ============================================================
-
 "use strict";
 
+// =====================================================
+// TESLA WEALTH — BINANCE PAY DEPOSIT
+// =====================================================
 
-// ============================================================
-// API
-// ============================================================
+// Use your production API when deployed.
+// For local testing, change this to:
+// http://localhost:5000/api
+const API_BASE = "https://tesla-wealth.onrender.com/api";
 
-const API_URL =
-    "https://tesla-wealth.onrender.com/api/deposit";
+const MIN_DEPOSIT = 50;
+const MAX_DEPOSIT = 100000;
+const MAX_FILE_SIZE = 3 * 1024 * 1024;
 
+// =====================================================
+// ELEMENTS
+// =====================================================
 
-// ============================================================
-// FRONTEND QR
-// ============================================================
+const amountInput = document.getElementById("amount");
+const paymentModal = document.getElementById("paymentModal");
+const continueButton = document.getElementById("continuePayment");
+const closeModalButton = document.getElementById("closeModal");
+const modalAmount = document.getElementById("modalAmount");
 
-const DEFAULT_QR_IMAGE =
-    "images/qr.jpeg";
+const upiIdElement = document.getElementById("upiId");
+const qrImage = document.getElementById("qrImage");
+const qrLoading = document.getElementById("qrLoading");
+const copyUpiButton = document.getElementById("copyUpi");
+const upiPayButton = document.getElementById("upiPayButton");
 
+const depositForm = document.getElementById("depositForm");
+const utrInput = document.getElementById("utr");
+const screenshotInput = document.getElementById("screenshot");
+const preview = document.getElementById("preview");
+const submitButton = document.getElementById("submitDeposit");
 
-// ============================================================
+const historyList = document.getElementById("historyList");
+const toast = document.getElementById("toast");
+const limitsElement = document.getElementById("limits");
+
+// =====================================================
+// STATE
+// =====================================================
+
+let paymentSettings = {};
+let selectedAmount = 0;
+let qrImageUrl = "";
+
+// =====================================================
 // TOKEN
-// ============================================================
+// =====================================================
 
 function getToken() {
-
     return (
         localStorage.getItem("ki_token") ||
         localStorage.getItem("token") ||
         ""
     );
-
 }
 
-
-let token = getToken();
-
-
-// ============================================================
-// LOGIN CHECK
-// ============================================================
-
-if (!token) {
-
-    window.location.href =
-        "auth.html";
-
-}
-
-
-// ============================================================
-// DEFAULT PAYMENT SETTINGS
-// ============================================================
-
-const DEFAULT_PAYMENT_SETTINGS = {
-
-    companyName:
-        "Bitcoin Investment",
-
-    paymentType:
-        "UPI",
-
-    upiId:
-        "jaishrishyamji0@axl",
-
-    accountHolder:
-        "",
-
-    bankName:
-        "",
-
-    accountNumber:
-        "",
-
-    ifscCode:
-        "",
-
-    minimumDeposit:
-        500,
-
-    maximumDeposit:
-        100000,
-
-    depositInstruction:
-        "Please make the payment using the details below and enter the correct UTR number after payment.",
-
-    qrImage:
-        DEFAULT_QR_IMAGE
-
-};
-
-
-let paymentSettings = {
-    ...DEFAULT_PAYMENT_SETTINGS
-};
-
-
-// ============================================================
-// HELPERS
-// ============================================================
-
-function getElement(id) {
-
-    return document.getElementById(id);
-
-}
-
-
-// ============================================================
-// MONEY
-// ============================================================
-
-function money(value) {
-
-    const amount =
-        Number(value || 0);
-
-
-    return (
-        "₹" +
-        amount.toLocaleString(
-            "en-IN",
-            {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }
-        )
-    );
-
-}
-
-
-// ============================================================
-// ESCAPE HTML
-// ============================================================
-
-function escapeHtml(value) {
-
-    return String(
-        value ?? ""
-    ).replace(
-        /[&<>"']/g,
-        character => {
-
-            const map = {
-
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-
-            };
-
-            return map[character];
-
-        }
-    );
-
-}
-
-
-// ============================================================
+// =====================================================
 // API REQUEST
-// ============================================================
+// =====================================================
 
-async function apiRequest(
-    url,
-    options = {}
-) {
-
-    token = getToken();
-
+async function apiRequest(endpoint, options = {}) {
+    const token = getToken();
 
     const headers = {
-
-        ...(options.headers || {}),
-
-        Authorization:
-            `Bearer ${token}`
-
+        ...(options.headers || {})
     };
 
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
 
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(data.message || "Something went wrong.");
+    }
+
+    return data;
+}
+
+// =====================================================
+// TOAST
+// =====================================================
+
+function showToast(message) {
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
+// =====================================================
+// FORMAT USDT / WALLET CURRENCY
+// =====================================================
+
+function formatUSDT(value) {
+    return Number(value || 0).toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }) + " USDT";
+}
+
+function formatWallet(value) {
+    return "$" + Number(value || 0).toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
+}
+
+// =====================================================
+// BUILD QR IMAGE URL
+// =====================================================
+
+function resolveImageUrl(imagePath) {
+    if (!imagePath) return "";
+
+    // Already an absolute URL.
+    if (/^https?:\/\//i.test(imagePath)) {
+        return imagePath;
+    }
+
+    // Relative upload path, e.g. /uploads/123-image.png
+    const apiOrigin = new URL(API_BASE).origin;
+    const normalizedPath = imagePath.startsWith("/")
+        ? imagePath
+        : `/${imagePath}`;
+
+    return `${apiOrigin}${normalizedPath}`;
+}
+
+// =====================================================
+// LOAD PAYMENT SETTINGS
+// =====================================================
+
+async function loadPaymentSettings() {
     try {
+        const data = await apiRequest("/deposit/payment-settings");
 
-        const response =
-            await fetch(
-                url,
-                {
-                    ...options,
-                    headers
-                }
-            );
-
-
-        const data =
-            await response
-                .json()
-                .catch(
-                    () => ({})
-                );
-
-
-        // ====================================================
-        // SESSION
-        // ====================================================
-
-        if (
-            response.status === 401 ||
-            response.status === 403
-        ) {
-
-            localStorage.removeItem(
-                "ki_token"
-            );
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "user"
-            );
-
-
-            alert(
-                "Your session has expired. Please login again."
-            );
-
-
-            window.location.href =
-                "auth.html";
-
-
-            return null;
-
+        if (!data.success || !data.setting) {
+            throw new Error("Payment settings are unavailable.");
         }
 
+        paymentSettings = data.setting;
 
-        if (!response.ok) {
+        const minimum = Number(
+            paymentSettings.minimumDeposit ?? MIN_DEPOSIT
+        );
 
-            throw new Error(
+        const maximum = Number(
+            paymentSettings.maximumDeposit ?? MAX_DEPOSIT
+        );
 
-                data.message ||
+        amountInput.min = minimum;
+        amountInput.max = maximum;
+        amountInput.step = "0.01";
 
-                data.msg ||
-
-                "Request failed."
-
-            );
-
+        if (limitsElement) {
+            limitsElement.textContent =
+                `Minimum ${formatUSDT(minimum)} · Maximum ${formatUSDT(maximum)}`;
         }
 
-
-        return data;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "API REQUEST ERROR:",
-            error
-        );
-
-        throw error;
-
-    }
-
-}
-
-
-// ============================================================
-// QR IMAGE
-// ============================================================
-
-function buildQRUrl(qrImage) {
-
-    if (!qrImage) {
-
-        return DEFAULT_QR_IMAGE;
-
-    }
-
-
-    const path =
-        String(qrImage)
-            .trim()
-            .replace(
-                /\\/g,
-                "/"
-            );
-
-
-    if (!path) {
-
-        return DEFAULT_QR_IMAGE;
-
-    }
-
-
-    if (
-        path.startsWith("http://") ||
-        path.startsWith("https://")
-    ) {
-
-        return path;
-
-    }
-
-
-    return path;
-
-}
-
-
-// ============================================================
-// LOAD QR
-// ============================================================
-
-function loadQRImage() {
-
-    const qr =
-        getElement("qrImage");
-
-    const loading =
-        getElement("qrLoading");
-
-
-    if (!qr) {
-
-        return;
-
-    }
-
-
-    const qrUrl =
-        buildQRUrl(
-            paymentSettings.qrImage
-        );
-
-
-    if (loading) {
-
-        loading.style.display =
-            "flex";
-
-        loading.textContent =
-            "Loading QR...";
-
-    }
-
-
-    qr.onload =
-        function () {
-
-            if (loading) {
-
-                loading.style.display =
-                    "none";
-
-            }
-
-
-            qr.style.display =
-                "block";
-
-        };
-
-
-    qr.onerror =
-        function () {
-
-            console.error(
-                "QR image failed:",
-                qrUrl
-            );
-
-
-            if (
-                qr.src !==
-                new URL(
-                    DEFAULT_QR_IMAGE,
-                    window.location.href
-                ).href
-            ) {
-
-                qr.src =
-                    DEFAULT_QR_IMAGE;
-
-                return;
-
-            }
-
-
-            qr.style.display =
-                "none";
-
-
-            if (loading) {
-
-                loading.textContent =
-                    "QR Code Could Not Load";
-
-            }
-
-        };
-
-
-    // Start loading after current rendering work.
-    requestAnimationFrame(
-        () => {
-
-            qr.src =
-                qrUrl;
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// RENDER PAYMENT SETTINGS
-// ============================================================
-
-function renderPaymentSettings() {
-
-    paymentSettings = {
-
-        ...DEFAULT_PAYMENT_SETTINGS
-
-    };
-
-
-    const companyName =
-        getElement("companyName");
-
-    if (companyName) {
-
-        companyName.textContent =
-            paymentSettings.companyName;
-
-    }
-
-
-    const paymentType =
-        getElement("paymentType");
-
-    if (paymentType) {
-
-        paymentType.textContent =
-            paymentSettings.paymentType;
-
-    }
-
-
-    const upiId =
-        getElement("upiId");
-
-    if (upiId) {
-
-        upiId.textContent =
-            paymentSettings.upiId;
-
-    }
-
-
-    const accountHolder =
-        getElement("accountHolder");
-
-    if (accountHolder) {
-
-        accountHolder.textContent =
-            paymentSettings.accountHolder;
-
-    }
-
-
-    const bankName =
-        getElement("bankName");
-
-    if (bankName) {
-
-        bankName.textContent =
-            paymentSettings.bankName ||
-            "-";
-
-    }
-
-
-    const accountNumber =
-        getElement("accountNumber");
-
-    if (accountNumber) {
-
-        accountNumber.textContent =
-            paymentSettings.accountNumber ||
-            "-";
-
-    }
-
-
-    const ifscCode =
-        getElement("ifscCode");
-
-    if (ifscCode) {
-
-        ifscCode.textContent =
-            paymentSettings.ifscCode ||
-            "-";
-
-    }
-
-
-    const limits =
-        getElement("limits");
-
-
-    if (limits) {
-
-        limits.textContent =
-
-            `${money(paymentSettings.minimumDeposit)} - ` +
-
-            `${money(paymentSettings.maximumDeposit)}`;
-
-    }
-
-
-    const instruction =
-        getElement(
-            "depositInstruction"
-        );
-
-
-    if (instruction) {
-
-        instruction.textContent =
-            paymentSettings.depositInstruction;
-
-    }
-
-
-    const amountInput =
-        getElement("amount");
-
-
-    if (amountInput) {
-
-        amountInput.min =
-            paymentSettings.minimumDeposit;
-
-        amountInput.max =
-            paymentSettings.maximumDeposit;
-
-    }
-
-
-    loadQRImage();
-
-}
-
-
-// ============================================================
-// COPY UPI
-// ============================================================
-
-async function copyUPI() {
-
-    const element =
-        getElement("upiId");
-
-
-    if (!element) {
-
-        return;
-
-    }
-
-
-    const upi =
-        element.textContent.trim();
-
-
-    if (!upi) {
-
-        showMessage(
-            "UPI ID is not available.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        await navigator.clipboard.writeText(
-            upi
-        );
-
-
-        showMessage(
-            "UPI ID copied successfully.",
-            "success"
-        );
-
-    }
-
-    catch (error) {
-
-        console.warn(
-            "Clipboard failed:",
-            error
-        );
-
-
-        const textarea =
-            document.createElement(
-                "textarea"
-            );
-
-
-        textarea.value =
-            upi;
-
-
-        textarea.style.position =
-            "fixed";
-
-        textarea.style.opacity =
-            "0";
-
-
-        document.body.appendChild(
-            textarea
-        );
-
-
-        textarea.focus();
-        textarea.select();
-
-
-        try {
-
-            document.execCommand(
-                "copy"
-            );
-
-
-            showMessage(
-                "UPI ID copied successfully.",
-                "success"
-            );
-
-        }
-
-        catch {
-
-            showMessage(
-                "Unable to copy UPI ID.",
-                "error"
-            );
-
-        }
-
-
-        textarea.remove();
-
-    }
-
-}
-
-
-// ============================================================
-// MESSAGE
-// ============================================================
-
-function showMessage(
-    message,
-    type = "info"
-) {
-
-    let element =
-        getElement(
-            "depositMessage"
-        );
-
-
-    if (!element) {
-
-        element =
-            document.createElement(
-                "div"
-            );
-
-
-        element.id =
-            "depositMessage";
-
-
-        const form =
-            getElement(
-                "depositForm"
-            );
-
-
-        if (form) {
-
-            form.prepend(
-                element
-            );
-
-        }
-
-    }
-
-
-    if (!element) {
-
-        alert(message);
-
-        return;
-
-    }
-
-
-    element.textContent =
-        message;
-
-
-    element.style.display =
-        "block";
-
-    element.style.marginTop =
-        "12px";
-
-    element.style.padding =
-        "10px 14px";
-
-    element.style.borderRadius =
-        "10px";
-
-    element.style.fontSize =
-        "13px";
-
-
-    if (
-        type === "success"
-    ) {
-
-        element.style.background =
-            "#ecfdf3";
-
-        element.style.color =
-            "#15803d";
-
-    }
-
-    else if (
-        type === "error"
-    ) {
-
-        element.style.background =
-            "#fef2f2";
-
-        element.style.color =
-            "#dc2626";
-
-    }
-
-    else {
-
-        element.style.background =
-            "#eff6ff";
-
-        element.style.color =
-            "#2563eb";
-
-    }
-
-
-    clearTimeout(
-        element._timer
-    );
-
-
-    element._timer =
-        setTimeout(
-            () => {
-
-                element.style.display =
-                    "none";
-
-            },
-            4500
-        );
-
-}
-
-
-// ============================================================
-// FAST SCREENSHOT PREVIEW
-// ============================================================
-
-let previewObjectUrl =
-    null;
-
-
-function initScreenshotPreview() {
-
-    const input =
-        getElement(
-            "screenshot"
-        );
-
-
-    const preview =
-        getElement(
-            "preview"
-        );
-
-
-    if (
-        !input ||
-        !preview
-    ) {
-
-        return;
-
-    }
-
-
-    input.addEventListener(
-        "change",
-        function () {
-
-            const file =
-                this.files?.[0];
-
-
-            if (!file) {
-
-                clearPreview();
-
-                return;
-
-            }
-
-
-            // =================================================
-            // FILE TYPE
-            // =================================================
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                showMessage(
-                    "Please select a valid image.",
-                    "error"
-                );
-
-                this.value =
-                    "";
-
-                clearPreview();
-
-                return;
-
-            }
-
-
-            // =================================================
-            // MOBILE-FRIENDLY LIMIT
-            // =================================================
-
-            const maxSize =
-                3 * 1024 * 1024;
-
-
-            if (
-                file.size > maxSize
-            ) {
-
-                showMessage(
-                    "Screenshot must be smaller than 3MB.",
-                    "error"
-                );
-
-                this.value =
-                    "";
-
-                clearPreview();
-
-                return;
-
-            }
-
-
-            // =================================================
-            // RELEASE OLD URL
-            // =================================================
-
-            if (
-                previewObjectUrl
-            ) {
-
-                URL.revokeObjectURL(
-                    previewObjectUrl
-                );
-
-            }
-
-
-            // =================================================
-            // FAST OBJECT URL
-            // =================================================
-
-            previewObjectUrl =
-                URL.createObjectURL(
-                    file
-                );
-
-
-            preview.src =
-                previewObjectUrl;
-
-
-            preview.style.display =
-                "block";
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// CLEAR PREVIEW
-// ============================================================
-
-function clearPreview() {
-
-    const preview =
-        getElement(
-            "preview"
-        );
-
-
-    if (preview) {
-
-        preview.removeAttribute(
-            "src"
-        );
-
-        preview.style.display =
-            "none";
-
-    }
-
-
-    if (
-        previewObjectUrl
-    ) {
-
-        URL.revokeObjectURL(
-            previewObjectUrl
-        );
-
-        previewObjectUrl =
-            null;
-
-    }
-
-}
-
-
-// ============================================================
-// VALIDATE DEPOSIT
-// ============================================================
-
-function validateDeposit() {
-
-    const amountInput =
-        getElement("amount");
-
-
-    const utrInput =
-        getElement("utr");
-
-
-    if (!amountInput) {
-
-        return {
-
-            valid: false,
-
-            message:
-                "Amount field not found."
-
-        };
-
-    }
-
-
-    const amount =
-        Number(
-            amountInput.value
-        );
-
-
-    const minimum =
-        Number(
-            paymentSettings.minimumDeposit
-        );
-
-
-    const maximum =
-        Number(
-            paymentSettings.maximumDeposit
-        );
-
-
-    if (
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ) {
-
-        return {
-
-            valid: false,
-
-            message:
-                "Please enter a valid deposit amount."
-
-        };
-
-    }
-
-
-    if (
-        amount < minimum
-    ) {
-
-        return {
-
-            valid: false,
-
-            message:
-                `Minimum deposit is ${money(minimum)}.`
-
-        };
-
-    }
-
-
-    if (
-        amount > maximum
-    ) {
-
-        return {
-
-            valid: false,
-
-            message:
-                `Maximum deposit is ${money(maximum)}.`
-
-        };
-
-    }
-
-
-    if (utrInput) {
-
-        const utr =
-            utrInput.value.trim();
-
-
-        if (!utr) {
-
-            return {
-
-                valid: false,
-
-                message:
-                    "Please enter your UTR number."
-
+        amountInput.placeholder = `Minimum ${minimum} USDT`;
+
+        document.querySelectorAll(".preset-btn").forEach(button => {
+            const value = Number(button.dataset.amount);
+            button.disabled = value < minimum || value > maximum;
+        });
+
+        // Load the Binance Pay QR saved from the admin settings.
+        qrImageUrl = resolveImageUrl(paymentSettings.qrImage);
+
+        if (qrImageUrl) {
+            qrImage.src = qrImageUrl;
+            qrImage.classList.remove("loaded");
+
+            qrImage.onload = () => {
+                qrImage.classList.add("loaded");
+                qrLoading.style.display = "none";
             };
 
-        }
-
-
-        if (
-            utr.length < 4
-        ) {
-
-            return {
-
-                valid: false,
-
-                message:
-                    "Please enter a valid UTR number."
-
+            qrImage.onerror = () => {
+                qrImage.classList.remove("loaded");
+                qrLoading.style.display = "block";
+                qrLoading.textContent =
+                    "Unable to load the saved Binance Pay QR. Please contact support.";
             };
-
+        } else {
+            qrImage.removeAttribute("src");
+            qrImage.classList.remove("loaded");
+            qrLoading.style.display = "block";
+            qrLoading.textContent =
+                "Binance Pay QR has not been configured yet.";
         }
 
+        // The model currently has no Binance Pay ID field.
+        // Show the configured payment instructions instead.
+        if (upiIdElement) {
+            upiIdElement.textContent =
+                paymentSettings.depositInstruction ||
+                "Scan the Binance Pay QR code";
+        }
+
+        // UPI-specific actions are not applicable to Binance Pay QR.
+        if (copyUpiButton) {
+            copyUpiButton.style.display = "none";
+        }
+
+        if (upiPayButton) {
+            upiPayButton.style.display = "none";
+        }
+
+    } catch (error) {
+        console.error("Payment settings error:", error);
+        showToast(error.message);
     }
-
-
-    return {
-
-        valid: true,
-
-        message: ""
-
-    };
-
 }
 
+// =====================================================
+// PRESET AMOUNT
+// =====================================================
 
-// ============================================================
+document.querySelectorAll(".preset-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        if (button.disabled) return;
+
+        const amount = Number(button.dataset.amount);
+
+        amountInput.value = amount;
+        selectedAmount = amount;
+
+        document.querySelectorAll(".preset-btn").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        button.classList.add("active");
+    });
+});
+
+amountInput.addEventListener("input", () => {
+    selectedAmount = Number(amountInput.value);
+
+    document.querySelectorAll(".preset-btn").forEach(button => {
+        button.classList.toggle(
+            "active",
+            Number(button.dataset.amount) === selectedAmount
+        );
+    });
+});
+
+// =====================================================
+// VALIDATE AMOUNT
+// =====================================================
+
+function validateAmount() {
+    const amount = Number(amountInput.value);
+
+    const minimum = Number(
+        paymentSettings.minimumDeposit ?? MIN_DEPOSIT
+    );
+
+    const maximum = Number(
+        paymentSettings.maximumDeposit ?? MAX_DEPOSIT
+    );
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+        showToast("Please enter a valid deposit amount in USDT.");
+        return false;
+    }
+
+    if (amount < minimum) {
+        showToast(`Minimum deposit is ${formatUSDT(minimum)}.`);
+        return false;
+    }
+
+    if (amount > maximum) {
+        showToast(`Maximum deposit is ${formatUSDT(maximum)}.`);
+        return false;
+    }
+
+    selectedAmount = amount;
+    return true;
+}
+
+// =====================================================
+// OPEN PAYMENT MODAL
+// =====================================================
+
+continueButton.addEventListener("click", () => {
+    if (!getToken()) {
+        showToast("Please login to continue.");
+
+        setTimeout(() => {
+            window.location.href = "auth.html";
+        }, 1200);
+
+        return;
+    }
+
+    if (!validateAmount()) return;
+
+    if (!qrImageUrl) {
+        showToast("Binance Pay QR is not configured yet.");
+        return;
+    }
+
+    modalAmount.textContent = formatUSDT(selectedAmount);
+
+    depositForm.reset();
+
+    preview.style.display = "none";
+    preview.removeAttribute("src");
+
+    // Re-apply the saved QR after resetting the form.
+    qrImage.src = qrImageUrl;
+    qrLoading.style.display = "none";
+
+    paymentModal.classList.add("active");
+    document.body.style.overflow = "hidden";
+});
+
+// =====================================================
+// CLOSE MODAL
+// =====================================================
+
+function closePaymentModal() {
+    paymentModal.classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+closeModalButton.addEventListener("click", closePaymentModal);
+
+paymentModal.addEventListener("click", event => {
+    if (event.target === paymentModal) {
+        closePaymentModal();
+    }
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closePaymentModal();
+    }
+});
+
+// =====================================================
+// SCREENSHOT PREVIEW
+// =====================================================
+
+screenshotInput.addEventListener("change", () => {
+    const file = screenshotInput.files[0];
+
+    if (!file) {
+        preview.style.display = "none";
+        preview.removeAttribute("src");
+        return;
+    }
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+        screenshotInput.value = "";
+        preview.style.display = "none";
+        showToast("Please select a JPG, PNG or WEBP image.");
+        return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+        screenshotInput.value = "";
+        preview.style.display = "none";
+        showToast("Screenshot must be smaller than 3MB.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = event => {
+        preview.src = event.target.result;
+        preview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+// =====================================================
 // SUBMIT DEPOSIT
-// ============================================================
+// =====================================================
 
-async function submitDeposit(event) {
-
+depositForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-
-    const form =
-        getElement(
-            "depositForm"
-        );
-
-
-    if (!form) {
-
+    if (!getToken()) {
+        showToast("Your session has expired. Please login.");
         return;
-
     }
 
+    if (!validateAmount()) return;
 
-    const validation =
-        validateDeposit();
+    const utr = utrInput.value.trim();
+    const screenshot = screenshotInput.files[0];
 
-
-    if (
-        !validation.valid
-    ) {
-
-        showMessage(
-            validation.message,
-            "error"
-        );
-
+    if (!utr) {
+        showToast("Please enter your Binance Pay transaction reference.");
+        utrInput.focus();
         return;
-
     }
 
+    if (!screenshot) {
+        showToast("Please upload your payment screenshot.");
+        return;
+    }
 
-    const button =
-        getElement(
-            "submitDeposit"
+    if (screenshot.size > MAX_FILE_SIZE) {
+        showToast("Screenshot must be smaller than 3MB.");
+        return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("amount", String(selectedAmount));
+    formData.append("utr", utr);
+    formData.append("screenshot", screenshot);
+
+    submitButton.disabled = true;
+    submitButton.innerHTML = `
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Submitting...
+    `;
+
+    try {
+        const data = await apiRequest("/deposit/create", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!data.success) {
+            throw new Error(data.message || "Deposit submission failed.");
+        }
+
+        showToast(
+            data.message || "Deposit request submitted successfully."
         );
 
+        depositForm.reset();
 
-    const originalText =
-        button
-            ? button.innerHTML
-            : "";
+        preview.style.display = "none";
+        preview.removeAttribute("src");
 
+        closePaymentModal();
 
-    if (button) {
+        amountInput.value = "";
+        selectedAmount = 0;
 
-        button.disabled =
-            true;
+        document.querySelectorAll(".preset-btn").forEach(button => {
+            button.classList.remove("active");
+        });
 
+        await loadDepositHistory();
 
-        button.innerHTML = `
-
-            <i class="fa-solid fa-spinner fa-spin"></i>
-
-            <span>
-                Submitting...
-            </span>
-
+    } catch (error) {
+        console.error("Deposit submission error:", error);
+        showToast(error.message);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = `
+            <span>Submit Deposit Request</span>
+            <i class="fa-solid fa-paper-plane"></i>
         `;
-
     }
+});
 
+// =====================================================
+// LOAD DEPOSIT HISTORY
+// =====================================================
 
-    const amountInput =
-        getElement(
-            "amount"
-        );
-
-
-    const utrInput =
-        getElement(
-            "utr"
-        );
-
-
-    const screenshotInput =
-        getElement(
-            "screenshot"
-        );
-
-
-    const formData =
-        new FormData();
-
-
-    formData.append(
-        "amount",
-        amountInput.value.trim()
-    );
-
-
-    formData.append(
-        "utr",
-        utrInput
-            ? utrInput.value.trim()
-            : ""
-    );
-
-
-    if (
-        screenshotInput &&
-        screenshotInput.files &&
-        screenshotInput.files[0]
-    ) {
-
-        formData.append(
-            "screenshot",
-            screenshotInput.files[0]
-        );
-
-    }
-
-
+async function loadDepositHistory() {
     try {
+        const data = await apiRequest("/deposit/my");
 
-        console.log(
-            "SUBMITTING DEPOSIT..."
-        );
-
-
-        const response =
-            await fetch(
-                `${API_URL}/create`,
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-
-                        Authorization:
-                            `Bearer ${getToken()}`
-
-                    },
-
-                    body:
-                        formData
-
-                }
-            );
-
-
-        const data =
-            await response
-                .json()
-                .catch(
-                    () => ({})
-                );
-
-
-        console.log(
-            "DEPOSIT RESPONSE:",
-            data
-        );
-
-
-        // ====================================================
-        // SESSION
-        // ====================================================
-
-        if (
-            response.status === 401 ||
-            response.status === 403
-        ) {
-
-            localStorage.removeItem(
-                "ki_token"
-            );
-
-            localStorage.removeItem(
-                "token"
-            );
-
-            localStorage.removeItem(
-                "user"
-            );
-
-
-            alert(
-                "Your session has expired. Please login again."
-            );
-
-
-            window.location.href =
-                "auth.html";
-
-
-            return;
-
+        if (!data.success) {
+            throw new Error("Unable to load deposit history.");
         }
 
-
-        if (
-            !response.ok ||
-            !data.success
-        ) {
-
-            throw new Error(
-
-                data.message ||
-
-                data.msg ||
-
-                "Deposit submission failed."
-
-            );
-
-        }
-
-
-        // ====================================================
-        // SUCCESS
-        // ====================================================
-
-        showMessage(
-
-            data.message ||
-
-            "Deposit submitted successfully.",
-
-            "success"
-
-        );
-
-
-        // ====================================================
-        // RESET
-        // ====================================================
-
-        form.reset();
-
-
-        clearPreview();
-
-
-        // ====================================================
-        // DON'T BLOCK UI
-        // ====================================================
-
-        // Update history in background.
-        // User doesn't need to wait.
-
-        loadHistory();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "DEPOSIT SUBMIT ERROR:",
-            error
-        );
-
-
-        showMessage(
-
-            error.message ||
-
-            "Server error. Please try again.",
-
-            "error"
-
-        );
-
-    }
-
-    finally {
-
-        if (button) {
-
-            button.disabled =
-                false;
-
-
-            button.innerHTML =
-                originalText;
-
-        }
-
-    }
-
-}
-
-
-// ============================================================
-// LOAD HISTORY
-// ============================================================
-
-async function loadHistory() {
-
-    const container =
-        getElement(
-            "historyList"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const data =
-            await apiRequest(
-                `${API_URL}/my`
-            );
-
-
-        if (!data) {
-
-            return;
-
-        }
-
-
-        if (
-            !data.success
-        ) {
-
-            throw new Error(
-
-                data.message ||
-
-                "Unable to load deposit history."
-
-            );
-
-        }
-
-
-        const deposits =
-            Array.isArray(
-                data.deposits
-            )
-
-                ? data.deposits
-
-                : [];
-
-
-        if (
-            deposits.length === 0
-        ) {
-
-            container.innerHTML = `
-
-                <div class="history-item empty-history">
-
-                    <i class="fa-solid fa-receipt"></i>
-
-                    <span>
-                        No Deposit Found
-                    </span>
-
+        const deposits = Array.isArray(data.deposits)
+            ? data.deposits
+            : [];
+
+        if (!deposits.length) {
+            historyList.innerHTML = `
+                <div class="empty-history">
+                    <i class="fa-solid fa-wallet"></i>
+                    <p>No deposit history available.</p>
                 </div>
-
             `;
-
             return;
-
         }
 
+        historyList.innerHTML = deposits.map(deposit => {
+            const status = String(deposit.status || "Pending");
+            const statusClass = status.toLowerCase();
 
-        // ====================================================
-        // RENDER
-        // ====================================================
+            const date = deposit.createdAt
+                ? new Date(deposit.createdAt).toLocaleString("en-IN")
+                : "Date unavailable";
 
-        container.innerHTML =
+            return `
+                <div class="history-item">
+                    <div class="history-left">
+                        <div class="history-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
 
-            deposits
-                .map(
-                    item => {
+                        <div>
+                            <strong>USDT Deposit</strong>
+                            <small>${escapeHTML(date)}</small>
+                        </div>
+                    </div>
 
-                        const amount =
-                            Number(
-                                item.amount || 0
-                            );
+                    <div class="history-right">
+                        <div class="history-amount">
+                            ${formatUSDT(deposit.amount)}
+                        </div>
 
+                        <span class="status ${escapeHTML(statusClass)}">
+                            ${escapeHTML(status)}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join("");
 
-                        const status =
-                            String(
-                                item.status ||
-                                "Pending"
-                            );
+    } catch (error) {
+        console.error("Deposit history error:", error);
 
-
-                        const statusClass =
-                            status
-                                .toLowerCase()
-                                .replace(
-                                    /\s+/g,
-                                    "-"
-                                );
-
-
-                        const createdAt =
-
-                            item.createdAt
-
-                                ? new Date(
-                                    item.createdAt
-                                ).toLocaleString(
-                                    "en-IN",
-                                    {
-
-                                        day:
-                                            "2-digit",
-
-                                        month:
-                                            "short",
-
-                                        year:
-                                            "numeric",
-
-                                        hour:
-                                            "2-digit",
-
-                                        minute:
-                                            "2-digit"
-
-                                    }
-                                )
-
-                                : "Recently";
-
-
-                        const utr =
-                            item.utr ||
-                            "-";
-
-
-                        return `
-
-                            <div class="history-item">
-
-                                <div>
-
-                                    <div class="amount">
-
-                                        ${money(amount)}
-
-                                    </div>
-
-
-                                    <small>
-
-                                        ${escapeHtml(
-                                            createdAt
-                                        )}
-
-                                    </small>
-
-                                </div>
-
-
-                                <div>
-
-                                    <span>
-                                        UTR
-                                    </span>
-
-                                    <br>
-
-                                    <strong>
-
-                                        ${escapeHtml(
-                                            utr
-                                        )}
-
-                                    </strong>
-
-                                </div>
-
-
-                                <div>
-
-                                    <span
-                                        class="status ${escapeHtml(
-                                            statusClass
-                                        )}"
-                                    >
-
-                                        ${escapeHtml(
-                                            status
-                                        )}
-
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        `;
-
-                    }
-                )
-                .join("");
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "LOAD HISTORY ERROR:",
-            error
-        );
-
-
-        // Don't make the entire page feel broken.
-        // Only show the error inside history.
-
-        container.innerHTML = `
-
-            <div class="history-item error-history">
-
-                <i class="fa-solid fa-circle-exclamation"></i>
-
-                <span>
-                    Unable to load deposit history.
-                </span>
-
+        historyList.innerHTML = `
+            <div class="empty-history">
+                Unable to load deposit history.
             </div>
-
         `;
-
     }
-
 }
 
+// =====================================================
+// SAFE HTML
+// =====================================================
+function escapeHTML(value) {
+    const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    };
 
-// ============================================================
-// COPY BUTTON
-// ============================================================
-
-function initCopyButton() {
-
-    const button =
-        getElement(
-            "copyUpi"
-        );
-
-
-    if (!button) {
-
-        return;
-
-    }
-
-
-    button.addEventListener(
-        "click",
-        copyUPI
-    );
-
+    return String(value ?? "").replace(/[&<>"']/g, character => {
+        return entities[character];
+    });
 }
-
-
-// ============================================================
-// DEPOSIT FORM
-// ============================================================
-
-function initDepositForm() {
-
-    const form =
-        getElement(
-            "depositForm"
-        );
-
-
-    if (!form) {
-
-        return;
-
-    }
-
-
-    form.addEventListener(
-        "submit",
-        submitDeposit
-    );
-
-}
-
-
-// ============================================================
-// AMOUNT VALIDATION
-// ============================================================
-
-function initAmountValidation() {
-
-    const input =
-        getElement(
-            "amount"
-        );
-
-
-    if (!input) {
-
-        return;
-
-    }
-
-
-    input.addEventListener(
-        "input",
-        function () {
-
-            const value =
-                Number(
-                    this.value
-                );
-
-
-            const minimum =
-                Number(
-                    paymentSettings.minimumDeposit
-                );
-
-
-            const maximum =
-                Number(
-                    paymentSettings.maximumDeposit
-                );
-
-
-            // =================================================
-            // MAX
-            // =================================================
-
-            if (
-                value > maximum
-            ) {
-
-                this.value =
-                    maximum;
-
-            }
-
-
-            const hint =
-                getElement(
-                    "amountHint"
-                );
-
-
-            if (!hint) {
-
-                return;
-
-            }
-
-
-            if (
-                value > 0 &&
-                value < minimum
-            ) {
-
-                hint.textContent =
-                    `Minimum deposit: ${money(minimum)}`;
-
-                hint.classList.add(
-                    "error"
-                );
-
-            }
-
-            else {
-
-                hint.textContent =
-
-                    `Deposit limit: ` +
-
-                    `${money(minimum)} - ` +
-
-                    `${money(maximum)}`;
-
-                hint.classList.remove(
-                    "error"
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-// ============================================================
+// =====================================================
 // INITIALIZE
-// ============================================================
+// =====================================================
 
-function initializeDepositPage() {
+async function initializeDepositPage() {
+    if (!getToken()) {
+        showToast("Please login to access deposits.");
 
-    console.log(
-        "================================"
-    );
+        setTimeout(() => {
+            window.location.href = "auth.html";
+        }, 1200);
 
-    console.log(
-        "FAST DEPOSIT PAGE INITIALIZING"
-    );
-
-    console.log(
-        "================================"
-    );
-
-
-    // ========================================================
-    // RENDER UI FIRST
-    // ========================================================
-
-    renderPaymentSettings();
-
-
-    initCopyButton();
-
-    initDepositForm();
-
-    initScreenshotPreview();
-
-    initAmountValidation();
-
-
-    console.log(
-        "DEPOSIT UI READY"
-    );
-
-
-    // ========================================================
-    // HISTORY IS NON-BLOCKING
-    // ========================================================
-
-    // IMPORTANT:
-    // Do NOT await this.
-    //
-    // The page remains usable while Render responds.
-
-    if (
-        "requestIdleCallback" in window
-    ) {
-
-        requestIdleCallback(
-            () => {
-
-                loadHistory();
-
-            },
-            {
-                timeout: 1500
-            }
-        );
-
+        return;
     }
 
-    else {
-
-        setTimeout(
-            () => {
-
-                loadHistory();
-
-            },
-            300
-        );
-
-    }
-
-
-    console.log(
-        "DEPOSIT PAGE READY"
-    );
-
+    await loadPaymentSettings();
+    await loadDepositHistory();
 }
 
-
-// ============================================================
-// DOM READY
-// ============================================================
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initializeDepositPage,
-        {
-            once: true
-        }
-    );
-
-}
-
-else {
-
-    initializeDepositPage();
-
-}
-
-
-// ============================================================
-// CLEANUP
-// ============================================================
-
-window.addEventListener(
-    "beforeunload",
-    () => {
-
-        if (
-            previewObjectUrl
-        ) {
-
-            URL.revokeObjectURL(
-                previewObjectUrl
-            );
-
-            previewObjectUrl =
-                null;
-
-        }
-
-    }
-);
+initializeDepositPage();

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="robots" content="noindex,nofollow">
+  <title>User Details | Tesla Wealth Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#f4f7fb; --surface:#fff; --ink:#172033; --muted:#778198;
+      --line:#e8edf4; --navy:#0b1220; --green:#13a66b; --green-soft:#e7f8f0;
+      --blue:#4263eb; --blue-soft:#edf1ff; --amber:#b7791f; --amber-soft:#fff5dc;
+      --red:#c2414b; --red-soft:#fff0f1; --shadow:0 10px 35px rgba(20,35,65,.055);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",sans-serif}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .app{min-height:100vh}
+    .topbar{height:72px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,54px);gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;font-family:Manrope,sans-serif;font-weight:800;letter-spacing:.2px}
+    .brand-mark{height:38px;width:38px;border-radius:12px;background:linear-gradient(145deg,#b9f5d8,#13a66b);display:grid;place-items:center;color:#092619;font-weight:900;font-size:19px}
+    .brand small{display:block;color:#a7b2c7;font:500 11px "DM Sans",sans-serif;letter-spacing:1.7px;margin-top:2px}
+    .top-actions{display:flex;align-items:center;gap:10px}
+    .top-label{font-size:12px;color:#c5cede}
+    .btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#fff;color:var(--ink);font-weight:700;font-size:13px}
+    .btn:hover{filter:brightness(.98)}
+    .btn-dark{background:#17233a;color:#fff;border-color:#34415a}
+    .btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+    .page{max-width:1440px;margin:auto;padding:28px clamp(16px,3vw,42px) 48px}
+    .breadcrumbs{font-size:12px;color:var(--muted);margin-bottom:16px}
+    .breadcrumbs a{color:var(--blue);text-decoration:none}
+    .page-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px}
+    h1,h2,h3,p{margin-top:0}
+    h1{font:800 clamp(24px,3vw,32px) Manrope,sans-serif;letter-spacing:-.8px;margin-bottom:7px}
+    .subtitle{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:0}
+    .heading-actions{display:flex;gap:9px;flex-wrap:wrap}
+    .notice{display:none;border:1px solid #f0d48b;background:#fff9e8;color:#805b13;padding:13px 15px;border-radius:12px;font-size:13px;line-height:1.5;margin-bottom:18px}
+    .notice.show{display:block}
+    .profile-card{background:linear-gradient(120deg,#111d31,#182b45);border-radius:var(--radius);padding:24px;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:20px;box-shadow:var(--shadow);margin-bottom:20px;position:relative;overflow:hidden}
+    .profile-card:after{content:"";position:absolute;width:250px;height:250px;border:1px solid #ffffff12;border-radius:50%;right:12%;top:-150px;box-shadow:0 0 0 35px #ffffff05,0 0 0 70px #ffffff04;pointer-events:none}
+    .profile-main{display:flex;align-items:center;gap:17px;min-width:0;position:relative;z-index:1}
+    .avatar{width:68px;height:68px;border-radius:20px;background:#d9f8e9;color:#087449;display:grid;place-items:center;font:800 25px Manrope,sans-serif;overflow:hidden;flex-shrink:0}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .profile-name{font:800 22px Manrope,sans-serif;margin-bottom:6px;overflow-wrap:anywhere}
+    .profile-meta{display:flex;gap:9px 16px;flex-wrap:wrap;color:#bdc9da;font-size:12px}
+    .profile-meta span{display:inline-flex;align-items:center;gap:6px}
+    .profile-status{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+    .status-pill{display:inline-flex;align-items:center;gap:7px;border-radius:100px;padding:7px 11px;font-size:11px;font-weight:800;background:#ffffff17;color:#fff}
+    .status-dot{height:7px;width:7px;border-radius:50%;background:#36d995}
+    .profile-code{font-size:12px;color:#cbd6e5}
+    .profile-code strong{color:#fff}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
+    .stat{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:0 4px 16px #17203305;min-width:0}
+    .stat-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:15px}
+    .stat-label{font-size:12px;color:var(--muted);font-weight:600}
+    .stat-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px;background:var(--blue-soft);color:var(--blue)}
+    .stat-value{font:800 clamp(19px,2vw,25px) Manrope,sans-serif;letter-spacing:-.6px;overflow-wrap:anywhere;margin-bottom:5px}
+    .stat-foot{font-size:11px;color:var(--muted)}
+    .layout{display:grid;grid-template-columns:265px minmax(0,1fr);gap:20px;align-items:start}
+    .side-card,.content-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .side-card{padding:17px;position:sticky;top:16px}
+    .side-title{font:800 12px Manrope,sans-serif;color:#8a94a8;text-transform:uppercase;letter-spacing:1.3px;margin:5px 8px 13px}
+    .side-nav{display:grid;gap:5px}
+    .nav-tab{width:100%;border:0;background:transparent;text-align:left;border-radius:10px;padding:12px 11px;color:#68748a;display:flex;align-items:center;gap:11px;font-size:13px;font-weight:700}
+    .nav-tab .nav-ico{width:22px;text-align:center;font-size:16px}
+    .nav-tab:hover{background:#f6f8fc;color:var(--ink)}
+    .nav-tab.active{background:#eaf8f1;color:#08794b}
+    .side-help{border-top:1px solid var(--line);margin-top:18px;padding:16px 7px 2px;color:var(--muted);font-size:11px;line-height:1.6}
+    .content-card{min-width:0;overflow:hidden}
+    .section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;padding:23px 24px 18px;border-bottom:1px solid var(--line)}
+    .section-head h2{font:800 18px Manrope,sans-serif;letter-spacing:-.4px;margin-bottom:5px}
+    .section-head p{font-size:12px;color:var(--muted);margin-bottom:0;line-height:1.5}
+    .section-body{padding:22px 24px}
+    .tab-panel{display:none}.tab-panel.active{display:block}
+    .detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .detail-item{padding:14px;border:1px solid var(--line);border-radius:12px;min-width:0}
+    .detail-label{font-size:11px;color:var(--muted);margin-bottom:7px}
+    .detail-value{font-size:13px;font-weight:700;overflow-wrap:anywhere;line-height:1.5}
+    .table-tools{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+    .search-box{flex:1;min-width:190px;max-width:340px;position:relative}
+    .search-box input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none;font-size:12px;background:#fff}
+    .search-box input:focus{border-color:#8fa4ff;box-shadow:0 0 0 3px #4263eb12}
+    .filter-select{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px;color:#4d5870;font-size:12px;max-width:100%}
+    .table-wrap{width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+    table{border-collapse:collapse;width:100%;min-width:700px;text-align:left}
+    th{background:#f8fafd;color:#778198;text-transform:uppercase;letter-spacing:.7px;font-size:10px;font-weight:800;padding:13px 15px;white-space:nowrap}
+    td{padding:14px 15px;border-top:1px solid var(--line);font-size:12px;vertical-align:top;line-height:1.5}
+    tbody tr:hover{background:#fbfcff}
+    .td-main{font-weight:700;color:#273249}.td-sub{font-size:10px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+    .money{font-weight:800;white-space:nowrap}
+    .pill{display:inline-flex;align-items:center;border-radius:50px;padding:5px 8px;font-size:10px;font-weight:800;white-space:nowrap;background:#eef2f7;color:#596579}
+    .pill.approved,.pill.completed,.pill.running,.pill.credited{background:var(--green-soft);color:#08794b}
+    .pill.pending{background:var(--amber-soft);color:#94620b}
+    .pill.rejected,.pill.cancelled,.pill.failed{background:var(--red-soft);color:#b42332}
+    .empty{padding:35px 15px;text-align:center;color:var(--muted);font-size:13px}
+    .empty strong{display:block;color:#303c52;margin-bottom:5px}
+    .loading{padding:34px;text-align:center;color:var(--muted);font-size:13px}
+    .spinner{width:22px;height:22px;border:2px solid #e0e7f0;border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .inline-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:13px}
+    .error-box{margin:18px;padding:16px;border:1px solid #ffd4d7;background:#fff7f7;color:#9e2630;border-radius:12px;font-size:13px;line-height:1.6}
+    .sensitive{filter:blur(4px);user-select:none}
+    .sensitive.revealed{filter:none;user-select:auto}
+    .reveal-btn{border:0;background:transparent;color:var(--blue);font-size:11px;font-weight:700;padding:0;margin-top:6px}
+    .footer{padding:20px 0 0;text-align:center;font-size:11px;color:#98a1b2}
+    .referral-launch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border:1px solid #bdebd5;background:#f0fbf5;border-radius:12px;margin:0 0 18px}
+    .referral-launch strong{display:block;font:800 13px Manrope;color:#08794b;margin-bottom:4px}
+    .referral-launch span{font-size:11px;color:#64748b}
+    .tree-toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:18px 0}
+    .tree-toolbar input{flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+    .tree-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+    .tree-stat{border:1px solid var(--line);border-radius:12px;padding:13px}
+    .tree-stat small{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}
+    .tree-stat strong{font:800 19px Manrope}
+    .tree-levels{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 18px}
+    .level-chip{padding:7px 10px;border-radius:30px;background:#edf1ff;color:#344db5;font-size:11px;font-weight:800}
+    .tree-root,.tree-node{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;margin:8px 0}
+    .tree-root{border-color:#9edcbd;background:#f5fcf8}
+    .tree-node.selected,.tree-root.selected{border:2px solid #4263eb;background:#f1f4ff;box-shadow:0 0 0 3px #4263eb12}
+    .tree-selected{font-size:9px;font-weight:900;border-radius:20px;padding:4px 7px;background:#e7eaff;color:#3049c7}
+    .tree-node[hidden],.tree-children[hidden]{display:none!important}
+    .tree-toolbar .btn{white-space:nowrap}
+    .tree-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+    .tree-toggle{width:27px;height:27px;border:1px solid var(--line);border-radius:8px;background:#fff;font-weight:800}
+    .tree-name{font-weight:800;font-size:12px}
+    .tree-meta{font-size:10px;color:var(--muted)}
+    .tree-children{margin:8px 0 0 17px;padding-left:13px;border-left:2px solid #e4ebf3}
+    .tree-badge{font-size:9px;font-weight:800;border-radius:20px;padding:4px 7px;background:#e7f8f0;color:#08794b}
+    .tree-badge.blocked{background:#fff0f1;color:#b42332}
+    .tree-empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px;font-size:12px}
+    @media(max-width:760px){.tree-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.referral-launch{align-items:flex-start;flex-direction:column}}
+    @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:220px minmax(0,1fr)}.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:760px){.topbar{height:64px}.top-label{display:none}.page{padding-top:20px}.page-heading{flex-direction:column}.heading-actions{width:100%}.profile-card{align-items:flex-start;flex-direction:column;padding:19px}.profile-status{align-items:flex-start}.profile-name{font-size:19px}.avatar{width:56px;height:56px;border-radius:16px}.layout{grid-template-columns:1fr}.side-card{position:static;padding:12px;overflow:auto}.side-title,.side-help{display:none}.side-nav{display:flex;gap:6px;min-width:max-content}.nav-tab{width:auto;padding:10px}.nav-tab .nav-ico{width:auto}.section-head{padding:19px 17px 15px}.section-body{padding:17px}.stats{gap:10px}.stat{padding:14px}.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:430px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-value{font-size:19px}.detail-grid{grid-template-columns:1fr}.profile-meta{gap:8px}.section-head{flex-direction:column}.top-actions .btn{padding:9px 10px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">T</div>
+      <div>Tesla Wealth<small>ADMIN CONSOLE</small></div>
+    </div>
+    <div class="top-actions">
+      <span class="top-label">User management</span>
+      <button class="btn btn-dark" id="backBtn" type="button">← Back to users</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="breadcrumbs"><a href="admin.html">Admin</a> / <a href="admin.html">Users</a> / User details</div>
+    <div class="page-heading">
+      <div>
+        <h1>User details</h1>
+        <p class="subtitle">A complete view of the user's account, financial activity, investments and referral history.</p>
+      </div>
+      <div class="heading-actions">
+        <button class="btn" id="refreshBtn" type="button">↻ Refresh data</button>
+        <button class="btn btn-green" id="exportBtn" type="button">↓ Export visible table</button>
+      </div>
+    </div>
+
+    <div class="notice" id="notice" role="status"></div>
+
+    <section class="profile-card" aria-label="User profile">
+      <div class="profile-main">
+        <div class="avatar" id="avatar">U</div>
+        <div>
+          <div class="profile-name" id="userName">Loading user…</div>
+          <div class="profile-meta">
+            <span>☎ <b id="userPhone">—</b></span>
+            <span>▦ ID: <b id="userIdShort">—</b></span>
+            <span>◷ Joined: <b id="joinedDate">—</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-status">
+        <span class="status-pill" id="accountStatus"><span class="status-dot"></span> Loading status</span>
+        <div class="profile-code">Referral code: <strong id="inviteCode">—</strong></div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Financial summary">
+      <article class="stat"><div class="stat-top"><span class="stat-label">Wallet balance</span><span class="stat-icon">₹</span></div><div class="stat-value" id="statBalance">—</div><div class="stat-foot">Current recorded wallet balance</div></article>
+      <article class="stat"><div class="stat-top"><span class="stat-label">Recorded earnings</span><span class="stat-icon">↗</span></div><div class="stat-value" id="statEarnings">—</div><div class="stat-foot">Earnings stored on user account</div></article>
+      <article class="stat"><div class="stat-top"><span class="stat-label">Approved deposits</span><span class="stat-icon">↓</span></div><div class="stat-value" id="statDeposits">—</div><div class="stat-foot" id="depositFoot">Approved deposit records</div></article>
+      <article class="stat"><div class="stat-top"><span class="stat-label">Approved withdrawals</span><span class="stat-icon">↑</span></div><div class="stat-value" id="statWithdrawals">—</div><div class="stat-foot" id="withdrawFoot">Approved withdrawal records</div></article>
+    </section>
+
+    <div class="layout">
+      <aside class="side-card">
+        <div class="side-title">User workspace</div>
+        <nav class="side-nav" aria-label="User detail sections">
+          <button class="nav-tab active" data-tab="overview"><span class="nav-ico">◉</span> Overview</button>
+          <button class="nav-tab" data-tab="investments"><span class="nav-ico">▤</span> Investments</button>
+          <button class="nav-tab" data-tab="deposits"><span class="nav-ico">↓</span> Deposits</button>
+          <button class="nav-tab" data-tab="withdrawals"><span class="nav-ico">↑</span> Withdrawals</button>
+          <button class="nav-tab" data-tab="transactions"><span class="nav-ico">⇄</span> Transactions</button>
+          <button class="nav-tab" data-tab="referrals"><span class="nav-ico">♧</span> Referrals & team</button>
+          <button class="nav-tab" data-tab="commissions"><span class="nav-ico">✦</span> Referral commissions</button>
+        </nav>
+        <div class="side-help">Sensitive financial and personal information should only be accessed by authorized administrators.</div>
+      </aside>
+
+      <section class="content-card">
+        <div class="tab-panel active" id="panel-overview">
+          <div class="section-head"><div><h2>Account overview</h2><p>Profile information and account-level financial values.</p></div></div>
+          <div class="section-body">
+            <div class="detail-grid" id="overviewGrid"></div>
+            <p class="inline-note">Financial values in this section are read from the user record unless explicitly labeled as calculated totals. Planned investment income is not treated as earned income.</p>
+          </div>
+        </div>
+        <div class="tab-panel" id="panel-investments">
+          <div class="section-head"><div><h2>Investment history</h2><p>Plan snapshots, principal, recorded earnings and investment status.</p></div></div>
+          <div class="section-body"><div id="investmentsTable"></div></div>
+        </div>
+        <div class="tab-panel" id="panel-deposits">
+          <div class="section-head"><div><h2>Deposit history</h2><p>Deposit requests and their recorded review status.</p></div></div>
+          <div class="section-body"><div id="depositsTable"></div></div>
+        </div>
+        <div class="tab-panel" id="panel-withdrawals">
+          <div class="section-head"><div><h2>Withdrawal history</h2><p>Requests, payment methods and processing details.</p></div></div>
+          <div class="section-body"><div id="withdrawalsTable"></div><p class="inline-note">Payment details are masked by default. Reveal them only when necessary for authorized account support.</p></div>
+        </div>
+        <div class="tab-panel" id="panel-transactions">
+          <div class="section-head"><div><h2>Transaction history</h2><p>Recorded transaction IDs, types, amounts and descriptions.</p></div></div>
+          <div class="section-body"><div id="transactionsTable"></div></div>
+        </div>
+        <div class="tab-panel" id="panel-referrals">
+          <div class="section-head"><div><h2>Referrals & team</h2><p>Referral relationships recorded by the referral system.</p></div></div>
+          <div class="section-body">
+            <div class="detail-grid" id="referralSummary"></div>
+            <div class="referral-launch">
+              <div><strong>Complete referral family tree</strong><span>Explore direct referrals and every recorded generation below this account.</span></div>
+              <button class="btn btn-green" id="loadReferralTreeBtn" type="button">Load referral tree ↗</button>
+            </div>
+            <div id="referralTreeArea" aria-live="polite"><div class="tree-empty">Select “Load referral tree” to retrieve the complete team from the admin referral-tree API.</div></div>
+            <h3 style="font:800 14px Manrope;margin:24px 0 12px">Direct referrals</h3>
+            <div id="referralsTable"></div>
+          </div>
+        </div>
+        <div class="tab-panel" id="panel-commissions">
+          <div class="section-head"><div><h2>Referral commissions</h2><p>Commission records linked to qualifying deposits.</p></div></div>
+          <div class="section-body"><div id="commissionsTable"></div><p class="inline-note">Welcome bonuses and deposit commissions are separate records. Only commission records marked “Credited” should be counted as credited commission.</p></div>
+        </div>
+      </section>
+    </div>
+    <div class="footer">Tesla Wealth Admin Console · User data is loaded from your authenticated backend.</div>
+  </main>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+
+  // Set window.TESLA_WEALTH_API_BASE before this script for local/staging deployments.
+  // Otherwise use the saved API base, then the Tesla Wealth production API.
+  const API_BASE = String(
+    window.TESLA_WEALTH_API_BASE ||
+    localStorage.getItem("apiBase") ||
+    "https://tesla-wealth.onrender.com/api"
+  ).replace(/\/+$/, "");
+  const token = localStorage.getItem("adminToken") || localStorage.getItem("token") || localStorage.getItem("ki_token");
+  const params = new URLSearchParams(location.search);
+  const userId = params.get("id") || params.get("userId");
+  let loadedData = {};
+  let activeTableName = "overview";
+
+  const $ = (id) => document.getElementById(id);
+  const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+  const money = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? n.toLocaleString("en-IN", {style:"currency",currency:"INR",maximumFractionDigits:2}) : "—";
+  };
+  const date = (value) => {
+    if (!value) return "—";
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("en-IN", {dateStyle:"medium", timeStyle:"short"});
+  };
+  const dateOnly = (value) => {
+    if (!value) return "—";
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-IN", {dateStyle:"medium"});
+  };
+  const val = (value) => value === undefined || value === null || value === "" ? "—" : String(value);
+  const statusClass = (value) => {
+    const s = String(value || "").toLowerCase();
+    if (["approved","completed","running","credited"].includes(s)) return s;
+    if (s === "pending") return "pending";
+    if (["rejected","cancelled","failed"].includes(s)) return s;
+    return "";
+  };
+  const pill = (value) => `<span class="pill ${statusClass(value)}">${escapeHtml(val(value))}</span>`;
+  const getUser = (data) => data.user || data.profile || data.data?.user || data;
+  const arrayFrom = (data, ...keys) => {
+    for (const key of keys) if (Array.isArray(data[key])) return data[key];
+    return [];
+  };
+  const detailItem = (label, value) => `<div class="detail-item"><div class="detail-label">${escapeHtml(label)}</div><div class="detail-value">${escapeHtml(val(value))}</div></div>`;
+
+  function showNotice(message, isError = false) {
+    const notice = $("notice");
+    notice.textContent = message;
+    notice.classList.add("show");
+    notice.style.borderColor = isError ? "#ffc5ca" : "#f0d48b";
+    notice.style.background = isError ? "#fff3f4" : "#fff9e8";
+    notice.style.color = isError ? "#9e2630" : "#805b13";
+  }
+
+  function showLoading() {
+    ["investmentsTable","depositsTable","withdrawalsTable","transactionsTable","referralsTable","commissionsTable"].forEach(id => {
+      $(id).innerHTML = '<div class="loading"><div class="spinner"></div>Loading records…</div>';
+    });
+    $("overviewGrid").innerHTML = '<div class="loading">Loading profile…</div>';
+  }
+
+  async function apiGet(url) {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Accept":"application/json",
+        ...(token ? {"Authorization":`Bearer ${token}`} : {})
+      },
+      cache: "no-store"
+    });
+    let body = {};
+    try { body = await response.json(); } catch (_) {
+      if (response.ok) throw new Error("The server returned an invalid JSON response.");
+    }
+    if (!response.ok) {
+      const error = new Error(body.message || `Request failed (${response.status})`);
+      error.status = response.status;
+      throw error;
+    }
+    return body;
+  }
+
+  async function loadData() {
+    if (!userId) {
+      showNotice("No user ID was provided. Open this page from the admin users list using user-details.html?id=USER_ID.", true);
+      $("userName").textContent = "User ID required";
+      ["investmentsTable","depositsTable","withdrawalsTable","transactionsTable","referralsTable","commissionsTable"].forEach(id => {
+        $(id).innerHTML = '<div class="empty"><strong>No user selected</strong>Return to the users list and open a user record.</div>';
+      });
+      return;
+    }
+    if (!token) {
+      showNotice("No authentication token was found in localStorage. Sign in to the admin panel, then reopen this page.", true);
+      $("userName").textContent = "Authentication required";
+      return;
+    }
+
+    showLoading();
+    try {
+      // This dedicated endpoint should return the profile and all associated histories.
+      // Expected shape: { success, user, summary, investments, deposits, withdrawals,
+      // transactions, referrals, commissions }. We fall back to the existing profile route
+      // until the dedicated details endpoint has been implemented on the backend.
+      try {
+        loadedData = await apiGet(`${API_BASE}/auth/admin/users/${encodeURIComponent(userId)}/details`);
+      } catch (err) {
+        if (err.status !== 404) throw err;
+        loadedData = await apiGet(`${API_BASE}/auth/admin/users/${encodeURIComponent(userId)}`);
+        showNotice("Profile loaded using the existing API. Full history sections require the backend endpoint GET /api/auth/admin/users/:id/details. They will populate after that endpoint is added.");
+      }
+      renderAll(loadedData);
+      if (!document.getElementById("notice").textContent.includes("Full history sections require")) {
+        $("notice").classList.remove("show");
+      }
+    } catch (error) {
+      console.error("Could not load user details:", error);
+      if (error.status === 401) {
+        showNotice("Your session is missing or expired. Please sign in again.", true);
+      } else if (error.status === 403) {
+        showNotice("Access denied. This page is for authorized administrators only.", true);
+      } else if (error.status === 404) {
+        showNotice("User or API route was not found. Check the user ID and backend route.", true);
+      } else {
+        showNotice(`Could not load user details: ${error.message}. Check the API base URL and backend logs.`, true);
+      }
+      $("userName").textContent = "Unable to load user";
+      ["investmentsTable","depositsTable","withdrawalsTable","transactionsTable","referralsTable","commissionsTable"].forEach(id => {
+        $(id).innerHTML = '<div class="empty"><strong>Records unavailable</strong>Check the notice above, your API URL and admin permissions.</div>';
+      });
+    }
+  }
+
+  function renderAll(data) {
+    const user = getUser(data);
+    const summary = data.summary || {};
+    const investments = arrayFrom(data,"investments","investmentHistory");
+    const deposits = arrayFrom(data,"deposits","depositHistory");
+    const withdrawals = arrayFrom(data,"withdrawals","withdrawalHistory");
+    const transactions = arrayFrom(data,"transactions","transactionHistory");
+    const referrals = arrayFrom(data,"referrals","directReferrals");
+    const commissions = arrayFrom(data,"commissions","referralCommissions");
+
+    const name = user.name || "Unnamed user";
+    $("userName").textContent = name;
+    $("userPhone").textContent = val(user.phone);
+    $("userIdShort").textContent = user._id ? `${String(user._id).slice(0,8)}…` : val(user.id);
+    $("joinedDate").textContent = dateOnly(user.createdAt);
+    $("inviteCode").textContent = val(user.inviteCode);
+    const avatarInitial = (name.trim()[0] || "U").toUpperCase();
+    const imageUrl = typeof user.profileImage === "string" ? user.profileImage : "";
+    if (/^https:\/\//i.test(imageUrl)) {
+      const image = document.createElement("img");
+      image.src = imageUrl;
+      image.alt = "User profile image";
+      image.referrerPolicy = "no-referrer";
+      image.onerror = () => { $("avatar").textContent = avatarInitial; };
+      $("avatar").replaceChildren(image);
+    } else {
+      $("avatar").textContent = avatarInitial;
+    }
+    const blocked = user.isBlocked === true;
+    $("accountStatus").innerHTML = `<span class="status-dot" style="background:${blocked ? "#ff7783" : "#36d995"}"></span>${blocked ? "Blocked account" : "Active account"}`;
+    $("statBalance").textContent = money(user.balance);
+    $("statEarnings").textContent = money(user.earnings);
+    $("statDeposits").textContent = money(summary.approvedDeposits ?? sumBy(deposits, "amount", "Approved"));
+    $("statWithdrawals").textContent = money(summary.approvedWithdrawals ?? sumBy(withdrawals, "amount", "Approved"));
+    $("depositFoot").textContent = `${deposits.filter(x => x.status === "Pending").length} pending · ${deposits.filter(x => x.status === "Rejected").length} rejected`;
+    $("withdrawFoot").textContent = `${withdrawals.filter(x => x.status === "Pending").length} pending · ${withdrawals.filter(x => x.status === "Rejected").length} rejected`;
+
+    $("overviewGrid").innerHTML = [
+      detailItem("Full name", user.name),
+      detailItem("Phone number", user.phone),
+      detailItem("Referral / invite code", user.inviteCode),
+      detailItem("Referred by (stored code)", user.referralBy),
+      `<div class="detail-item"><div class="detail-label">Referral count on account</div><div class="detail-value"><button type="button" class="btn btn-green" id="overviewReferralTreeBtn">${escapeHtml(val(user.referralCount))} · View complete tree</button></div></div>`,
+      detailItem("Referral earnings on account", money(user.referralEarnings)),
+      detailItem("Wallet balance", money(user.balance)),
+      detailItem("Recorded earnings", money(user.earnings)),
+      detailItem("Withdrawable earnings", money(user.withdrawableEarnings)),
+      detailItem("Total deposit field", money(user.totalDeposit)),
+      detailItem("Total withdrawal field", money(user.totalWithdraw)),
+      detailItem("Active investments field", user.activeInvestments),
+      detailItem("Daily yield field", money(user.dailyYield)),
+      detailItem("Phone verified", user.phoneVerified ? "Yes" : "No"),
+      detailItem("Phone verification date", date(user.phoneVerifiedAt)),
+      detailItem("Registered", date(user.createdAt)),
+      detailItem("Last profile update", date(user.updatedAt)),
+      detailItem("Account status", blocked ? "Blocked" : "Active")
+    ].join("");
+
+    renderInvestments(investments);
+    renderDeposits(deposits);
+    renderWithdrawals(withdrawals);
+    renderTransactions(transactions);
+    renderReferrals(referrals, user, summary);
+    renderCommissions(commissions);
+  }
+
+  function sumBy(rows, field, status) {
+    return rows.filter(x => !status || x.status === status).reduce((sum, x) => sum + (Number(x[field]) || 0), 0);
+  }
+
+  function table(headers, rows, emptyTitle, emptyMessage, tableName) {
+    if (!rows.length) {
+        return `<div class="empty"><strong>${escapeHtml(emptyTitle)}</strong>${escapeHtml(emptyMessage)}</div>`;
+    }
+    const head = headers.map(h=>`<th>${escapeHtml(h.label)}</th>`).join("");
+    const body = rows.map(row=>`<tr>${row.cells.map(cell=>`<td>${cell.html}</td>`).join("")}</tr>`).join("");
+    return `<div class="table-tools"><div class="search-box"><input type="search" class="table-search" aria-label="Search ${escapeHtml(tableName)}" placeholder="Search ${escapeHtml(tableName)}…"></div><span class="stat-foot">${rows.length} record${rows.length===1?"":"s"}</span></div><div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  const cell = (text, html) => ({text:String(text ?? ""),html:html ?? escapeHtml(val(text))});
+  const makeRow = (cells, exportRow) => ({cells,export:exportRow || cells.map(c=>c.text)});
+
+  function renderInvestments(rows) {
+    const mapped = rows.map(x => makeRow([
+      cell(x.planName || x.plan?.name || "Investment plan", `<div class="td-main">${escapeHtml(x.planName || x.plan?.name || "Investment plan")}</div><div class="td-sub">Purchased ${escapeHtml(dateOnly(x.purchaseDate || x.createdAt))}</div>`),
+      cell(money(x.amount), `<span class="money">${escapeHtml(money(x.amount))}</span>`),
+      cell(money(x.dailyIncome)),
+      cell(money(x.earned), `<span class="money">${escapeHtml(money(x.earned))}</span><div class="td-sub">Recorded earned amount</div>`),
+      cell(`${val(x.remainingDays)} days`),
+      cell(x.status, pill(x.status))
+    ]));
+    $("investmentsTable").innerHTML = table([{label:"Plan"},{label:"Principal"},{label:"Daily income"},{label:"Earned"},{label:"Remaining"},{label:"Status"}], mapped, "No investment records", "No investments were returned for this user.", "investments");
+  }
+
+  function renderDeposits(rows) {
+    const mapped = rows.map(x => makeRow([
+      cell(money(x.amount), `<span class="money">${escapeHtml(money(x.amount))}</span><div class="td-sub">Created ${escapeHtml(date(x.createdAt))}</div>`),
+      cell(x.utr, `<div class="td-main">${escapeHtml(val(x.utr))}</div>`),
+      cell(x.status, pill(x.status)),
+      cell(x.remark),
+      cell(x.screenshot ? "Available" : "Not supplied", x.screenshot ? `<a href="${escapeHtml(x.screenshot)}" target="_blank" rel="noopener noreferrer">View proof ↗</a>` : "Not supplied"),
+      cell(date(x.updatedAt))
+    ]));
+    $("depositsTable").innerHTML = table([{label:"Amount"},{label:"UTR"},{label:"Status"},{label:"Admin remark"},{label:"Proof"},{label:"Updated"}], mapped, "No deposit records", "No deposits were returned for this user.", "deposits");
+  }
+
+  function renderWithdrawals(rows) {
+    const mapped = rows.map((x, index) => {
+      const p = x.paymentDetails || {};
+      const details = [
+        p.upiId ? `UPI: ${p.upiId}` : "",
+        p.accountHolder ? `Holder: ${p.accountHolder}` : "",
+        p.bankName ? `Bank: ${p.bankName}` : "",
+        p.accountNumber ? `Account: ${p.accountNumber}` : "",
+        p.ifscCode ? `IFSC: ${p.ifscCode}` : ""
+      ].filter(Boolean).join(" · ");
+      const safeDetails = escapeHtml(details || "No payment details");
+      return makeRow([
+        cell(money(x.amount), `<span class="money">${escapeHtml(money(x.amount))}</span><div class="td-sub">${escapeHtml(date(x.createdAt))}</div>`),
+        cell(x.paymentMethod, `<div class="td-main">${escapeHtml(val(x.paymentMethod))}</div><div class="td-sub sensitive">${safeDetails}</div><button class="reveal-btn" type="button" data-reveal="${index}">Reveal payment details</button>`),
+        cell(x.status, pill(x.status)),
+        cell(x.remark),
+        cell(date(x.processedAt)),
+        cell(date(x.updatedAt))
+      ], [money(x.amount),x.paymentMethod,details,x.status,x.remark,date(x.processedAt),date(x.updatedAt)]);
+    });
+    $("withdrawalsTable").innerHTML = table([{label:"Amount"},{label:"Payment method & details"},{label:"Status"},{label:"Admin remark"},{label:"Processed"},{label:"Updated"}], mapped, "No withdrawal records", "No withdrawals were returned for this user.", "withdrawals");
+  }
+
+  function renderTransactions(rows) {
+    const mapped = rows.map(x => makeRow([
+      cell(x.txId, `<div class="td-main">${escapeHtml(val(x.txId))}</div><div class="td-sub">${escapeHtml(date(x.createdAt))}</div>`),
+      cell(x.type, `<span class="pill">${escapeHtml(val(x.type))}</span>`),
+      cell(money(x.amount), `<span class="money">${escapeHtml(money(x.amount))}</span>`),
+      cell(x.description)
+    ]));
+    $("transactionsTable").innerHTML = table([{label:"Transaction ID"},{label:"Type"},{label:"Amount"},{label:"Description"}], mapped, "No transactions", "No transactions were returned for this user.", "transactions");
+  }
+
+  function renderReferrals(rows, user, summary) {
+    $("referralSummary").innerHTML = [
+      detailItem("Referral code", user.inviteCode),
+      detailItem("Stored referral count", user.referralCount),
+      detailItem("Recorded referral earnings", money(user.referralEarnings)),
+      detailItem("Referral records returned", rows.length),
+      detailItem("Welcome bonuses total", money(summary.welcomeBonuses)),
+      detailItem("Referral status", "Based on saved referral records")
+    ].join("");
+    const mapped = rows.map(x => {
+      const referred = x.referredUser || {};
+      const referrer = x.referrer || {};
+      const referredName = referred.name || x.name || "Referred user";
+      return makeRow([
+        cell(referredName, `<div class="td-main">${escapeHtml(referredName)}</div><div class="td-sub">${escapeHtml(val(referred.phone || x.phone))}</div>`),
+        cell(x.referralCode || user.inviteCode),
+        cell(money(x.welcomeBonus)),
+        cell(money(x.totalCommission), `<span class="money">${escapeHtml(money(x.totalCommission))}</span><div class="td-sub">Referral model total</div>`),
+        cell(x.status, pill(x.status)),
+        cell(date(x.createdAt))
+      ]);
+    });
+    $("referralsTable").innerHTML = table([{label:"Referred user"},{label:"Referral code"},{label:"Welcome bonus"},{label:"Referral total"},{label:"Status"},{label:"Joined / created"}], mapped, "No direct referrals found", "No referral records were returned for this user.", "referrals");
+  }
+
+  function renderCommissions(rows) {
+    const mapped = rows.map(x => {
+      const deposit = x.deposit && typeof x.deposit === "object" ? x.deposit : {};
+      const ref = x.referral && typeof x.referral === "object" ? x.referral : {};
+      const relatedName = x.referredUser?.name || ref.referredUser?.name || "Referred user";
+      return makeRow([
+        cell(relatedName, `<div class="td-main">${escapeHtml(relatedName)}</div><div class="td-sub">${escapeHtml(val(x.referredUser?.phone || ""))}</div>`),
+        cell(money(x.depositAmount)),
+        cell(`${val(x.commissionRate)}%`),
+        cell(money(x.commissionAmount), `<span class="money">${escapeHtml(money(x.commissionAmount))}</span>`),
+        cell(x.status, pill(x.status)),
+        cell(deposit.utr || "—", `<div>${escapeHtml(val(deposit.utr))}</div><div class="td-sub">${escapeHtml(date(x.createdAt))}</div>`)
+      ]);
+    });
+    $("commissionsTable").innerHTML = table([{label:"Referred user"},{label:"Deposit amount"},{label:"Rate"},{label:"Commission"},{label:"Status"},{label:"Deposit UTR / date"}], mapped, "No commission records", "No referral commission records were returned for this user.", "commissions");
+  }
+
+
+  // =====================================================
+  // ADMIN REFERRAL TREE
+  // GET /api/referral/admin/tree/:userId
+  // =====================================================
+  let referralTreeData = null;
+
+  function treeNodeHtml(node, isRoot = false) {
+    const children = Array.isArray(node.children) ? node.children : [];
+    const nodeId = String(node.id || node._id || "");
+    const blocked = node.isBlocked === true || node.accountStatus === "Blocked";
+    const selected = node.isSelected === true;
+    const name = escapeHtml(node.name || "Unknown user");
+    const phone = escapeHtml(node.phone || "—");
+    const code = escapeHtml(node.inviteCode || "—");
+    const level = Number(node.level || 0);
+    const toggle = children.length
+      ? `<button class="tree-toggle" type="button" aria-expanded="true" data-tree-toggle>−</button>`
+      : `<span class="tree-toggle" aria-hidden="true">·</span>`;
+    const childHtml = children.length
+      ? `<div class="tree-children" data-tree-children>${children.map(child => treeNodeHtml(child)).join("")}</div>`
+      : "";
+    return `<div class="${isRoot ? "tree-root" : "tree-node"}${selected ? " selected" : ""}" data-tree-node data-search="${escapeHtml((name+" "+phone+" "+code).toLowerCase())}">
+      <div class="tree-row">${toggle}<span class="tree-name">${name}</span>
+      <span class="tree-meta">${phone} · Code: ${code} · Level ${level}</span>
+      <span class="tree-badge ${blocked ? "blocked" : ""}">${blocked ? "Blocked" : "Active"}</span>${selected ? '<span class="tree-selected">SELECTED USER</span>' : ""}
+      ${children.length ? `<span class="tree-meta">${children.length} direct</span>` : ""}
+      </div>${childHtml}</div>`;
+  }
+
+  async function loadReferralTree() {
+    const area = $("referralTreeArea");
+    if (!userId || !token) {
+      area.innerHTML = '<div class="tree-empty">A selected user and valid admin session are required.</div>';
+      return;
+    }
+    area.innerHTML = '<div class="loading"><div class="spinner"></div>Loading referral family tree…</div>';
+    try {
+      const data = await apiGet(`${API_BASE}/referral/admin/tree/${encodeURIComponent(userId)}?maxDepth=20&maxNodes=10000`);
+      if (!data || data.success !== true || !data.tree) {
+        throw new Error(data?.message || "The API response did not contain a referral tree.");
+      }
+      referralTreeData = data;
+      const root = data.rootUser || data.tree || {};
+      const selected = data.selectedUser || {};
+      const summary = data.summary || {};
+      const levels = Array.isArray(data.levelStatistics) ? data.levelStatistics : [];
+      const stats = [
+        ["Total team", summary.totalTeamMembers ?? summary.members ?? summary.totalMembers ?? 0],
+        ["Direct referrals", summary.directReferrals ?? summary.directReferralCount ?? 0],
+        ["Active members", summary.activeMembers ?? summary.active ?? 0],
+        ["Blocked members", summary.blockedMembers ?? summary.blocked ?? 0]
+      ];
+      const levelHtml = levels.map(x => `<span class="level-chip">Level ${Number(x.level)} · ${Number(x.memberCount || 0)}</span>`).join("");
+      area.innerHTML = `
+        <div class="tree-stats">${stats.map(x => `<div class="tree-stat"><small>${escapeHtml(x[0])}</small><strong>${escapeHtml(x[1])}</strong></div>`).join("")}</div>
+        <div class="tree-levels">${levelHtml || '<span class="tree-meta">No referral generations found.</span>'}</div>
+        <div class="tree-toolbar">
+          <input id="referralTreeSearch" type="search" placeholder="Search team by name, phone or invite code…" aria-label="Search referral tree">
+          <button class="btn" type="button" id="expandReferralTree">Expand all</button>
+          <button class="btn" type="button" id="collapseReferralTree">Collapse all</button>
+        </div>
+        ${data.pagination?.truncated ? '<div class="notice show">The returned tree reached its depth or member limit. Increase maxDepth/maxNodes or load a smaller branch to inspect the remaining team.</div>' : ""}
+        ${treeNodeHtml(data.tree, true)}
+        <p class="inline-note">Tree root: ${escapeHtml(root.name || data.tree.name || "Selected user")} · Selected account: ${escapeHtml(selected.name || "Shown with SELECTED USER badge when supplied by the API")} · Code: ${escapeHtml(root.inviteCode || data.tree.inviteCode || "—")} · Commission totals are based on saved referral records. This view does not modify referral balances or stored counts.</p>`;
+      $("referralTreeSearch")?.addEventListener("input", event => {
+        const q = event.target.value.trim().toLowerCase();
+        area.querySelectorAll("[data-tree-node]").forEach(el => {
+          el.style.display = !q || el.dataset.search.includes(q) ? "" : "none";
+        });
+      });
+      $("expandReferralTree")?.addEventListener("click", () => {
+        area.querySelectorAll("[data-tree-children]").forEach(el => el.hidden = false);
+        area.querySelectorAll("[data-tree-toggle]").forEach(el => { el.textContent = "−"; el.setAttribute("aria-expanded","true"); });
+      });
+      $("collapseReferralTree")?.addEventListener("click", () => {
+        area.querySelectorAll("[data-tree-children]").forEach(el => el.hidden = true);
+        area.querySelectorAll("[data-tree-toggle]").forEach(el => { el.textContent = "+"; el.setAttribute("aria-expanded","false"); });
+      });
+    } catch (error) {
+      console.error("Referral tree load failed:", error);
+      area.innerHTML = `<div class="error-box">Could not load referral tree: ${escapeHtml(error.message)}. Confirm the backend route is mounted at <code>/api/referral</code> and the admin token has access.</div>`;
+    }
+  }
+
+  document.addEventListener("click", event => {
+    const toggle = event.target.closest("[data-tree-toggle]");
+    if (!toggle) return;
+    const node = toggle.closest("[data-tree-node]");
+    const children = node?.querySelector(":scope > [data-tree-children]");
+    if (!children) return;
+    children.hidden = !children.hidden;
+    toggle.textContent = children.hidden ? "+" : "−";
+    toggle.setAttribute("aria-expanded", String(!children.hidden));
+  });
+
+  $("loadReferralTreeBtn")?.addEventListener("click", loadReferralTree);
+  document.addEventListener("click", event => {
+    if (event.target.id === "overviewReferralTreeBtn") {
+      document.querySelector('[data-tab="referrals"]')?.click();
+      loadReferralTree();
+    }
+  });
+
+  document.querySelectorAll(".nav-tab").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".nav-tab").forEach(b => b.classList.toggle("active", b === button));
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.id === `panel-${button.dataset.tab}`));
+      activeTableName = button.dataset.tab;
+      // Export always reads the currently visible table directly from the DOM.
+    });
+  });
+
+  document.addEventListener("input", event => {
+    if (!event.target.matches(".table-search")) return;
+    const query = event.target.value.toLowerCase();
+    const tableEl = event.target.closest(".tab-panel")?.querySelector("tbody");
+    if (!tableEl) return;
+    tableEl.querySelectorAll("tr").forEach(row => row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none");
+  });
+
+  document.addEventListener("click", event => {
+    const reveal = event.target.closest("[data-reveal]");
+    if (reveal) {
+      const detail = reveal.parentElement.querySelector(".td-sub");
+      if (detail) detail.classList.toggle("revealed");
+      reveal.textContent = detail?.classList.contains("revealed") ? "Hide payment details" : "Reveal payment details";
+    }
+  });
+
+  $("backBtn").addEventListener("click", () => {
+    if (history.length > 1) history.back();
+    else location.href = "admin.html";
+  });
+  $("refreshBtn").addEventListener("click", loadData);
+  $("exportBtn").addEventListener("click", () => {
+    const panel = document.querySelector(".tab-panel.active");
+    const tableEl = panel?.querySelector("table");
+    if (!tableEl) {
+      showNotice("There is no table to export in the current section. Open a history section first.");
+      return;
+    }
+    const rows = [...tableEl.querySelectorAll("tr")].map(tr => [...tr.querySelectorAll("th,td")].map(td => td.innerText.trim()));
+    if (!rows.length) return;
+    const csv = rows.map(row => row.map(value => `"${String(value).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+    const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tesla-wealth-${activeTableName}-${String(userId || "user").slice(0,8)}.csv`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+
+  loadData();
+})();
+</script>
+</body>
+</html>

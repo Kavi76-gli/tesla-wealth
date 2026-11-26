@@ -2042,7 +2042,45 @@
             }
 
         }
+/* =================================
+   TRADE PAYOUT INFORMATION
+================================= */
 
+.trade-payout-info {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #0d1927;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+}
+
+.trade-payout-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.trade-payout-label {
+    color: #94a3b8;
+}
+
+.trade-payout-value {
+    color: #ffffff;
+    font-weight: 750;
+}
+
+.trade-payout-value.profit {
+    color: #20d889;
+}
+
+.trade-payout-value.loss {
+    color: #ff6262;
+}
     </style>
 
 </head>
@@ -2101,7 +2139,7 @@
                 </small>
 
                 <strong>
-                    ₹<span id="walletBalance">
+                    $<span id="walletBalance">
                         0.00
                     </span>
                 </strong>
@@ -2258,13 +2296,13 @@
         <div class="panel-heading">
 
             <h3>
-                Place Demo Trade
+                Place Live Trade
             </h3>
 
 
             <span class="demo-badge">
 
-                DEMO MODE
+                LIVE MODE
 
             </span>
 
@@ -2366,7 +2404,7 @@
 
                     <strong>
 
-                        ₹<span id="amount">
+                        $<span id="amount">
                             500
                         </span>
 
@@ -2595,7 +2633,7 @@
                     <strong
                         id="activeAmount"
                     >
-                        ₹0
+                        $0
                     </strong>
 
                 </div>
@@ -2806,884 +2844,1510 @@
 
 <script>
 
+"use strict";
 
-    // =====================================================
-    // CONFIG
-    // =====================================================
-
-    const API_URL =
-        "https://tesla-wealth.onrender.com/api";
+// =====================================================
+// TESLA WEALTH - REAL WALLET BTC TRADING
+// BACKEND CONNECTED TRADING SYSTEM
+// =====================================================
 
 
-    const token =
+// =====================================================
+// CONFIGURATION
+// =====================================================
+
+const API_URL =
+    window.TESLA_API_BASE ||
+    (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1"
+            ? "http://localhost:5000/api"
+            : "https://tesla-wealth.onrender.com/api"
+    );
+
+const MARKET_SYMBOL = "BTCUSDT";
+
+const MARKET_ASSET = "BTC/USDT";
+
+const MIN_TRADE_AMOUNT = 100;
+
+const MAX_TRADE_AMOUNT = 100000000;
+
+const ALLOWED_DURATIONS = [30, 60, 180, 300];
+
+const SYNC_INTERVAL = 3000;
+
+const PRICE_INTERVAL = 10000;
+
+const HISTORY_LIMIT = 50;
+
+const BINANCE_CANDLE_URL =
+    "https://api.binance.com/api/v3/klines";
+
+const BINANCE_WEBSOCKET_URL =
+    "wss://stream.binance.com:9443/ws/btcusdt@kline_1m";
+
+
+// =====================================================
+// AUTHENTICATION
+// =====================================================
+
+function getAuthToken() {
+
+    return (
         localStorage.getItem("ki_token") ||
-        localStorage.getItem("token");
+        localStorage.getItem("token") ||
+        null
+    );
+
+}
+
+let token = getAuthToken();
 
 
-    // =====================================================
-    // GLOBAL VARIABLES
-    // =====================================================
+// =====================================================
+// GLOBAL VARIABLES
+// =====================================================
 
-    let walletBalance = 0;
+let walletBalance = 0;
 
-    let tradeAmount = 500;
+let tradeAmount = 500;
 
-    let selectedDuration = 30;
+let selectedDuration = 30;
 
-    let currentPrice = 0;
+let currentPrice = 0;
 
-    let previousPrice = 0;
+let previousPrice = 0;
 
-    let activeTrade = null;
+let activeTrade = null;
 
-    let timerInterval = null;
+let timerInterval = null;
 
-    let chart = null;
+let syncInterval = null;
 
-    let candleSeries = null;
+let priceInterval = null;
 
-    let marketSocket = null;
+let chart = null;
 
-    let tradeHistory = [];
+let candleSeries = null;
 
-    let selectedFilter = "all";
+let marketSocket = null;
 
+let tradeHistory = [];
 
-    // =====================================================
-    // MONEY FORMAT
-    // =====================================================
+let selectedFilter = "all";
 
-    function money(value) {
+let isStartingTrade = false;
 
-        return "₹" +
-            Number(value || 0)
-                .toLocaleString(
-                    "en-IN",
-                    {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2
-                    }
-                );
+let isSyncingTrades = false;
 
-    }
+let isLoadingProfile = false;
+
+let socketReconnectTimer = null;
+
+let lastHistoryUpdate = 0;
 
 
-    // =====================================================
-    // MESSAGE
-    // =====================================================
+// =====================================================
+// API REQUEST HELPER
+// =====================================================
 
-    function showMessage(text) {
+async function apiRequest(endpoint, options = {}) {
 
-        const message =
-            document.getElementById("message");
+    token = getAuthToken();
 
+    if (!token) {
 
-        message.textContent =
-            text;
-
-
-        message.classList.add("show");
-
-
-        clearTimeout(
-            window.messageTimeout
-        );
-
-
-        window.messageTimeout =
-            setTimeout(
-                () => {
-
-                    message.classList.remove("show");
-
-                },
-                3000
-            );
+        throw new Error("Please login to your account.");
 
     }
 
+    const headers = {
 
-    // =====================================================
-    // LOAD PROFILE
-    // =====================================================
+        "Authorization": `Bearer ${token}`,
 
-    async function loadProfile() {
+        ...(options.headers || {})
 
-        if (!token) {
+    };
 
-            showMessage(
-                "Please login first"
-            );
+    if (
+        options.body &&
+        !(options.body instanceof FormData)
+    ) {
 
-            return;
-
-        }
-
-
-        try {
-
-            const response =
-                await fetch(
-                    `${API_URL}/auth/profile`,
-                    {
-                        headers: {
-                            "Authorization":
-                                `Bearer ${token}`
-                        }
-                    }
-                );
-
-
-            const data =
-                await response.json();
-
-
-            if (data.success) {
-
-                const user =
-                    data.user ||
-                    data.data?.user ||
-                    data.data ||
-                    {};
-
-
-                walletBalance =
-                    Number(
-                        user.balance ??
-                        user.wallet ??
-                        0
-                    );
-
-
-                document
-                    .getElementById(
-                        "walletBalance"
-                    )
-                    .textContent =
-                    walletBalance
-                        .toLocaleString(
-                            "en-IN",
-                            {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            }
-                        );
-
-            }
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "PROFILE ERROR:",
-                error
-            );
-
-        }
+        headers["Content-Type"] = "application/json";
 
     }
 
+    let response;
 
-    // =====================================================
-    // CREATE REAL CHART
-    // =====================================================
+    try {
 
-    function createChart() {
-
-        const chartElement =
-            document.getElementById("chart");
-
-
-        chart =
-            LightweightCharts.createChart(
-                chartElement,
-                {
-
-                    width:
-                        chartElement.clientWidth,
-
-                    height:
-                        360,
-
-
-                    layout: {
-
-                        background: {
-                            color: "#111827"
-                        },
-
-                        textColor:
-                            "#8f9aad"
-
-                    },
-
-
-                    grid: {
-
-                        vertLines: {
-                            color:
-                                "rgba(255,255,255,0.04)"
-                        },
-
-                        horzLines: {
-                            color:
-                                "rgba(255,255,255,0.04)"
-                        }
-
-                    },
-
-
-                    rightPriceScale: {
-
-                        borderColor:
-                            "rgba(255,255,255,0.08)"
-
-                    },
-
-
-                    timeScale: {
-
-                        borderColor:
-                            "rgba(255,255,255,0.08)",
-
-                        timeVisible:
-                            true,
-
-                        secondsVisible:
-                            false
-
-                    },
-
-
-                    crosshair: {
-
-                        mode:
-                            LightweightCharts.CrosshairMode.Normal
-
-                    }
-
-                }
-            );
-
-
-        candleSeries =
-            chart.addCandlestickSeries(
-                {
-
-                    upColor:
-                        "#22c55e",
-
-                    downColor:
-                        "#ef4444",
-
-                    borderUpColor:
-                        "#22c55e",
-
-                    borderDownColor:
-                        "#ef4444",
-
-                    wickUpColor:
-                        "#22c55e",
-
-                    wickDownColor:
-                        "#ef4444"
-
-                }
-            );
-
-
-        window.addEventListener(
-            "resize",
-            () => {
-
-                if (!chart) {
-                    return;
-                }
-
-
-                chart.applyOptions(
-                    {
-
-                        width:
-                            chartElement.clientWidth
-
-                    }
-                );
-
+        response = await fetch(
+            `${API_URL}${endpoint}`,
+            {
+                ...options,
+                headers
             }
         );
 
     }
 
+    catch (error) {
 
-    // =====================================================
-    // LOAD REAL BTC CANDLES
-    // =====================================================
+        throw new Error(
+            "Unable to connect to Tesla Wealth server."
+        );
 
-    async function loadRealCandles() {
+    }
 
-        try {
+    let data;
 
-            const response =
-                await fetch(
-                    "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=100"
-                );
+    try {
+
+        data = await response.json();
+
+    }
+
+    catch (error) {
+
+        throw new Error(
+            "Invalid server response."
+        );
+
+    }
+
+    if (!response.ok || data.success === false) {
+
+        throw new Error(
+            data.message ||
+            data.error ||
+            `Request failed (${response.status})`
+        );
+
+    }
+
+    return data;
+
+}
 
 
-            if (!response.ok) {
+// =====================================================
+// RESPONSE HELPERS
+// =====================================================
 
-                throw new Error(
-                    "Unable to load market candles"
-                );
+function extractTrade(data) {
 
+    if (!data) {
+        return null;
+    }
+
+    if (
+        Object.prototype.hasOwnProperty.call(data, "trade")
+    ) {
+
+        return data.trade || null;
+
+    }
+
+    if (
+        data.data &&
+        Object.prototype.hasOwnProperty.call(data.data, "trade")
+    ) {
+
+        return data.data.trade || null;
+
+    }
+
+    if (
+        data.data &&
+        data.data._id
+    ) {
+
+        return data.data;
+
+    }
+
+    if (data._id) {
+
+        return data;
+
+    }
+
+    return null;
+
+}
+
+
+function extractTrades(data) {
+
+    if (!data) {
+        return [];
+    }
+
+    if (Array.isArray(data.trades)) {
+        return data.trades;
+    }
+
+    if (Array.isArray(data.data?.trades)) {
+        return data.data.trades;
+    }
+
+    if (Array.isArray(data.data)) {
+        return data.data;
+    }
+
+    return [];
+
+}
+
+
+// =====================================================
+// SAFE HTML
+// =====================================================
+
+function escapeHTML(value) {
+
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        character => ({
+
+            "&": "&amp;",
+
+            "<": "&lt;",
+
+            ">": "&gt;",
+
+            '"': "&quot;",
+
+            "'": "&#039;"
+
+        })[character]
+    );
+
+}
+
+
+// =====================================================
+// MONEY FORMAT
+// =====================================================
+function money(value) {
+
+    const amount = Number(value || 0);
+
+    return "$" + amount.toLocaleString(
+        "en-US",
+        {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+
+// =====================================================
+// PRICE FORMAT
+// =====================================================
+
+function formatPrice(value) {
+
+    const price = Number(value || 0);
+
+    return "$" + price.toLocaleString(
+        "en-US",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+
+// =====================================================
+// MESSAGE
+// =====================================================
+
+function showMessage(messageText) {
+
+    const message =
+        document.getElementById("message");
+
+    if (!message) {
+
+        console.log(messageText);
+
+        return;
+
+    }
+
+    message.textContent = messageText;
+
+    message.classList.add("show");
+
+    clearTimeout(window.messageTimeout);
+
+    window.messageTimeout = setTimeout(
+        () => {
+
+            message.classList.remove("show");
+
+        },
+        3500
+    );
+
+}
+
+
+// =====================================================
+// UPDATE WALLET DISPLAY
+// =====================================================
+
+function updateWalletDisplay() {
+
+    const walletElement =
+        document.getElementById("walletBalance");
+
+    if (!walletElement) {
+        return;
+    }
+
+    walletElement.textContent =
+        walletBalance.toLocaleString(
+            "en-IN",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
             }
+        );
+
+}
 
 
-            const data =
-                await response.json();
+// =====================================================
+// LOAD ACTUAL USER PROFILE
+// =====================================================
 
+async function loadProfile() {
 
-            const candles =
-                data.map(
-                    item => {
+    if (isLoadingProfile) {
+        return false;
+    }
 
-                        return {
+    isLoadingProfile = true;
 
-                            time:
-                                Math.floor(
-                                    item[0] / 1000
-                                ),
+    try {
 
-                            open:
-                                Number(item[1]),
+        const data = await apiRequest(
+            "/auth/profile"
+        );
 
-                            high:
-                                Number(item[2]),
+        const user =
+            data.user ||
+            data.data?.user ||
+            data.data ||
+            {};
 
-                            low:
-                                Number(item[3]),
+        const balance = Number(
+            user.balance ??
+            user.wallet ??
+            0
+        );
 
-                            close:
-                                Number(item[4])
+        if (!Number.isFinite(balance)) {
 
-                        };
-
-                    }
-                );
-
-
-            candleSeries.setData(
-                candles
+            throw new Error(
+                "Invalid wallet balance received."
             );
 
+        }
 
-            const latest =
-                candles[
-                    candles.length - 1
-                ];
+        walletBalance = balance;
+
+        updateWalletDisplay();
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "PROFILE ERROR:",
+            error
+        );
+
+        showMessage(error.message);
+
+        return false;
+
+    }
+
+    finally {
+
+        isLoadingProfile = false;
+
+    }
+
+}
 
 
-            currentPrice =
-                latest.close;
+// =====================================================
+// REFRESH WALLET AFTER TRADE
+// =====================================================
+
+async function refreshWallet() {
+
+    return await loadProfile();
+
+}
 
 
-            previousPrice =
-                latest.open;
+// =====================================================
+// LOAD BACKEND MARKET PRICE
+// =====================================================
 
+async function loadBackendPrice() {
+
+    try {
+
+        const data = await apiRequest(
+            "/trade/price"
+        );
+
+        const market =
+            data.market ||
+            data.data?.market ||
+            data.data ||
+            {};
+
+        const price = Number(market.price);
+
+        if (
+            Number.isFinite(price) &&
+            price > 0
+        ) {
+
+            previousPrice = currentPrice || price;
+
+            currentPrice = price;
 
             updatePriceDisplay();
 
+            updateActiveTradePrice();
 
-            chart.timeScale().fitContent();
+        }
 
+    }
+
+    catch (error) {
+
+        console.error(
+            "BACKEND PRICE ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// CREATE CHART
+// =====================================================
+
+function createChart() {
+
+    const chartElement =
+        document.getElementById("chart");
+
+    if (!chartElement) {
+
+        throw new Error(
+            "Chart element not found."
+        );
+
+    }
+
+    if (
+        typeof LightweightCharts === "undefined"
+    ) {
+
+        throw new Error(
+            "Trading chart library is not loaded."
+        );
+
+    }
+
+    chart = LightweightCharts.createChart(
+        chartElement,
+        {
+
+            width: chartElement.clientWidth,
+
+            height: 360,
+
+            layout: {
+
+                background: {
+                    color: "#111827"
+                },
+
+                textColor: "#8f9aad"
+
+            },
+
+            grid: {
+
+                vertLines: {
+                    color: "rgba(255,255,255,0.04)"
+                },
+
+                horzLines: {
+                    color: "rgba(255,255,255,0.04)"
+                }
+
+            },
+
+            rightPriceScale: {
+
+                borderColor:
+                    "rgba(255,255,255,0.08)"
+
+            },
+
+            timeScale: {
+
+                borderColor:
+                    "rgba(255,255,255,0.08)",
+
+                timeVisible: true,
+
+                secondsVisible: false
+
+            },
+
+            crosshair: {
+
+                mode:
+                    LightweightCharts.CrosshairMode.Normal
+
+            }
+
+        }
+    );
+
+
+    candleSeries = chart.addCandlestickSeries(
+        {
+
+            upColor: "#22c55e",
+
+            downColor: "#ef4444",
+
+            borderUpColor: "#22c55e",
+
+            borderDownColor: "#ef4444",
+
+            wickUpColor: "#22c55e",
+
+            wickDownColor: "#ef4444"
+
+        }
+    );
+
+
+    window.addEventListener(
+        "resize",
+        resizeChart
+    );
+
+}
+
+
+// =====================================================
+// RESIZE CHART
+// =====================================================
+
+function resizeChart() {
+
+    const chartElement =
+        document.getElementById("chart");
+
+    if (!chart || !chartElement) {
+        return;
+    }
+
+    chart.applyOptions({
+
+        width: chartElement.clientWidth
+
+    });
+
+}
+
+
+// =====================================================
+// LOAD REAL BTC CANDLES
+// =====================================================
+
+async function loadRealCandles() {
+
+    try {
+
+        const response = await fetch(
+            `${BINANCE_CANDLE_URL}?symbol=${MARKET_SYMBOL}&interval=1m&limit=100`
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load BTC market candles."
+            );
+
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data) || !data.length) {
+
+            throw new Error(
+                "No BTC candle data received."
+            );
+
+        }
+
+        const candles = data.map(item => ({
+
+            time: Math.floor(item[0] / 1000),
+
+            open: Number(item[1]),
+
+            high: Number(item[2]),
+
+            low: Number(item[3]),
+
+            close: Number(item[4])
+
+        }));
+
+        candleSeries.setData(candles);
+
+        const latest =
+            candles[candles.length - 1];
+
+        currentPrice = latest.close;
+
+        previousPrice = latest.open;
+
+        updatePriceDisplay();
+
+        chart.timeScale().fitContent();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CANDLE ERROR:",
+            error
+        );
+
+        showMessage(
+            "Unable to load live market chart."
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// CONNECT LIVE BINANCE WEBSOCKET
+// =====================================================
+
+function connectLiveMarket() {
+
+    if (
+        marketSocket &&
+        (
+            marketSocket.readyState === WebSocket.OPEN ||
+            marketSocket.readyState === WebSocket.CONNECTING
+        )
+    ) {
+
+        return;
+
+    }
+
+    clearTimeout(socketReconnectTimer);
+
+    try {
+
+        marketSocket = new WebSocket(
+            BINANCE_WEBSOCKET_URL
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "WEBSOCKET INITIALIZATION ERROR:",
+            error
+        );
+
+        scheduleSocketReconnect();
+
+        return;
+
+    }
+
+
+    marketSocket.onopen = function() {
+
+        console.log(
+            "TESLA WEALTH LIVE BTC MARKET CONNECTED"
+        );
+
+    };
+
+
+    marketSocket.onmessage = function(event) {
+
+        try {
+
+            const data = JSON.parse(event.data);
+
+            const kline = data.k;
+
+            if (!kline || !candleSeries) {
+                return;
+            }
+
+            const candle = {
+
+                time: Math.floor(kline.t / 1000),
+
+                open: Number(kline.o),
+
+                high: Number(kline.h),
+
+                low: Number(kline.l),
+
+                close: Number(kline.c)
+
+            };
+
+            previousPrice = currentPrice || candle.open;
+
+            currentPrice = candle.close;
+
+            candleSeries.update(candle);
+
+            updatePriceDisplay();
+
+            updateActiveTradePrice();
 
         }
 
         catch (error) {
 
             console.error(
-                "CANDLE ERROR:",
+                "MARKET DATA ERROR:",
                 error
             );
 
-
-            showMessage(
-                "Unable to load real market data"
-            );
-
         }
 
+    };
+
+
+    marketSocket.onerror = function(error) {
+
+        console.error(
+            "WEBSOCKET ERROR:",
+            error
+        );
+
+    };
+
+
+    marketSocket.onclose = function() {
+
+        console.log(
+            "BTC MARKET CONNECTION CLOSED"
+        );
+
+        scheduleSocketReconnect();
+
+    };
+
+}
+
+
+// =====================================================
+// SOCKET RECONNECT
+// =====================================================
+
+function scheduleSocketReconnect() {
+
+    clearTimeout(socketReconnectTimer);
+
+    if (document.visibilityState === "hidden") {
+        return;
     }
 
+    socketReconnectTimer = setTimeout(
+        () => {
 
-    // =====================================================
-    // LIVE MARKET WEBSOCKET
-    // =====================================================
+            connectLiveMarket();
 
-    function connectLiveMarket() {
+        },
+        3000
+    );
 
-        if (marketSocket) {
-
-            marketSocket.close();
-
-        }
+}
 
 
-        marketSocket =
-            new WebSocket(
-                "wss://stream.binance.com:9443/ws/btcusdt@kline_1m"
-            );
+// =====================================================
+// UPDATE PRICE DISPLAY
+// =====================================================
 
+function updatePriceDisplay() {
 
-        marketSocket.onopen =
-            function() {
+    const priceElement =
+        document.getElementById("currentPrice");
 
-                console.log(
-                    "LIVE BTC MARKET CONNECTED"
-                );
-
-            };
-
-
-        marketSocket.onmessage =
-            function(event) {
-
-                try {
-
-                    const data =
-                        JSON.parse(
-                            event.data
-                        );
-
-
-                    const kline =
-                        data.k;
-
-
-                    if (!kline) {
-                        return;
-                    }
-
-
-                    const candle = {
-
-                        time:
-                            Math.floor(
-                                kline.t / 1000
-                            ),
-
-                        open:
-                            Number(
-                                kline.o
-                            ),
-
-                        high:
-                            Number(
-                                kline.h
-                            ),
-
-                        low:
-                            Number(
-                                kline.l
-                            ),
-
-                        close:
-                            Number(
-                                kline.c
-                            )
-
-                    };
-
-
-                    previousPrice =
-                        currentPrice ||
-                        candle.open;
-
-
-                    currentPrice =
-                        candle.close;
-
-
-                    candleSeries.update(
-                        candle
-                    );
-
-
-                    updatePriceDisplay();
-
-
-                    updateActiveTradePrice();
-
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "MARKET DATA ERROR:",
-                        error
-                    );
-
-                }
-
-            };
-
-
-        marketSocket.onerror =
-            function(error) {
-
-                console.error(
-                    "WEBSOCKET ERROR:",
-                    error
-                );
-
-            };
-
-
-        marketSocket.onclose =
-            function() {
-
-                console.log(
-                    "MARKET CONNECTION CLOSED"
-                );
-
-
-                setTimeout(
-                    () => {
-
-                        connectLiveMarket();
-
-                    },
-                    3000
-                );
-
-            };
-
-    }
-
-
-    // =====================================================
-    // UPDATE PRICE DISPLAY
-    // =====================================================
-
-    function updatePriceDisplay() {
-
-        const priceElement =
-            document.getElementById(
-                "currentPrice"
-            );
-
+    if (priceElement) {
 
         priceElement.textContent =
-            Number(currentPrice)
-                .toLocaleString(
-                    "en-US",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }
-                );
-
-
-        const changeElement =
-            document.getElementById(
-                "priceChange"
+            Number(currentPrice).toLocaleString(
+                "en-US",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
             );
-
-
-        if (
-            previousPrice > 0 &&
-            currentPrice > previousPrice
-        ) {
-
-            changeElement.className =
-                "price-change up";
-
-
-            changeElement.innerHTML = `
-
-                <i class="fa-solid fa-arrow-trend-up"></i>
-
-                <span>
-                    Market moving upward
-                </span>
-
-            `;
-
-        }
-
-        else if (
-            previousPrice > 0 &&
-            currentPrice < previousPrice
-        ) {
-
-            changeElement.className =
-                "price-change down";
-
-
-            changeElement.innerHTML = `
-
-                <i class="fa-solid fa-arrow-trend-down"></i>
-
-                <span>
-                    Market moving downward
-                </span>
-
-            `;
-
-        }
 
     }
 
 
-    // =====================================================
-    // DURATION BUTTONS
-    // =====================================================
+    const changeElement =
+        document.getElementById("priceChange");
 
-    document
-        .querySelectorAll(".duration-btn")
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        if (activeTrade) {
-
-                            showMessage(
-                                "A trade is already active"
-                            );
-
-                            return;
-
-                        }
+    if (!changeElement) {
+        return;
+    }
 
 
-                        document
-                            .querySelectorAll(
-                                ".duration-btn"
-                            )
-                            .forEach(
-                                btn => {
+    if (
+        previousPrice > 0 &&
+        currentPrice > previousPrice
+    ) {
 
-                                    btn.classList.remove(
-                                        "active"
-                                    );
+        changeElement.className =
+            "price-change up";
 
-                                }
-                            );
+        changeElement.innerHTML = `
+            <i class="fa-solid fa-arrow-trend-up"></i>
+            <span>Market moving upward</span>
+        `;
+
+    }
+
+    else if (
+        previousPrice > 0 &&
+        currentPrice < previousPrice
+    ) {
+
+        changeElement.className =
+            "price-change down";
+
+        changeElement.innerHTML = `
+            <i class="fa-solid fa-arrow-trend-down"></i>
+            <span>Market moving downward</span>
+        `;
+
+    }
+
+}
 
 
-                        button.classList.add(
-                            "active"
-                        );
+// =====================================================
+// DURATION BUTTONS
+// =====================================================
 
+document.querySelectorAll(
+    ".duration-btn"
+).forEach(button => {
 
-                        selectedDuration =
-                            Number(
-                                button.dataset.duration
-                            );
+    button.addEventListener(
+        "click",
+        () => {
 
-                    }
+            if (
+                activeTrade ||
+                isStartingTrade
+            ) {
+
+                showMessage(
+                    "A trade is already active."
                 );
+
+                return;
+
+            }
+
+            const duration =
+                Number(button.dataset.duration);
+
+            if (
+                !ALLOWED_DURATIONS.includes(duration)
+            ) {
+
+                showMessage(
+                    "Invalid trading duration."
+                );
+
+                return;
+
+            }
+
+            document.querySelectorAll(
+                ".duration-btn"
+            ).forEach(btn => {
+
+                btn.classList.remove("active");
+
+            });
+
+            button.classList.add("active");
+
+            selectedDuration = duration;
+
+        }
+    );
+
+});
+
+
+// =====================================================
+// CHANGE TRADE AMOUNT
+// =====================================================
+
+function changeAmount(change) {
+
+    if (
+        activeTrade ||
+        isStartingTrade
+    ) {
+
+        showMessage(
+            "Cannot change amount during an active trade."
+        );
+
+        return;
+
+    }
+
+    tradeAmount += Number(change);
+
+    tradeAmount = Math.max(
+        MIN_TRADE_AMOUNT,
+        Math.min(MAX_TRADE_AMOUNT, tradeAmount)
+    );
+
+    updateAmountDisplay();
+
+}
+
+
+// =====================================================
+// UPDATE AMOUNT DISPLAY
+// =====================================================
+
+function updateAmountDisplay() {
+
+    const amountElement =
+        document.getElementById("amount");
+
+    if (amountElement) {
+
+        amountElement.textContent =
+            tradeAmount.toLocaleString("en-IN");
+
+    }
+
+}
+
+
+// =====================================================
+// START REAL WALLET TRADE
+// =====================================================
+
+// IMPORTANT:
+// The backend is responsible for:
+// 1. Checking the actual wallet balance.
+// 2. Fetching the entry price.
+// 3. Deducting the trade stake.
+// 4. Creating the trade.
+// 5. Recording the wallet transaction.
+//
+// Never deduct money or calculate a payout in this browser.
+
+async function startTrade(direction) {
+
+    if (isStartingTrade) {
+        return;
+    }
+
+    if (!token) {
+
+        showMessage(
+            "Please login first."
+        );
+
+        return;
+
+    }
+
+    if (activeTrade) {
+
+        showMessage(
+            "You already have an active trade."
+        );
+
+        return;
+
+    }
+
+    if (
+        !["BUY", "SELL"].includes(direction)
+    ) {
+
+        showMessage(
+            "Invalid trade direction."
+        );
+
+        return;
+
+    }
+
+    if (
+        !ALLOWED_DURATIONS.includes(selectedDuration)
+    ) {
+
+        showMessage(
+            "Please select a valid duration."
+        );
+
+        return;
+
+    }
+
+    if (
+        !Number.isFinite(tradeAmount) ||
+        tradeAmount < MIN_TRADE_AMOUNT ||
+        tradeAmount > MAX_TRADE_AMOUNT
+    ) {
+
+        showMessage(
+            "Please enter a valid trade amount."
+        );
+
+        return;
+
+    }
+
+    if (currentPrice <= 0) {
+
+        showMessage(
+            "Waiting for live BTC market price."
+        );
+
+        return;
+
+    }
+
+    if (walletBalance < tradeAmount) {
+
+        showMessage(
+            "Insufficient wallet balance."
+        );
+
+        return;
+
+    }
+
+
+    isStartingTrade = true;
+
+    disableTradeButtons();
+
+
+    try {
+
+        const data = await apiRequest(
+            "/trade/start",
+            {
+
+                method: "POST",
+
+                body: JSON.stringify({
+
+                    direction: direction,
+
+                    amount: tradeAmount,
+
+                    duration: selectedDuration,
+
+                    asset: MARKET_ASSET
+
+                })
 
             }
         );
 
 
-    // =====================================================
-    // CHANGE AMOUNT
-    // =====================================================
+        const trade = extractTrade(data);
 
-    function changeAmount(change) {
+        if (
+            !trade ||
+            !trade._id
+        ) {
 
-        if (activeTrade) {
-
-            showMessage(
-                "Cannot change amount during a trade"
+            throw new Error(
+                "The server did not return a valid trade."
             );
 
-            return;
-
         }
 
 
-        tradeAmount += change;
-
-
-        if (tradeAmount < 100) {
-
-            tradeAmount = 100;
-
-        }
-
-
-        document
-            .getElementById("amount")
-            .textContent =
-            tradeAmount;
-
-    }
-
-
-    // =====================================================
-    // START DEMO TRADE
-    // =====================================================
-
-    function startTrade(direction) {
-
-        if (activeTrade) {
-
-            showMessage(
-                "You already have an active trade"
-            );
-
-            return;
-
-        }
-
-
-        if (currentPrice <= 0) {
-
-            showMessage(
-                "Waiting for real market price"
-            );
-
-            return;
-
-        }
-
-
-        if (walletBalance < tradeAmount) {
-
-            showMessage(
-                "Insufficient displayed balance"
-            );
-
-            return;
-
-        }
-
-
-        activeTrade = {
-
-            id:
-                Date.now(),
-
-            direction:
-                direction,
-
-            amount:
-                tradeAmount,
-
-            entryPrice:
-                currentPrice,
-
-            duration:
-                selectedDuration,
-
-            remainingTime:
-                selectedDuration,
-
-            startedAt:
-                new Date()
-
-        };
-
+        activeTrade = trade;
 
         updateActiveTradeUI();
-
-
-        disableTradeButtons();
-
 
         startTimer();
 
 
-        renderHistory();
+        // Refresh actual wallet balance from database.
+
+        await refreshWallet();
+
+
+        // Refresh trade history.
+
+        await loadTradeHistory();
 
 
         showMessage(
-            `${direction} demo trade started`
+            `${direction} trade started successfully. Your wallet stake has been deducted.`
         );
 
     }
 
+    catch (error) {
 
-    // =====================================================
-    // UPDATE ACTIVE TRADE UI
-    // =====================================================
+        console.error(
+            "START REAL TRADE ERROR:",
+            error
+        );
 
-    function updateActiveTradeUI() {
+        showMessage(error.message);
 
-        const noTrade =
-            document.getElementById(
-                "noActiveTrade"
-            );
+        // Recover backend state in case the request
+        // succeeded but the response was interrupted.
 
+        await loadActiveTrade();
 
-        const activeCard =
-            document.getElementById(
-                "activeTradeCard"
-            );
+        await refreshWallet();
 
+    }
+
+    finally {
+
+        isStartingTrade = false;
 
         if (!activeTrade) {
 
-            noTrade.classList.remove(
-                "hidden"
-            );
+            enableTradeButtons();
+
+        }
+
+    }
+
+}
 
 
-            activeCard.classList.add(
-                "hidden"
-            );
+// =====================================================
+// LOAD ACTIVE TRADE
+// =====================================================
+
+async function loadActiveTrade() {
+
+    try {
+
+        const data = await apiRequest(
+            "/trade/active"
+        );
+
+        const trade = extractTrade(data);
+
+        if (
+            trade &&
+            trade._id &&
+            trade.status === "ACTIVE"
+        ) {
+
+            activeTrade = trade;
+
+            updateActiveTradeUI();
+
+            startTimer();
+
+        }
+
+        else {
+
+            activeTrade = null;
+
+            clearInterval(timerInterval);
+
+            updateActiveTradeUI();
+
+            enableTradeButtons();
+
+        }
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ACTIVE TRADE ERROR:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
 
 
-            document
-                .getElementById(
-                    "activeTradeText"
-                )
-                .textContent =
-                "No active trade";
+// =====================================================
+// LOAD TRADE HISTORY
+// =====================================================
+
+async function loadTradeHistory() {
+
+    try {
+
+        const data = await apiRequest(
+            "/trade/history"
+        );
+
+        tradeHistory = extractTrades(data);
+
+        tradeHistory = tradeHistory.slice(
+            0,
+            HISTORY_LIMIT
+        );
+
+        lastHistoryUpdate = Date.now();
+
+        renderHistory();
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "TRADE HISTORY ERROR:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
 
 
-            return;
+// =====================================================
+// SYNCHRONIZE TRADES WITH BACKEND
+// =====================================================
+
+async function syncTrades() {
+
+    if (
+        isSyncingTrades ||
+        !token
+    ) {
+
+        return;
+
+    }
+
+    isSyncingTrades = true;
+
+    try {
+
+        const previousTradeId =
+            activeTrade?._id || null;
+
+        const data = await apiRequest(
+            "/trade/active"
+        );
+
+        const trade = extractTrade(data);
+
+
+        if (
+            trade &&
+            trade._id &&
+            trade.status === "ACTIVE"
+        ) {
+
+            activeTrade = trade;
+
+            updateActiveTradeUI();
+
+            startTimer();
+
+        }
+
+        else {
+
+            activeTrade = null;
+
+            clearInterval(timerInterval);
+
+            updateActiveTradeUI();
+
+            enableTradeButtons();
+
+
+            // A previously active trade has disappeared
+            // from the active endpoint.
+            // Refresh history and wallet to obtain its
+            // final backend-settled state.
+
+            if (previousTradeId) {
+
+                await loadTradeHistory();
+
+                await refreshWallet();
+
+                showMessage(
+                    "Your trade has been settled. Check your trade history."
+                );
+
+            }
 
         }
 
 
-        noTrade.classList.add(
-            "hidden"
+        // Update history periodically.
+
+        if (
+            Date.now() - lastHistoryUpdate >= 10000
+        ) {
+
+            await loadTradeHistory();
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "TRADE SYNCHRONIZATION ERROR:",
+            error
         );
 
+    }
 
-        activeCard.classList.remove(
-            "hidden"
-        );
+    finally {
 
+        isSyncingTrades = false;
 
-        document
-            .getElementById(
-                "activeTradeText"
-            )
-            .textContent =
-            "Trade running";
+    }
+
+}
 
 
-        const icon =
-            document.getElementById(
-                "activeDirectionIcon"
-            );
+// =====================================================
+// UPDATE ACTIVE TRADE UI
+// =====================================================
+
+function updateActiveTradeUI() {
+
+    const noTrade =
+        document.getElementById("noActiveTrade");
+
+    const activeCard =
+        document.getElementById("activeTradeCard");
+
+    if (!noTrade || !activeCard) {
+        return;
+    }
 
 
-        const arrow =
-            document.getElementById(
-                "activeDirectionArrow"
-            );
+    if (!activeTrade) {
 
+        noTrade.classList.remove("hidden");
+
+        activeCard.classList.add("hidden");
+
+        const text =
+            document.getElementById("activeTradeText");
+
+        if (text) {
+
+            text.textContent =
+                "No active trade";
+
+        }
+
+        enableTradeButtons();
+
+        return;
+
+    }
+
+
+    noTrade.classList.add("hidden");
+
+    activeCard.classList.remove("hidden");
+
+
+    const text =
+        document.getElementById("activeTradeText");
+
+    if (text) {
+
+        text.textContent =
+            "Real wallet trade running";
+
+    }
+
+
+    const icon =
+        document.getElementById("activeDirectionIcon");
+
+    const arrow =
+        document.getElementById("activeDirectionArrow");
+
+
+    if (icon) {
 
         icon.className =
             "direction-icon " +
@@ -3693,757 +4357,779 @@
                     : "sell"
             );
 
+    }
+
+
+    if (arrow) {
 
         arrow.className =
             activeTrade.direction === "BUY"
                 ? "fa-solid fa-arrow-up"
                 : "fa-solid fa-arrow-down";
 
+    }
 
-        document
-            .getElementById(
-                "activeDirection"
-            )
-            .textContent =
+
+    const direction =
+        document.getElementById("activeDirection");
+
+    if (direction) {
+
+        direction.textContent =
             activeTrade.direction;
 
-
-        document
-            .getElementById(
-                "entryPrice"
-            )
-            .textContent =
-            "$" +
-            activeTrade.entryPrice
-                .toLocaleString(
-                    "en-US",
-                    {
-                        maximumFractionDigits: 2
-                    }
-                );
+    }
 
 
-        document
-            .getElementById(
-                "activeAmount"
-            )
-            .textContent =
-            money(
-                activeTrade.amount
-            );
+    const entryElement =
+        document.getElementById("entryPrice");
 
+    if (entryElement) {
 
-        updateActiveTradePrice();
-
-        updateTimerDisplay();
+        entryElement.textContent =
+            formatPrice(activeTrade.entryPrice);
 
     }
 
 
-    // =====================================================
-    // UPDATE ACTIVE PRICE
-    // =====================================================
+    const amountElement =
+        document.getElementById("activeAmount");
 
-    function updateActiveTradePrice() {
+    if (amountElement) {
 
-        const element =
-            document.getElementById(
-                "activeCurrentPrice"
-            );
-
-
-        if (!element) {
-            return;
-        }
-
-
-        element.textContent =
-            "$" +
-            Number(currentPrice)
-                .toLocaleString(
-                    "en-US",
-                    {
-                        maximumFractionDigits: 2
-                    }
-                );
+        amountElement.textContent =
+            money(activeTrade.amount);
 
     }
 
 
-    // =====================================================
-    // TIMER
-    // =====================================================
+    updateActiveTradePrice();
 
-    function startTimer() {
+    updateTimerDisplay();
 
-        clearInterval(
-            timerInterval
-        );
+    disableTradeButtons();
+
+}
 
 
-        timerInterval =
-            setInterval(
-                () => {
+// =====================================================
+// UPDATE ACTIVE TRADE PRICE
+// =====================================================
 
-                    if (!activeTrade) {
+function updateActiveTradePrice() {
 
-                        clearInterval(
-                            timerInterval
-                        );
+    const element =
+        document.getElementById("activeCurrentPrice");
 
-                        return;
-
-                    }
-
-
-                    activeTrade.remainingTime--;
-
-
-                    updateTimerDisplay();
-
-
-                    if (
-                        activeTrade.remainingTime <= 0
-                    ) {
-
-                        clearInterval(
-                            timerInterval
-                        );
-
-
-                        finishTrade();
-
-                    }
-
-                },
-                1000
-            );
-
+    if (!element) {
+        return;
     }
 
+    element.textContent =
+        formatPrice(currentPrice);
 
-    // =====================================================
-    // TIMER DISPLAY
-    // =====================================================
-
-    function updateTimerDisplay() {
-
-        if (!activeTrade) {
-            return;
-        }
+}
 
 
-        const minutes =
-            Math.floor(
-                activeTrade.remainingTime / 60
-            );
+// =====================================================
+// SERVER-SYNCHRONIZED TIMER
+// =====================================================
+
+function getRemainingSeconds(trade) {
+
+    if (!trade || !trade.endTime) {
+        return 0;
+    }
+
+    const endTime =
+        new Date(trade.endTime).getTime();
+
+    if (!Number.isFinite(endTime)) {
+        return 0;
+    }
+
+    return Math.max(
+        0,
+        Math.ceil(
+            (endTime - Date.now()) / 1000
+        )
+    );
+
+}
 
 
-        const seconds =
-            activeTrade.remainingTime % 60;
+// =====================================================
+// START TIMER
+// =====================================================
+
+function startTimer() {
+
+    clearInterval(timerInterval);
+
+    if (!activeTrade) {
+        return;
+    }
+
+    updateTimerDisplay();
+
+    timerInterval = setInterval(
+        () => {
+
+            if (!activeTrade) {
+
+                clearInterval(timerInterval);
+
+                return;
+
+            }
+
+            updateTimerDisplay();
+
+            if (
+                getRemainingSeconds(activeTrade) <= 0
+            ) {
+
+                clearInterval(timerInterval);
+
+                // Browser does not settle trades.
+                // The backend controls settlement.
+
+                syncTrades();
+
+            }
+
+        },
+        1000
+    );
+
+}
 
 
-        document
-            .getElementById("timer")
-            .textContent =
+// =====================================================
+// TIMER DISPLAY
+// =====================================================
+
+function updateTimerDisplay() {
+
+    if (!activeTrade) {
+        return;
+    }
+
+    const remainingTime =
+        getRemainingSeconds(activeTrade);
+
+    const minutes =
+        Math.floor(remainingTime / 60);
+
+    const seconds =
+        remainingTime % 60;
+
+
+    const timerElement =
+        document.getElementById("timer");
+
+    if (timerElement) {
+
+        timerElement.textContent =
             `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-
-        const progress =
-            (
-                (
-                    activeTrade.duration -
-                    activeTrade.remainingTime
-                )
-                /
-                activeTrade.duration
-            )
-            *
-            100;
-
-
-        document
-            .getElementById(
-                "progressFill"
-            )
-            .style.width =
-            `${Math.min(100, progress)}%`;
-
     }
 
 
-    // =====================================================
-    // FINISH DEMO TRADE
-    // =====================================================
+    const duration =
+        Number(activeTrade.duration || selectedDuration);
 
-    function finishTrade() {
-
-        if (!activeTrade) {
-            return;
-        }
-
-
-        const finishedTrade =
-            {
-                ...activeTrade
-            };
-
-
-        const exitPrice =
-            currentPrice;
-
-
-        let isWin =
-            false;
-
-
-        if (
-            finishedTrade.direction === "BUY" &&
-            exitPrice > finishedTrade.entryPrice
-        ) {
-
-            isWin = true;
-
-        }
-
-
-        if (
-            finishedTrade.direction === "SELL" &&
-            exitPrice < finishedTrade.entryPrice
-        ) {
-
-            isWin = true;
-
-        }
-
-
-        finishedTrade.exitPrice =
-            exitPrice;
-
-
-        finishedTrade.isWin =
-            isWin;
-
-
-        finishedTrade.status =
-            "completed";
-
-
-        finishedTrade.completedAt =
-            new Date();
-
-
-        tradeHistory.unshift(
-            finishedTrade
+    const elapsed =
+        Math.max(
+            0,
+            duration - remainingTime
         );
 
-
-        activeTrade =
-            null;
-
-
-        updateActiveTradeUI();
+    const progress =
+        duration > 0
+            ? (elapsed / duration) * 100
+            : 0;
 
 
-        enableTradeButtons();
+    const progressElement =
+        document.getElementById("progressFill");
 
+    if (progressElement) {
 
-        renderHistory();
-
-
-        showMessage(
-            isWin
-                ? "Demo trade completed: WIN"
-                : "Demo trade completed: LOSS"
-        );
+        progressElement.style.width =
+            `${Math.min(100, Math.max(0, progress))}%`;
 
     }
 
-
-    // =====================================================
-    // DISABLE BUTTONS
-    // =====================================================
-
-    function disableTradeButtons() {
-
-        document
-            .getElementById("buyBtn")
-            .disabled = true;
+}
 
 
-        document
-            .getElementById("sellBtn")
-            .disabled = true;
+// =====================================================
+// DISABLE TRADE BUTTONS
+// =====================================================
 
-    }
+function disableTradeButtons() {
 
+    const buyButton =
+        document.getElementById("buyBtn");
 
-    // =====================================================
-    // ENABLE BUTTONS
-    // =====================================================
+    const sellButton =
+        document.getElementById("sellBtn");
 
-    function enableTradeButtons() {
+    if (buyButton) {
 
-        document
-            .getElementById("buyBtn")
-            .disabled = false;
-
-
-        document
-            .getElementById("sellBtn")
-            .disabled = false;
+        buyButton.disabled = true;
 
     }
 
+    if (sellButton) {
 
-    // =====================================================
-    // FILTER BUTTONS
-    // =====================================================
+        sellButton.disabled = true;
 
-    document
-        .querySelectorAll(".filter-btn")
-        .forEach(
-            button => {
+    }
 
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        document
-                            .querySelectorAll(
-                                ".filter-btn"
-                            )
-                            .forEach(
-                                btn =>
-                                    btn.classList.remove(
-                                        "active"
-                                    )
-                            );
+}
 
 
-                        button.classList.add(
-                            "active"
-                        );
+// =====================================================
+// ENABLE TRADE BUTTONS
+// =====================================================
+
+function enableTradeButtons() {
+
+    if (
+        activeTrade ||
+        isStartingTrade
+    ) {
+
+        return;
+
+    }
+
+    const buyButton =
+        document.getElementById("buyBtn");
+
+    const sellButton =
+        document.getElementById("sellBtn");
+
+    if (buyButton) {
+
+        buyButton.disabled = false;
+
+    }
+
+    if (sellButton) {
+
+        sellButton.disabled = false;
+
+    }
+
+}
 
 
-                        selectedFilter =
-                            button.dataset.filter;
+// =====================================================
+// FILTER BUTTONS
+// =====================================================
 
+document.querySelectorAll(
+    ".filter-btn"
+).forEach(button => {
 
-                        renderHistory();
+    button.addEventListener(
+        "click",
+        () => {
 
-                    }
-                );
+            document.querySelectorAll(
+                ".filter-btn"
+            ).forEach(btn => {
 
-            }
-        );
+                btn.classList.remove("active");
 
+            });
 
-    // =====================================================
-    // RENDER HISTORY
-    // =====================================================
+            button.classList.add("active");
 
-    function renderHistory() {
+            selectedFilter =
+                button.dataset.filter;
 
-        const historyList =
-            document.getElementById(
-                "historyList"
-            );
-
-
-        let items = [];
-
-
-        if (
-            selectedFilter === "active"
-        ) {
-
-            if (activeTrade) {
-
-                items = [
-                    {
-                        ...activeTrade,
-                        status:
-                            "active"
-                    }
-                ];
-
-            }
+            renderHistory();
 
         }
+    );
 
-        else if (
-            selectedFilter === "completed"
-        ) {
+});
 
-            items =
-                [...tradeHistory];
+
+// =====================================================
+// RENDER TRADE HISTORY
+// =====================================================
+
+function renderHistory() {
+
+    const historyList =
+        document.getElementById("historyList");
+
+    if (!historyList) {
+        return;
+    }
+
+    let items = [...tradeHistory];
+
+
+    if (selectedFilter === "active") {
+
+        items = items.filter(
+            trade => trade.status === "ACTIVE"
+        );
+
+    }
+
+    else if (
+        selectedFilter === "completed"
+    ) {
+
+        items = items.filter(
+            trade => trade.status === "COMPLETED"
+        );
+
+    }
+
+
+    const countElement =
+        document.getElementById("historyCount");
+
+    if (countElement) {
+
+        countElement.textContent =
+            `${items.length} Trade${items.length !== 1 ? "s" : ""}`;
+
+    }
+
+
+    if (!items.length) {
+
+        historyList.innerHTML = `
+
+            <div class="empty-history">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                No trades found
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    historyList.innerHTML = items.map(trade => {
+
+        const isActive =
+            trade.status === "ACTIVE";
+
+
+        const direction =
+            trade.direction === "BUY"
+                ? "BUY"
+                : "SELL";
+
+
+        const directionClass =
+            direction.toLowerCase();
+
+
+        const icon =
+            direction === "BUY"
+                ? "fa-arrow-up"
+                : "fa-arrow-down";
+
+
+        let resultHTML = "";
+
+
+        if (isActive) {
+
+            resultHTML = `
+
+                <span class="result-badge">
+                    ACTIVE
+                </span>
+
+            `;
 
         }
 
         else {
 
-            items =
-                activeTrade
-                    ? [
-                        {
-                            ...activeTrade,
-                            status:
-                                "active"
-                        },
-                        ...tradeHistory
-                    ]
-                    : [...tradeHistory];
+            const result =
+                String(
+                    trade.result || ""
+                ).toUpperCase();
 
-        }
+            const badgeClass =
+                result === "WIN"
+                    ? "win"
+                    : result === "DRAW"
+                        ? "draw"
+                        : "loss";
 
 
-        document
-            .getElementById(
-                "historyCount"
-            )
-            .textContent =
-            `${items.length} Trade${items.length !== 1 ? "s" : ""}`;
+            resultHTML = `
 
-
-        if (items.length === 0) {
-
-            historyList.innerHTML = `
-
-                <div class="empty-history">
-
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-
-                    No trades found
-
-                </div>
+                <span class="result-badge ${badgeClass}">
+                    ${escapeHTML(result || "COMPLETED")}
+                </span>
 
             `;
 
-            return;
-
         }
 
 
-        historyList.innerHTML =
-            items
-                .map(
-                    trade => {
+        const entryPrice =
+            Number(trade.entryPrice || 0);
 
-                        const isActive =
-                            trade.status === "active";
 
+        const exitPrice =
+            Number(
+                isActive
+                    ? currentPrice
+                    : trade.exitPrice || 0
+            );
 
-                        const directionClass =
-                            trade.direction === "BUY"
-                                ? "buy"
-                                : "sell";
 
+        const amount =
+            Number(trade.amount || 0);
 
-                        const icon =
-                            trade.direction === "BUY"
-                                ? "fa-arrow-up"
-                                : "fa-arrow-down";
 
+        const payout =
+            Number(trade.netPayout || 0);
 
-                        let resultHTML =
-                            "";
 
+        const profit =
+            Number(trade.profit || 0);
 
-                        if (isActive) {
 
-                            resultHTML = `
+        return `
 
-                                <span class="result-badge">
+            <article class="history-item">
 
-                                    ACTIVE
+                <div class="history-top">
 
-                                </span>
+                    <div class="history-direction">
 
-                            `;
+                        <div class="history-icon ${directionClass}">
 
-                        }
+                            <i class="fa-solid ${icon}"></i>
 
-                        else {
+                        </div>
 
-                            resultHTML = `
+                        <div>
 
-                                <span
-                                    class="
-                                        result-badge
-                                        ${trade.isWin ? "win" : "loss"}
-                                    "
-                                >
+                            <strong>
+                                ${direction} BTC
+                            </strong>
 
-                                    ${trade.isWin ? "WIN" : "LOSS"}
+                            <small>
+                                ${escapeHTML(trade.asset || MARKET_ASSET)}
+                            </small>
 
-                                </span>
+                        </div>
 
-                            `;
+                    </div>
 
-                        }
+                    ${resultHTML}
 
+                </div>
 
-                        return `
 
-                            <article class="history-item">
+                <div class="history-data">
 
+                    <div>
 
-                                <div class="history-top">
+                        <span>ENTRY</span>
 
+                        <strong>
+                            ${formatPrice(entryPrice)}
+                        </strong>
 
-                                    <div class="history-direction">
+                    </div>
 
 
-                                        <div
-                                            class="
-                                                history-icon
-                                                ${directionClass}
-                                            "
-                                        >
+                    <div>
 
-                                            <i
-                                                class="
-                                                    fa-solid
-                                                    ${icon}
-                                                "
-                                            ></i>
+                        <span>
+                            ${isActive ? "CURRENT" : "EXIT"}
+                        </span>
 
-                                        </div>
+                        <strong>
+                            ${formatPrice(exitPrice)}
+                        </strong>
 
+                    </div>
 
-                                        <div>
 
-                                            <strong>
+                    <div>
 
-                                                ${trade.direction}
-                                                BTC
+                        <span>STAKE</span>
 
-                                            </strong>
+                        <strong>
+                            ${money(amount)}
+                        </strong>
 
+                    </div>
 
-                                            <small>
+                </div>
 
-                                                BTC / USDT
 
-                                            </small>
+                ${
+                    !isActive && trade.result === "WIN"
+                        ? `
+                            <div class="history-payout">
 
-                                        </div>
+                                <span>Net payout</span>
 
+                                <strong>${money(payout)}</strong>
 
-                                    </div>
+                            </div>
+                        `
+                        : ""
+                }
 
+                ${
+                    !isActive && trade.result === "WIN"
+                        ? `
+                            <div class="history-profit">
 
-                                    ${resultHTML}
+                                <span>Net profit</span>
 
+                                <strong>${money(profit)}</strong>
 
-                                </div>
+                            </div>
+                        `
+                        : ""
+                }
 
+            </article>
 
-                                <div class="history-data">
+        `;
 
+    }).join("");
 
-                                    <div>
+}
 
-                                        <span>
-                                            ENTRY
-                                        </span>
 
-                                        <strong>
+// =====================================================
+// NAVIGATION
+// =====================================================
 
-                                            $${Number(
-                                                trade.entryPrice
-                                            ).toLocaleString(
-                                                "en-US",
-                                                {
-                                                    maximumFractionDigits: 2
-                                                }
-                                            )}
+function navigate(page) {
 
-                                        </strong>
+    const pages = {
 
-                                    </div>
+        home: "home.html",
 
+        deposit: "deposite.html",
 
-                                    <div>
+        invite: "reer.html",
 
-                                        <span>
-                                            ${isActive ? "CURRENT" : "EXIT"}
-                                        </span>
+        profile: "profile.html"
 
-                                        <strong>
+    };
 
-                                            $${Number(
-                                                isActive
-                                                    ? currentPrice
-                                                    : trade.exitPrice
-                                            ).toLocaleString(
-                                                "en-US",
-                                                {
-                                                    maximumFractionDigits: 2
-                                                }
-                                            )}
+    if (pages[page]) {
 
-                                        </strong>
+        window.location.href =
+            pages[page];
 
-                                    </div>
+    }
 
+}
 
-                                    <div>
 
-                                        <span>
-                                            AMOUNT
-                                        </span>
+// =====================================================
+// INITIALIZE CHART
+// =====================================================
 
-                                        <strong>
+async function initializeChart() {
 
-                                            ${money(
-                                                trade.amount
-                                            )}
+    try {
 
-                                        </strong>
+        createChart();
 
-                                    </div>
+        await loadRealCandles();
 
+        connectLiveMarket();
 
-                                </div>
+    }
 
+    catch (error) {
 
-                            </article>
+        console.error(
+            "CHART INITIALIZATION ERROR:",
+            error
+        );
 
-                        `;
+    }
 
-                    }
-                )
-                .join("");
+}
+
+
+// =====================================================
+// INITIALIZE TRADING SYSTEM
+// =====================================================
+
+async function initializeTrading() {
+
+    console.log(
+        "TESLA WEALTH REAL WALLET TRADING INITIALIZING"
+    );
+
+
+    if (!token) {
+
+        showMessage(
+            "Please login first."
+        );
+
+        return;
 
     }
 
 
-    // =====================================================
-    // NAVIGATION
-    // =====================================================
+    // 1. Load actual wallet balance.
 
-    function navigate(page) {
-
-        switch (page) {
-
-            case "home":
-
-                window.location.href =
-                    "home.html";
-
-                break;
+    await loadProfile();
 
 
-            case "deposit":
+    // 2. Initialize BTC market chart.
 
-                window.location.href =
-                    "deposite.html";
-
-                break;
+    await initializeChart();
 
 
-            case "invite":
+    // 3. Load backend BTC price.
 
-                window.location.href =
-                    "reer.html";
-
-                break;
+    await loadBackendPrice();
 
 
-            case "profile":
+    // 4. Restore active trade.
 
-                window.location.href =
-                    "profile.html";
-
-                break;
-
-        }
-
-    }
+    await loadActiveTrade();
 
 
-    // =====================================================
-    // INITIALIZE CHART
-    // =====================================================
+    // 5. Load trade history.
 
-    async function initializeChart() {
-
-        try {
-
-            createChart();
+    await loadTradeHistory();
 
 
-            await loadRealCandles();
+    // 6. Render interface.
 
+    updateWalletDisplay();
+
+    updateAmountDisplay();
+
+    updateActiveTradeUI();
+
+    renderHistory();
+
+
+    // 7. Synchronize trades with backend.
+
+    clearInterval(syncInterval);
+
+    syncInterval = setInterval(
+        syncTrades,
+        SYNC_INTERVAL
+    );
+
+
+    // 8. Refresh backend market price periodically.
+
+    clearInterval(priceInterval);
+
+    priceInterval = setInterval(
+        loadBackendPrice,
+        PRICE_INTERVAL
+    );
+
+
+    console.log(
+        "TESLA WEALTH REAL WALLET TRADING READY"
+    );
+
+}
+
+
+// =====================================================
+// PAGE LOAD
+// =====================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeTrading
+);
+
+
+// =====================================================
+// PAGE VISIBILITY
+// =====================================================
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if (
+            !document.hidden &&
+            token
+        ) {
+
+            loadProfile();
+
+            loadBackendPrice();
+
+            syncTrades();
 
             connectLiveMarket();
 
         }
 
-        catch (error) {
+    }
+);
 
-            console.error(
-                "CHART INITIALIZATION ERROR:",
-                error
-            );
+
+// =====================================================
+// CLEANUP
+// =====================================================
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if (marketSocket) {
+
+            marketSocket.onclose = null;
+
+            marketSocket.close();
 
         }
+
+        clearInterval(timerInterval);
+
+        clearInterval(syncInterval);
+
+        clearInterval(priceInterval);
+
+        clearTimeout(socketReconnectTimer);
+
+        window.removeEventListener(
+            "resize",
+            resizeChart
+        );
 
     }
-
-
-    // =====================================================
-    // PAGE LOAD
-    // =====================================================
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        async () => {
-
-            await loadProfile();
-
-
-            await initializeChart();
-
-
-            updateActiveTradeUI();
-
-
-            renderHistory();
-
-
-            console.log(
-                "TRADING PAGE READY"
-            );
-
-        }
-    );
-
-
-    // =====================================================
-    // CLEANUP
-    // =====================================================
-
-    window.addEventListener(
-        "beforeunload",
-        () => {
-
-            if (marketSocket) {
-
-                marketSocket.close();
-
-            }
-
-
-            clearInterval(
-                timerInterval
-            );
-
-        }
-    );
-
+);
 
 </script>
 

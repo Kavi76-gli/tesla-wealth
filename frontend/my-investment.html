@@ -1,83 +1,50 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
 
-<meta charset="UTF-8">
+    <meta name="theme-color" content="#061a13">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
+    <meta
+        name="description"
+        content="View and manage your Tesla Wealth investment portfolio."
+    >
 
-<title>My Investments | Kubota Invest</title>
+    <title>My Investments | Tesla Wealth</title>
 
-<!-- =====================================================
-     GOOGLE FONT
-====================================================== -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-<link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
->
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
 
-<link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
->
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-<!-- =====================================================
-     FONT AWESOME
-====================================================== -->
-
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
->
-
-
-<!-- =====================================================
-     SWEETALERT
-====================================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-<!-- =====================================================
-     PAGE CSS
-====================================================== -->
-
-<link
-    rel="stylesheet"
-    href="css/my-investment.css"
->
-
-
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="css/my-investment.css">
 </head>
 
 <body>
 
-
-<!-- =====================================================
-     APP SHELL
-====================================================== -->
-
 <div class="app-shell">
 
-
-    <!-- =================================================
-         HEADER
-    ================================================== -->
-
+    <!-- HEADER -->
     <header class="top-header">
 
         <div class="header-left">
@@ -86,33 +53,27 @@
                 class="back-button"
                 type="button"
                 onclick="goBack()"
-                aria-label="Go Back"
+                aria-label="Go back"
             >
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
 
-
             <div class="page-heading">
 
-                <span>
-                    Investment Portfolio
-                </span>
+                <span>TESLA WEALTH / PORTFOLIO</span>
 
-                <h1>
-                    My Investments
-                </h1>
+                <h1>My Investments</h1>
 
             </div>
 
         </div>
-
 
         <button
             class="refresh-button"
             id="refreshButton"
             type="button"
             onclick="refreshInvestments()"
-            aria-label="Refresh Investments"
+            aria-label="Refresh investments"
         >
             <i class="fa-solid fa-rotate"></i>
         </button>
@@ -120,104 +81,91 @@
     </header>
 
 
-
-    <!-- =================================================
-         MAIN CONTENT
-    ================================================== -->
-
+    <!-- MAIN -->
     <main class="main-content">
 
+        <!-- PORTFOLIO SUMMARY -->
+        <section class="portfolio-card">
 
-        <!-- =================================================
-             PORTFOLIO SUMMARY
-        ================================================== -->
+            <div class="portfolio-glow glow-one"></div>
+            <div class="portfolio-glow glow-two"></div>
 
-       <section class="portfolio-card">
+            <div class="portfolio-top">
 
-    <div class="portfolio-glow glow-one"></div>
+                <div class="portfolio-info">
 
-    <div class="portfolio-glow glow-two"></div>
+                    <span class="portfolio-label">
+                        TOTAL INVESTED
+                    </span>
+
+                    <h2 id="totalInvested">
+                        ₹0.00
+                    </h2>
+
+                    <small class="portfolio-subtitle">
+                        Your investment portfolio
+                    </small>
+
+                </div>
+
+                <div class="portfolio-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+            </div>
+
+            <div class="portfolio-divider"></div>
+
+            <div class="portfolio-bottom">
+
+                <div class="portfolio-stat">
+
+                    <span>
+                        <i class="fa-solid fa-bolt"></i>
+                        Active
+                    </span>
+
+                    <strong id="activeInvestments">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="portfolio-stat">
+
+                    <span>
+                        <i class="fa-solid fa-coins"></i>
+                        Total Earned
+                    </span>
+
+                    <strong
+                        id="totalProfit"
+                        class="profit-value"
+                    >
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+                <div class="portfolio-stat">
+
+                    <span>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Completed
+                    </span>
+
+                    <strong id="completedInvestments">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
 
 
-    <div class="portfolio-top">
-
-        <div>
-
-            <span class="portfolio-label">
-                Total Invested
-            </span>
-
-            <h2 id="totalInvested">
-                ₹0.00
-            </h2>
-
-            <small class="portfolio-subtitle">
-                Your active investment portfolio
-            </small>
-
-        </div>
-
-
-        <div class="portfolio-icon">
-
-            <i class="fa-solid fa-chart-line"></i>
-
-        </div>
-
-    </div>
-
-
-    <div class="portfolio-bottom">
-
-        <div class="portfolio-stat">
-
-            <span>
-                Active
-            </span>
-
-            <strong id="activeInvestments">
-                0
-            </strong>
-
-        </div>
-
-
-        <div class="portfolio-stat">
-
-            <span>
-                Total Earned
-            </span>
-
-            <strong
-                id="totalProfit"
-                class="profit-value"
-            >
-                ₹0.00
-            </strong>
-
-        </div>
-
-
-        <div class="portfolio-stat">
-
-            <span>
-                Completed
-            </span>
-
-            <strong id="completedInvestments">
-                0
-            </strong>
-
-        </div>
-
-    </div>
-
-</section>
-
-        <!-- =================================================
-             FILTERS
-        ================================================== -->
-
+        <!-- FILTERS -->
         <section class="filter-section">
 
             <button
@@ -229,7 +177,6 @@
                 All
             </button>
 
-
             <button
                 class="filter-button"
                 data-filter="active"
@@ -238,7 +185,6 @@
                 <i class="fa-solid fa-bolt"></i>
                 Active
             </button>
-
 
             <button
                 class="filter-button"
@@ -252,18 +198,16 @@
         </section>
 
 
-
-        <!-- =================================================
-             SECTION HEADER
-        ================================================== -->
-
+        <!-- SECTION HEADING -->
         <div class="section-header">
 
             <div>
 
-                <h2>
-                    Investment History
-                </h2>
+                <span class="section-eyebrow">
+                    PORTFOLIO MANAGEMENT
+                </span>
+
+                <h2>Investment History</h2>
 
                 <p id="investmentCount">
                     Loading investments...
@@ -271,14 +215,14 @@
 
             </div>
 
+            <div class="history-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+
         </div>
 
 
-
-        <!-- =================================================
-             INVESTMENTS CONTAINER
-        ================================================== -->
-
+        <!-- INVESTMENTS -->
         <section
             id="investmentsContainer"
             class="investments-container"
@@ -301,23 +245,13 @@
         </section>
 
 
-
-        <!-- =================================================
-             BOTTOM SPACE
-        ================================================== -->
-
         <div class="bottom-space"></div>
 
     </main>
 
 
-
-    <!-- =====================================================
-         BOTTOM NAVIGATION
-    ====================================================== -->
-
+    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav">
-
 
         <button
             class="nav-item"
@@ -325,13 +259,9 @@
             onclick="goTo('home.html')"
         >
 
-            <div class="nav-icon">
-                <i class="fa-solid fa-house"></i>
-            </div>
+            <i class="fa-solid fa-house"></i>
 
-            <span>
-                Home
-            </span>
+            <span>Home</span>
 
         </button>
 
@@ -339,15 +269,12 @@
         <button
             class="nav-item active"
             type="button"
+            aria-current="page"
         >
 
-            <div class="nav-icon">
-                <i class="fa-solid fa-chart-pie"></i>
-            </div>
+            <i class="fa-solid fa-chart-pie"></i>
 
-            <span>
-                Invest
-            </span>
+            <span>Invest</span>
 
         </button>
 
@@ -362,9 +289,7 @@
                 <i class="fa-solid fa-plus"></i>
             </div>
 
-            <span>
-                Deposit
-            </span>
+            <span>Deposit</span>
 
         </button>
 
@@ -375,13 +300,9 @@
             onclick="goTo('withdraw.html')"
         >
 
-            <div class="nav-icon">
-                <i class="fa-solid fa-money-bill-transfer"></i>
-            </div>
+            <i class="fa-solid fa-money-bill-transfer"></i>
 
-            <span>
-                Withdraw
-            </span>
+            <span>Withdraw</span>
 
         </button>
 
@@ -392,30 +313,19 @@
             onclick="goTo('profile.html')"
         >
 
-            <div class="nav-icon">
-                <i class="fa-solid fa-user"></i>
-            </div>
+            <i class="fa-solid fa-user"></i>
 
-            <span>
-                Profile
-            </span>
+            <span>Profile</span>
 
         </button>
-
 
     </nav>
 
 </div>
 
 
-
-<!-- =====================================================
-     PAGE JAVASCRIPT
-====================================================== -->
-
+<!-- JAVASCRIPT -->
 <script src="js/my-investment.js"></script>
 
-
 </body>
-
 </html>

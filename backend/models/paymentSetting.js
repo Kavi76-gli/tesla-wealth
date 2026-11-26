@@ -8,10 +8,10 @@ const paymentSettingSchema = new mongoose.Schema({
     },
 
     paymentType: {
-        type: String,
-        enum: ["UPI", "BANK", "BOTH"],
-        default: "UPI"
-    },
+    type: String,
+    enum: ["UPI", "BANK", "BOTH", "BINANCE_PAY"],
+    default: "BINANCE_PAY"
+},
 
     upiId: {
         type: String,
@@ -44,9 +44,9 @@ const paymentSettingSchema = new mongoose.Schema({
     },
 
     minimumDeposit: {
-        type: Number,
-        default: 100
-    },
+    type: Number,
+    default: 50
+},
 
     maximumDeposit: {
         type: Number,

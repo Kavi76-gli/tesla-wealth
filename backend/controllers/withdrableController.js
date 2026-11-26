@@ -1,930 +1,1681 @@
 "use strict";
 
-// ======================================================
-// TESLA WEALTH
-// SECURE WITHDRAWAL CONTROLLER
-// ======================================================
-
 const mongoose = require("mongoose");
 
 const Withdrawal = require("../models/withdrawal");
 const User = require("../models/user");
 const Transaction = require("../models/transaction");
 
+
 // ======================================================
-// CONSTANTS
+// CONFIGURATION
 // ======================================================
 
 const MIN_WITHDRAWAL = 500;
+
 const PLATFORM_FEE_PERCENT = 3;
 
+const MAX_REJECTION_REASON_LENGTH = 500;
+
+const MAX_ALERT_LENGTH = 1000;
+
+
 // ======================================================
-// HELPERS
+// HELPER - GET USER ID
 // ======================================================
 
 function getUserId(req) {
+
     return (
         req.user?.id ||
         req.user?._id ||
-        req.user?.userId ||
         req.userId
     );
+
 }
 
-function validObjectId(id) {
-    return (
-        typeof id === "string" &&
-        mongoose.Types.ObjectId.isValid(id)
-    );
-}
 
-function toNumber(value, fallback = 0) {
-    const number = Number(value);
-
-    return Number.isFinite(number) ? number : fallback;
-}
-
-function roundMoney(value) {
-    return Math.round(
-        (Number(value) + Number.EPSILON) * 100
-    ) / 100;
-}
+// ======================================================
+// HELPER - GENERATE TRANSACTION ID
+// ======================================================
 
 function generateTxId(prefix = "WDR") {
+
     return (
         prefix +
         Date.now() +
-        cryptoRandomSuffix()
+        Math.floor(100 + Math.random() * 900)
     );
+
 }
 
-function cryptoRandomSuffix() {
-    return require("crypto")
-        .randomBytes(8)
-        .toString("hex")
-        .toUpperCase();
-}
-
-function httpError(status, message) {
-    const error = new Error(message);
-    error.statusCode = status;
-    return error;
-}
-
-function isDuplicateKeyError(error) {
-    return error?.code === 11000;
-}
 
 // ======================================================
-// USER — CREATE WITHDRAWAL
+// HELPER - ROUND MONEY
+// ======================================================
+
+function roundMoney(value) {
+
+    return Number(Number(value).toFixed(2));
+
+}
+
+
+// ======================================================
+// HELPER - ERROR RESPONSE
+// ======================================================
+
+function serverError(res, error, title) {
+
+    console.error(title, error);
+
+    return res.status(500).json({
+
+        success: false,
+
+        message:
+            error.message ||
+            "An unexpected server error occurred."
+
+    });
+
+}
+
+
+// ======================================================
+// USER - CREATE WITHDRAWAL
 // ======================================================
 
 exports.createWithdrawal = async (req, res) => {
-    let session;
 
     try {
+
         console.log("====================================");
-        console.log("TESLA WEALTH — CREATE WITHDRAWAL");
+        console.log("CREATE WITHDRAWAL");
         console.log("====================================");
 
-        // ----------------------------------------------
-        // 1. AUTHENTICATION
-        // ----------------------------------------------
+
+        // ==============================================
+        // USER ID
+        // ==============================================
 
         const userId = getUserId(req);
 
-        if (!userId || !validObjectId(String(userId))) {
+        if (!userId) {
+
             return res.status(401).json({
+
                 success: false,
+
                 message: "Authentication required."
+
             });
+
         }
 
-        // ----------------------------------------------
-        // 2. VALIDATE REQUEST
-        // ----------------------------------------------
+
+        // ==============================================
+        // FIND USER
+        // ==============================================
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "User not found."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // CHECK WITHDRAWAL PERMISSION
+        // ==============================================
+
+        if (user.withdrawalEnabled === false) {
+
+            return res.status(403).json({
+
+                success: false,
+
+                withdrawalDisabled: true,
+
+                message:
+                    "Your withdrawal permission is currently disabled.",
+
+                alert:
+                    "Withdrawal Temporarily Disabled",
+
+                reason:
+                    user.withdrawalDisabledReason ||
+                    "Please contact customer support.",
+
+                disabledReason:
+                    user.withdrawalDisabledReason || "",
+
+                disabledAlert:
+                    user.withdrawalDisabledAlert || "",
+
+                disabledAt:
+                    user.withdrawalDisabledAt || null
+
+            });
+
+        }
+
+
+        // ==============================================
+        // REQUEST BODY
+        // ==============================================
 
         const {
+
             amount,
+
             paymentMethod,
+
             paymentDetails = {}
+
         } = req.body || {};
 
-        const requestedAmount = Number(amount);
+
+        // ==============================================
+        // AMOUNT VALIDATION
+        // ==============================================
+
+        const withdrawAmount = Number(amount);
 
         if (
-            !Number.isFinite(requestedAmount) ||
-            requestedAmount <= 0
+            !Number.isFinite(withdrawAmount) ||
+            withdrawAmount <= 0
         ) {
+
             return res.status(400).json({
+
                 success: false,
-                message: "Please enter a valid withdrawal amount."
+
+                message:
+                    "Please enter a valid withdrawal amount."
+
             });
+
         }
 
-        if (
-            !Number.isSafeInteger(
-                Math.round(requestedAmount * 100)
-            )
-        ) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid withdrawal amount."
-            });
-        }
 
-        const grossAmount = roundMoney(requestedAmount);
+        const finalAmount = roundMoney(withdrawAmount);
 
-        if (grossAmount < MIN_WITHDRAWAL) {
+        if (finalAmount < MIN_WITHDRAWAL) {
+
             return res.status(400).json({
+
                 success: false,
+
                 message:
                     `Minimum withdrawal amount is ₹${MIN_WITHDRAWAL}.`
+
             });
+
         }
 
-        // ----------------------------------------------
-        // 3. VALIDATE PAYMENT METHOD
-        // ----------------------------------------------
+
+        // ==============================================
+        // PAYMENT METHOD VALIDATION
+        // ==============================================
 
         if (!["UPI", "Bank"].includes(paymentMethod)) {
+
             return res.status(400).json({
+
                 success: false,
+
                 message: "Invalid payment method."
+
             });
+
         }
 
-        // ----------------------------------------------
-        // 4. SANITIZE PAYMENT DETAILS
-        // ----------------------------------------------
+
+        // ==============================================
+        // WALLET BALANCE
+        // ==============================================
+
+        const currentBalance =
+            Number(user.balance || 0);
+
+        if (
+            !Number.isFinite(currentBalance) ||
+            finalAmount > currentBalance
+        ) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    `Insufficient wallet balance. Available balance: ₹${currentBalance}`
+
+            });
+
+        }
+
+
+        // ==============================================
+        // CLEAN PAYMENT DETAILS
+        // ==============================================
+
+        const submittedDetails =
+            paymentDetails &&
+            typeof paymentDetails === "object"
+                ? paymentDetails
+                : {};
+
+
+        const ifscCode = String(
+            submittedDetails.ifscCode ||
+            submittedDetails.ifsc ||
+            ""
+        ).trim().toUpperCase();
+
 
         const cleanPaymentDetails = {
+
             upiId:
                 paymentMethod === "UPI"
                     ? String(
-                        paymentDetails?.upiId || ""
+                        submittedDetails.upiId || ""
                     ).trim()
                     : "",
 
             accountHolder:
                 paymentMethod === "Bank"
                     ? String(
-                        paymentDetails?.accountHolder || ""
+                        submittedDetails.accountHolder || ""
                     ).trim()
                     : "",
 
             bankName:
                 paymentMethod === "Bank"
                     ? String(
-                        paymentDetails?.bankName || ""
+                        submittedDetails.bankName || ""
                     ).trim()
                     : "",
 
             accountNumber:
                 paymentMethod === "Bank"
                     ? String(
-                        paymentDetails?.accountNumber || ""
+                        submittedDetails.accountNumber || ""
                     ).trim()
                     : "",
 
-            ifscCode:
-                paymentMethod === "Bank"
-                    ? String(
-                        paymentDetails?.ifscCode || ""
-                    ).trim().toUpperCase()
-                    : ""
+            ifsc: ifscCode,
+
+            ifscCode: ifscCode
+
         };
 
-        // ----------------------------------------------
-        // 5. VALIDATE UPI
-        // ----------------------------------------------
+
+        // ==============================================
+        // UPI VALIDATION
+        // ==============================================
 
         if (paymentMethod === "UPI") {
+
             if (!cleanPaymentDetails.upiId) {
+
                 return res.status(400).json({
+
                     success: false,
+
                     message: "UPI ID is required."
+
                 });
+
             }
 
             if (
-                cleanPaymentDetails.upiId.length > 100 ||
-                !/^[^\s@]+@[^\s@]+$/.test(
+                !/^[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}$/.test(
                     cleanPaymentDetails.upiId
                 )
             ) {
+
                 return res.status(400).json({
+
                     success: false,
+
                     message: "Please enter a valid UPI ID."
+
                 });
+
             }
+
         }
 
-        // ----------------------------------------------
-        // 6. VALIDATE BANK DETAILS
-        // ----------------------------------------------
+
+        // ==============================================
+        // BANK VALIDATION
+        // ==============================================
 
         if (paymentMethod === "Bank") {
+
             if (
                 !cleanPaymentDetails.accountHolder ||
                 !cleanPaymentDetails.bankName ||
                 !cleanPaymentDetails.accountNumber ||
                 !cleanPaymentDetails.ifscCode
             ) {
+
                 return res.status(400).json({
+
                     success: false,
+
                     message:
                         "Please provide complete bank account details."
+
                 });
+
             }
+
 
             if (
                 !/^\d{6,20}$/.test(
                     cleanPaymentDetails.accountNumber
                 )
             ) {
+
                 return res.status(400).json({
+
                     success: false,
+
                     message:
                         "Please enter a valid bank account number."
+
                 });
+
             }
+
 
             if (
                 !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(
                     cleanPaymentDetails.ifscCode
                 )
             ) {
+
                 return res.status(400).json({
+
                     success: false,
-                    message: "Please enter a valid IFSC code."
+
+                    message:
+                        "Please enter a valid IFSC code."
+
                 });
+
             }
+
         }
 
-        // ----------------------------------------------
-        // 7. CALCULATE FEE AND NET PAYOUT
-        // ----------------------------------------------
+
+        // ==============================================
+        // CHECK EXISTING PENDING WITHDRAWAL
+        // ==============================================
+
+        const existingPending =
+            await Withdrawal.findOne({
+
+                user: user._id,
+
+                status: "Pending"
+
+            });
+
+        if (existingPending) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "You already have a pending withdrawal."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // CALCULATE PLATFORM FEE
+        // ==============================================
+
+        const platformFeePercent =
+            PLATFORM_FEE_PERCENT;
 
         const platformFee = roundMoney(
-            grossAmount * PLATFORM_FEE_PERCENT / 100
+            finalAmount * platformFeePercent / 100
         );
 
         const netAmount = roundMoney(
-            grossAmount - platformFee
+            finalAmount - platformFee
         );
 
-        // ----------------------------------------------
-        // 8. RESERVE FUNDS TRANSACTIONALLY
-        // ----------------------------------------------
 
-        session = await mongoose.startSession();
+        // ==============================================
+        // CREATE WITHDRAWAL
+        // ==============================================
 
-        let createdWithdrawal = null;
-        let updatedBalances = null;
+        const withdrawal = await Withdrawal.create({
 
-        await session.withTransaction(async () => {
-            // Reset callback results because MongoDB may retry
-            // a transaction callback.
-            createdWithdrawal = null;
-            updatedBalances = null;
+            user: user._id,
 
-            // ------------------------------------------
-            // CHECK EXISTING PENDING REQUEST
-            // ------------------------------------------
+            amount: finalAmount,
 
-            const existingPending = await Withdrawal.findOne({
-                user: userId,
-                status: "Pending"
-            }).session(session);
+            platformFee: platformFee,
 
-            if (existingPending) {
-                throw httpError(
-                    409,
-                    "You already have a pending withdrawal. Please wait until it is processed."
-                );
-            }
+            platformFeePercent: platformFeePercent,
 
-            // ------------------------------------------
-            // ATOMICALLY RESERVE ELIGIBLE FUNDS
-            // ------------------------------------------
+            netAmount: netAmount,
 
-            const user = await User.findOneAndUpdate(
-                {
-                    _id: userId,
-                    balance: {
-                        $gte: grossAmount
-                    },
-                    withdrawableEarnings: {
-                        $gte: grossAmount
-                    }
-                },
-                {
-                    $inc: {
-                        balance: -grossAmount,
-                        withdrawableEarnings: -grossAmount,
-                        totalWithdraw: grossAmount
-                    }
-                },
-                {
-                    new: true,
-                    session,
-                    runValidators: true
-                }
-            );
+            paymentMethod,
 
-            if (!user) {
-                const currentUser = await User.findById(
-                    userId
-                ).session(session);
+            paymentDetails: cleanPaymentDetails,
 
-                if (!currentUser) {
-                    throw httpError(
-                        404,
-                        "User account not found."
-                    );
-                }
+            status: "Pending"
 
-                const walletBalance = roundMoney(
-                    toNumber(currentUser.balance)
-                );
-
-                const eligibleBalance = roundMoney(
-                    toNumber(currentUser.withdrawableEarnings)
-                );
-
-                if (eligibleBalance < grossAmount) {
-                    throw httpError(
-                        400,
-                        "Insufficient eligible investment earnings. " +
-                        `Available for withdrawal: ₹${eligibleBalance}.`
-                    );
-                }
-
-                if (walletBalance < grossAmount) {
-                    throw httpError(
-                        400,
-                        "Insufficient wallet balance for this withdrawal."
-                    );
-                }
-
-                throw httpError(
-                    400,
-                    "Unable to reserve the requested withdrawal amount."
-                );
-            }
-
-            // ------------------------------------------
-            // CREATE PENDING WITHDRAWAL
-            // ------------------------------------------
-
-            const [withdrawal] = await Withdrawal.create(
-                [
-                    {
-                        user: user._id,
-                        amount: grossAmount,
-                        platformFee,
-                        platformFeePercent:
-                            PLATFORM_FEE_PERCENT,
-                        netAmount,
-                        paymentMethod,
-                        paymentDetails:
-                            cleanPaymentDetails,
-                        status: "Pending"
-                    }
-                ],
-                {
-                    session
-                }
-            );
-
-            createdWithdrawal = withdrawal;
-
-            updatedBalances = {
-                balance: roundMoney(user.balance),
-                withdrawableEarnings: roundMoney(
-                    user.withdrawableEarnings
-                )
-            };
         });
 
-        // ----------------------------------------------
-        // 9. SUCCESS RESPONSE
-        // ----------------------------------------------
 
-        if (!createdWithdrawal) {
-            throw new Error(
-                "Withdrawal transaction completed without creating a withdrawal."
-            );
-        }
+        // ==============================================
+        // RESERVE WALLET AMOUNT
+        // ==============================================
 
-        console.log("Withdrawal created successfully.");
-        console.log("Withdrawal ID:", createdWithdrawal._id);
-        console.log("Gross amount:", grossAmount);
-        console.log("Platform fee:", platformFee);
-        console.log("Net payout:", netAmount);
+        user.balance = roundMoney(
+            currentBalance - finalAmount
+        );
+
+        user.totalWithdraw = roundMoney(
+            Number(user.totalWithdraw || 0) +
+            finalAmount
+        );
+
+        await user.save();
+
+
+        // ==============================================
+        // RESPONSE
+        // ==============================================
 
         return res.status(201).json({
+
             success: true,
+
             message:
                 "Withdrawal request submitted successfully.",
 
-            withdrawal: createdWithdrawal,
+            withdrawal,
 
-            grossAmount,
-            platformFee,
-            platformFeePercent: PLATFORM_FEE_PERCENT,
-            netAmount,
+            balance: user.balance,
 
-            balance: updatedBalances.balance,
+            calculation: {
 
-            withdrawableEarnings:
-                updatedBalances.withdrawableEarnings
+                amount: finalAmount,
+
+                platformFeePercent,
+
+                platformFee,
+
+                netAmount
+
+            }
+
         });
+
 
     } catch (error) {
-        console.error("CREATE WITHDRAWAL ERROR:", error);
 
-        if (isDuplicateKeyError(error)) {
-            return res.status(409).json({
-                success: false,
-                message:
-                    "You already have a pending withdrawal. Please wait until it is processed."
-            });
-        }
+        return serverError(
+            res,
+            error,
+            "CREATE WITHDRAWAL ERROR:"
+        );
 
-        return res.status(error.statusCode || 500).json({
-            success: false,
-            message:
-                error.statusCode
-                    ? error.message
-                    : "Unable to create withdrawal request."
-        });
-
-    } finally {
-        if (session) {
-            await session.endSession();
-        }
     }
+
 };
 
+
 // ======================================================
-// USER — MY WITHDRAWALS
+// USER - MY WITHDRAWALS
 // ======================================================
 
 exports.getMyWithdrawals = async (req, res) => {
+
     try {
+
+        // ==============================================
+        // USER ID
+        // ==============================================
+
         const userId = getUserId(req);
 
-        if (!userId || !validObjectId(String(userId))) {
+        if (!userId) {
+
             return res.status(401).json({
+
                 success: false,
+
                 message: "Authentication required."
+
             });
+
         }
 
-        const withdrawals = await Withdrawal.find({
-            user: userId
-        }).sort({
-            createdAt: -1
+
+        // ==============================================
+        // GET USER AND WITHDRAWALS
+        // ==============================================
+
+        const [withdrawals, user] = await Promise.all([
+
+            Withdrawal.find({
+
+                user: userId
+
+            }).sort({
+
+                createdAt: -1
+
+            }),
+
+            User.findById(userId).select(
+
+                "withdrawalEnabled " +
+                "withdrawalDisabledReason " +
+                "withdrawalDisabledAlert " +
+                "withdrawalDisabledAt"
+
+            )
+
+        ]);
+
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "User not found."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // RESPONSE
+        // ==============================================
+
+        return res.json({
+
+            success: true,
+
+            withdrawals,
+
+            withdrawalPermission: {
+
+                enabled:
+                    user.withdrawalEnabled !== false,
+
+                disabledReason:
+                    user.withdrawalDisabledReason || "",
+
+                disabledAlert:
+                    user.withdrawalDisabledAlert || "",
+
+                disabledAt:
+                    user.withdrawalDisabledAt || null
+
+            }
+
         });
 
-        return res.status(200).json({
-            success: true,
-            withdrawals
-        });
 
     } catch (error) {
-        console.error("GET MY WITHDRAWALS ERROR:", error);
 
-        return res.status(500).json({
-            success: false,
-            message: "Unable to fetch withdrawals."
-        });
+        return serverError(
+            res,
+            error,
+            "MY WITHDRAWALS ERROR:"
+        );
+
     }
+
 };
 
+
 // ======================================================
-// ADMIN — GET ALL WITHDRAWALS
+// ADMIN - GET ALL WITHDRAWALS
 // ======================================================
 
 exports.getAllWithdrawals = async (req, res) => {
+
     try {
+
+        // ==============================================
+        // FIND ALL WITHDRAWALS
+        // ==============================================
+
         const withdrawals = await Withdrawal.find()
+
             .populate(
+
                 "user",
-                "name phone inviteCode balance withdrawableEarnings"
+
+                "name phone inviteCode " +
+                "withdrawalEnabled " +
+                "withdrawalDisabledReason " +
+                "withdrawalDisabledAlert " +
+                "withdrawalDisabledAt"
+
             )
+
             .sort({
+
                 createdAt: -1
+
             });
 
+
+        // ==============================================
+        // FORMAT RESPONSE
+        // ==============================================
+
         const formattedWithdrawals = withdrawals.map(
-            (withdrawal) => {
-                const details =
+            withdrawal => {
+
+                const paymentDetails =
                     withdrawal.paymentDetails || {};
 
+                const user =
+                    withdrawal.user || {};
+
+
                 return {
+
                     _id: withdrawal._id,
-                    user: withdrawal.user || null,
 
-                    amount: toNumber(withdrawal.amount),
+                    user: user._id ? {
 
-                    platformFee: toNumber(
-                        withdrawal.platformFee
-                    ),
+                        _id: user._id,
 
-                    platformFeePercent: toNumber(
-                        withdrawal.platformFeePercent
-                    ),
+                        name: user.name || "",
 
-                    netAmount: toNumber(
-                        withdrawal.netAmount
-                    ),
+                        phone: user.phone || "",
+
+                        inviteCode: user.inviteCode || "",
+
+                        withdrawalEnabled:
+                            user.withdrawalEnabled !== false,
+
+                        withdrawalDisabledReason:
+                            user.withdrawalDisabledReason || "",
+
+                        withdrawalDisabledAlert:
+                            user.withdrawalDisabledAlert || "",
+
+                        withdrawalDisabledAt:
+                            user.withdrawalDisabledAt || null
+
+                    } : null,
+
+
+                    amount:
+                        Number(withdrawal.amount || 0),
+
+                    platformFee:
+                        Number(withdrawal.platformFee || 0),
+
+                    platformFeePercent:
+                        Number(withdrawal.platformFeePercent || 0),
+
+                    netAmount:
+                        Number(withdrawal.netAmount || 0),
+
 
                     paymentMethod:
                         withdrawal.paymentMethod || "",
 
+
                     paymentDetails: {
-                        upiId: details.upiId || "",
+
+                        upiId:
+                            paymentDetails.upiId || "",
+
                         accountHolder:
-                            details.accountHolder || "",
-                        bankName: details.bankName || "",
+                            paymentDetails.accountHolder || "",
+
+                        bankName:
+                            paymentDetails.bankName || "",
+
                         accountNumber:
-                            details.accountNumber || "",
-                        ifscCode: details.ifscCode || ""
+                            paymentDetails.accountNumber || "",
+
+                        ifscCode:
+                            paymentDetails.ifscCode ||
+                            paymentDetails.ifsc || ""
+
                     },
 
-                    // Retained for compatibility with existing
-                    // admin frontend implementations.
-                    upiId: details.upiId || "",
-                    accountHolder:
-                        details.accountHolder || "",
-                    bankName: details.bankName || "",
-                    accountNumber:
-                        details.accountNumber || "",
-                    ifscCode: details.ifscCode || "",
 
-                    status: withdrawal.status || "Pending",
-                    remark: withdrawal.remark || "",
+                    upiId:
+                        paymentDetails.upiId || "",
+
+                    accountHolder:
+                        paymentDetails.accountHolder || "",
+
+                    bankName:
+                        paymentDetails.bankName || "",
+
+                    accountNumber:
+                        paymentDetails.accountNumber || "",
+
+                    ifscCode:
+                        paymentDetails.ifscCode ||
+                        paymentDetails.ifsc || "",
+
+
+                    status:
+                        withdrawal.status || "Pending",
+
+                    remark:
+                        withdrawal.remark || "",
+
                     rejectionReason:
                         withdrawal.rejectionReason || "",
+
+                    rejectionAlert:
+                        withdrawal.rejectionAlert || "",
+
 
                     processedAt:
                         withdrawal.processedAt || null,
 
-                    createdAt: withdrawal.createdAt,
-                    updatedAt: withdrawal.updatedAt
+                    createdAt:
+                        withdrawal.createdAt,
+
+                    updatedAt:
+                        withdrawal.updatedAt
+
                 };
+
             }
         );
 
-        return res.status(200).json({
+
+        return res.json({
+
             success: true,
+
             count: formattedWithdrawals.length,
+
             withdrawals: formattedWithdrawals
+
         });
+
 
     } catch (error) {
-        console.error("GET ALL WITHDRAWALS ERROR:", error);
 
-        return res.status(500).json({
-            success: false,
-            message: "Unable to fetch withdrawals."
-        });
+        return serverError(
+            res,
+            error,
+            "GET ALL WITHDRAWALS ERROR:"
+        );
+
     }
+
 };
 
+
 // ======================================================
-// ADMIN — APPROVE WITHDRAWAL
-//
-// Money has already been reserved during creation.
-// Approval must NOT deduct the wallet a second time.
+// ADMIN - APPROVE WITHDRAWAL
 // ======================================================
 
 exports.approveWithdrawal = async (req, res) => {
-    let session;
 
     try {
-        const withdrawalId = req.params.id;
 
-        if (!validObjectId(withdrawalId)) {
-            return res.status(400).json({
+        // ==============================================
+        // FIND WITHDRAWAL
+        // ==============================================
+
+        const withdrawal = await Withdrawal.findById(
+            req.params.id
+        );
+
+        if (!withdrawal) {
+
+            return res.status(404).json({
+
                 success: false,
-                message: "Invalid withdrawal ID."
+
+                message: "Withdrawal not found."
+
             });
+
         }
 
-        session = await mongoose.startSession();
 
-        let approvedWithdrawal = null;
-        let resultingBalance = null;
+        // ==============================================
+        // CHECK STATUS
+        // ==============================================
 
-        await session.withTransaction(async () => {
-            approvedWithdrawal = null;
+        if (withdrawal.status !== "Pending") {
 
-            // ------------------------------------------
-            // CLAIM PENDING WITHDRAWAL
-            // ------------------------------------------
+            return res.status(400).json({
 
-            const withdrawal = await Withdrawal.findOneAndUpdate(
-                {
-                    _id: withdrawalId,
-                    status: "Pending"
-                },
-                {
-                    $set: {
-                        status: "Approved",
+                success: false,
 
-                        remark: String(
-                            req.body?.remark ||
-                            "Withdrawal approved by admin."
-                        ).trim(),
+                message: "Withdrawal already processed."
 
-                        processedAt: new Date()
-                    }
-                },
-                {
-                    new: true,
-                    session
-                }
+            });
+
+        }
+
+
+        // ==============================================
+        // FIND USER
+        // ==============================================
+
+        const user = await User.findById(
+            withdrawal.user
+        );
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "User not found."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // ADMIN REMARK
+        // ==============================================
+
+        const remark = String(
+
+            req.body?.remark ||
+            "Withdrawal approved by admin."
+
+        ).trim();
+
+
+        // ==============================================
+        // ENSURE LEGACY FINANCIAL FIELDS
+        // ==============================================
+
+        const amount = Number(withdrawal.amount || 0);
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Invalid withdrawal amount."
+
+            });
+
+        }
+
+
+        if (
+            withdrawal.netAmount === undefined ||
+            withdrawal.netAmount === null
+        ) {
+
+            const feePercent = Number(
+                withdrawal.platformFeePercent ??
+                PLATFORM_FEE_PERCENT
             );
 
-            if (!withdrawal) {
-                const existing = await Withdrawal.findById(
-                    withdrawalId
-                ).session(session);
-
-                throw httpError(
-                    existing ? 409 : 404,
-                    existing
-                        ? "Withdrawal has already been processed."
-                        : "Withdrawal not found."
-                );
-            }
-
-            const user = await User.findById(
-                withdrawal.user
-            ).session(session);
-
-            if (!user) {
-                throw new Error(
-                    "User not found for this withdrawal."
-                );
-            }
-
-            // ------------------------------------------
-            // RECORD APPROVAL
-            // ------------------------------------------
-            // No wallet deduction occurs here.
-            //
-            // The transaction record is an audit entry.
-            // Actual bank/UPI payment must be handled and
-            // verified by the payout process.
-
-            await Transaction.create(
-                [
-                    {
-                        userId: user._id,
-                        txId: generateTxId("WDR"),
-                        type: "Withdrawal",
-                        amount: -toNumber(
-                            withdrawal.netAmount
-                        ),
-                        description:
-                            `Withdrawal approved. Gross ₹${toNumber(withdrawal.amount)}, ` +
-                            `platform fee ₹${toNumber(withdrawal.platformFee)}, ` +
-                            `net payout ₹${toNumber(withdrawal.netAmount)}.`
-                    }
-                ],
-                {
-                    session
-                }
+            const fee = roundMoney(
+                amount * feePercent / 100
             );
 
-            approvedWithdrawal = withdrawal;
-            resultingBalance = roundMoney(
-                toNumber(user.balance)
+            withdrawal.platformFeePercent = feePercent;
+
+            withdrawal.platformFee = fee;
+
+            withdrawal.netAmount = roundMoney(
+                amount - fee
             );
+
+        }
+
+
+        // ==============================================
+        // UPDATE STATUS
+        // ==============================================
+
+        withdrawal.status = "Approved";
+
+        withdrawal.remark = remark;
+
+        withdrawal.processedAt = new Date();
+
+
+        await withdrawal.save();
+
+
+        // ==============================================
+        // CREATE TRANSACTION RECORD
+        // ==============================================
+
+        await Transaction.create({
+
+            userId: user._id,
+
+            txId: generateTxId("WD"),
+
+            type: "Withdrawal",
+
+            amount: -amount,
+
+            description:
+                "Withdrawal approved successfully."
+
         });
 
-        return res.status(200).json({
+
+        // ==============================================
+        // RESPONSE
+        // ==============================================
+
+        return res.json({
+
             success: true,
-            message: "Withdrawal approved successfully.",
-            withdrawal: approvedWithdrawal,
-            balance: resultingBalance
+
+            message:
+                "Withdrawal approved successfully.",
+
+            withdrawal,
+
+            balance: user.balance
+
         });
+
 
     } catch (error) {
-        console.error("APPROVE WITHDRAWAL ERROR:", error);
 
-        return res.status(error.statusCode || 500).json({
-            success: false,
-            message:
-                error.statusCode
-                    ? error.message
-                    : "Unable to approve withdrawal."
-        });
+        return serverError(
+            res,
+            error,
+            "APPROVE WITHDRAWAL ERROR:"
+        );
 
-    } finally {
-        if (session) {
-            await session.endSession();
-        }
     }
+
 };
 
+
 // ======================================================
-// ADMIN — REJECT WITHDRAWAL
-//
-// Restore the gross amount exactly once.
-// Status change, wallet refund and audit record are
-// committed in the same MongoDB transaction.
+// ADMIN - REJECT WITHDRAWAL
 // ======================================================
 
 exports.rejectWithdrawal = async (req, res) => {
-    let session;
 
     try {
-        const withdrawalId = req.params.id;
 
-        if (!validObjectId(withdrawalId)) {
-            return res.status(400).json({
+        // ==============================================
+        // FIND WITHDRAWAL
+        // ==============================================
+
+        const withdrawal = await Withdrawal.findById(
+            req.params.id
+        );
+
+        if (!withdrawal) {
+
+            return res.status(404).json({
+
                 success: false,
-                message: "Invalid withdrawal ID."
+
+                message: "Withdrawal not found."
+
             });
+
         }
+
+
+        // ==============================================
+        // CHECK STATUS
+        // ==============================================
+
+        if (withdrawal.status !== "Pending") {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Withdrawal already processed."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // FIND USER
+        // ==============================================
+
+        const user = await User.findById(
+            withdrawal.user
+        );
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "User not found."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // VALIDATE AMOUNT
+        // ==============================================
+
+        const amount = Number(withdrawal.amount || 0);
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Invalid withdrawal amount."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // ADMIN REJECTION REASON
+        // ==============================================
 
         const rejectionReason = String(
-            req.body?.remark ||
+
             req.body?.rejectionReason ||
+            req.body?.remark ||
             ""
+
         ).trim();
 
+
         if (!rejectionReason) {
+
             return res.status(400).json({
+
                 success: false,
-                message: "Please enter a rejection reason."
+
+                message:
+                    "Please enter a withdrawal rejection reason."
+
             });
+
         }
 
-        session = await mongoose.startSession();
 
-        let rejectedWithdrawal = null;
-        let resultingBalance = null;
-        let resultingEligibleBalance = null;
+        if (
+            rejectionReason.length >
+            MAX_REJECTION_REASON_LENGTH
+        ) {
 
-        await session.withTransaction(async () => {
-            rejectedWithdrawal = null;
+            return res.status(400).json({
 
-            // ------------------------------------------
-            // 1. ATOMICALLY CLAIM PENDING WITHDRAWAL
-            // ------------------------------------------
+                success: false,
 
-            const withdrawal = await Withdrawal.findOneAndUpdate(
-                {
-                    _id: withdrawalId,
-                    status: "Pending"
-                },
-                {
-                    $set: {
-                        status: "Rejected",
-                        remark: rejectionReason,
-                        rejectionReason,
-                        processedAt: new Date()
-                    }
-                },
-                {
-                    new: true,
-                    session
-                }
+                message:
+                    "Rejection reason cannot exceed 500 characters."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // SEPARATE USER ALERT
+        // ==============================================
+
+        const rejectionAlert = String(
+
+            req.body?.rejectionAlert || ""
+
+        ).trim();
+
+
+        if (!rejectionAlert) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Please enter a separate user alert message."
+
+            });
+
+        }
+
+
+        if (
+            rejectionAlert.length >
+            MAX_ALERT_LENGTH
+        ) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Alert message cannot exceed 1000 characters."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // ENSURE LEGACY FINANCIAL FIELDS
+        // ==============================================
+
+        if (
+            withdrawal.netAmount === undefined ||
+            withdrawal.netAmount === null
+        ) {
+
+            const feePercent = Number(
+                withdrawal.platformFeePercent ??
+                PLATFORM_FEE_PERCENT
             );
 
-            if (!withdrawal) {
-                const existing = await Withdrawal.findById(
-                    withdrawalId
-                ).session(session);
-
-                throw httpError(
-                    existing ? 409 : 404,
-                    existing
-                        ? "Withdrawal has already been processed."
-                        : "Withdrawal not found."
-                );
-            }
-
-            // ------------------------------------------
-            // 2. VALIDATE RESERVED AMOUNT
-            // ------------------------------------------
-
-            const amount = roundMoney(
-                toNumber(withdrawal.amount, NaN)
+            const fee = roundMoney(
+                amount * feePercent / 100
             );
 
-            if (
-                !Number.isFinite(amount) ||
-                amount <= 0
-            ) {
-                throw new Error(
-                    "Invalid withdrawal amount. Refund was rolled back."
-                );
-            }
+            withdrawal.platformFeePercent = feePercent;
 
-            // ------------------------------------------
-            // 3. RESTORE USER BALANCES
-            // ------------------------------------------
+            withdrawal.platformFee = fee;
 
-            const user = await User.findByIdAndUpdate(
-                withdrawal.user,
-                {
-                    $inc: {
-                        balance: amount,
-                        withdrawableEarnings: amount,
-                        totalWithdraw: -amount
-                    }
-                },
-                {
-                    new: true,
-                    session,
-                    runValidators: true
-                }
+            withdrawal.netAmount = roundMoney(
+                amount - fee
             );
 
-            if (!user) {
-                throw new Error(
-                    "User not found. Refund was rolled back."
-                );
-            }
+        }
 
-            // ------------------------------------------
-            // 4. CREATE REFUND AUDIT RECORD
-            // ------------------------------------------
 
-            await Transaction.create(
-                [
-                    {
-                        userId: user._id,
-                        txId: generateTxId("REF"),
-                        type: "Withdrawal Refund",
-                        amount,
-                        description:
-                            `Withdrawal ${withdrawal._id} rejected. ` +
-                            `₹${amount} restored to wallet and eligible withdrawal funds.`
-                    }
-                ],
-                {
-                    session
-                }
-            );
+        // ==============================================
+        // REFUND USER WALLET
+        // ==============================================
 
-            rejectedWithdrawal = withdrawal;
+        user.balance = roundMoney(
 
-            resultingBalance = roundMoney(
-                toNumber(user.balance)
-            );
+            Number(user.balance || 0) + amount
 
-            resultingEligibleBalance = roundMoney(
-                toNumber(user.withdrawableEarnings)
-            );
+        );
+
+
+        user.totalWithdraw = Math.max(
+
+            0,
+
+            roundMoney(
+                Number(user.totalWithdraw || 0) - amount
+            )
+
+        );
+
+
+        // ==============================================
+        // DISABLE FUTURE WITHDRAWALS
+        // ==============================================
+
+        user.withdrawalEnabled = false;
+
+        user.withdrawalDisabledReason =
+            rejectionReason;
+
+        user.withdrawalDisabledAlert =
+            rejectionAlert;
+
+        user.withdrawalDisabledAt = new Date();
+
+
+        // ==============================================
+        // UPDATE WITHDRAWAL
+        // ==============================================
+
+        withdrawal.status = "Rejected";
+
+        withdrawal.remark = rejectionReason;
+
+        withdrawal.rejectionReason =
+            rejectionReason;
+
+        withdrawal.rejectionAlert =
+            rejectionAlert;
+
+        withdrawal.processedAt = new Date();
+
+
+        // ==============================================
+        // SAVE WITHDRAWAL AND USER
+        // ==============================================
+
+        await withdrawal.save();
+
+        await user.save();
+
+
+        // ==============================================
+        // CREATE REFUND TRANSACTION
+        // ==============================================
+
+        await Transaction.create({
+
+            userId: user._id,
+
+            txId: generateTxId("REF"),
+
+            type: "Withdrawal Refund",
+
+            amount: amount,
+
+            description:
+                "Withdrawal rejected. Amount returned to wallet."
+
         });
 
+
+        // ==============================================
+        // RESPONSE
+        // ==============================================
+
         return res.status(200).json({
+
             success: true,
 
             message:
-                "Withdrawal rejected. Reserved funds have been restored.",
+                "Withdrawal rejected. Amount refunded and future withdrawals disabled.",
 
-            balance: resultingBalance,
-
-            withdrawableEarnings:
-                resultingEligibleBalance,
+            balance: user.balance,
 
             withdrawal: {
-                _id: rejectedWithdrawal._id,
-                amount: rejectedWithdrawal.amount,
-                platformFee: rejectedWithdrawal.platformFee,
-                netAmount: rejectedWithdrawal.netAmount,
-                status: rejectedWithdrawal.status,
-                remark: rejectedWithdrawal.remark,
+
+                _id: withdrawal._id,
+
+                user: withdrawal.user,
+
+                amount: withdrawal.amount,
+
+                status: withdrawal.status,
+
                 rejectionReason:
-                    rejectedWithdrawal.rejectionReason,
-                processedAt: rejectedWithdrawal.processedAt
+                    withdrawal.rejectionReason,
+
+                rejectionAlert:
+                    withdrawal.rejectionAlert,
+
+                processedAt:
+                    withdrawal.processedAt
+
+            },
+
+            withdrawalPermission: {
+
+                enabled: false,
+
+                disabledReason:
+                    user.withdrawalDisabledReason,
+
+                disabledAlert:
+                    user.withdrawalDisabledAlert,
+
+                disabledAt:
+                    user.withdrawalDisabledAt
+
             }
+
         });
+
 
     } catch (error) {
-        console.error("REJECT WITHDRAWAL ERROR:", error);
 
-        return res.status(error.statusCode || 500).json({
-            success: false,
+        return serverError(
+            res,
+            error,
+            "REJECT WITHDRAWAL ERROR:"
+        );
+
+    }
+
+};
+
+
+// ======================================================
+// ADMIN - ENABLE USER WITHDRAWAL
+// ======================================================
+
+exports.enableUserWithdrawal = async (req, res) => {
+
+    try {
+
+        const { userId } = req.params;
+
+
+        // ==============================================
+        // VALIDATE USER ID
+        // ==============================================
+
+        if (!mongoose.isValidObjectId(userId)) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Invalid user ID."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // FIND USER
+        // ==============================================
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "User not found."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // ENABLE WITHDRAWAL
+        // ==============================================
+
+        user.withdrawalEnabled = true;
+
+        user.withdrawalDisabledReason = "";
+
+        user.withdrawalDisabledAlert = "";
+
+        user.withdrawalDisabledAt = null;
+
+
+        await user.save();
+
+
+        // ==============================================
+        // RESPONSE
+        // ==============================================
+
+        return res.json({
+
+            success: true,
+
             message:
-                error.statusCode
-                    ? error.message
-                    : "Unable to reject withdrawal."
+                "User withdrawal facility enabled successfully.",
+
+            user: {
+
+                _id: user._id,
+
+                name: user.name,
+
+                phone: user.phone,
+
+                withdrawalEnabled: true,
+
+                withdrawalDisabledReason: "",
+
+                withdrawalDisabledAlert: "",
+
+                withdrawalDisabledAt: null
+
+            }
+
         });
 
-    } finally {
-        if (session) {
-            await session.endSession();
-        }
+
+    } catch (error) {
+
+        return serverError(
+            res,
+            error,
+            "ENABLE USER WITHDRAWAL ERROR:"
+        );
+
     }
+
+};
+
+
+// ======================================================
+// ADMIN - DISABLE USER WITHDRAWAL
+// ======================================================
+
+exports.disableUserWithdrawal = async (req, res) => {
+
+    try {
+
+        const { userId } = req.params;
+
+
+        // ==============================================
+        // VALIDATE USER ID
+        // ==============================================
+
+        if (!mongoose.isValidObjectId(userId)) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Invalid user ID."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // FIND USER
+        // ==============================================
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "User not found."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // ADMIN RESTRICTION REASON
+        // ==============================================
+
+        const reason = String(
+
+            req.body?.reason ||
+            req.body?.withdrawalDisabledReason ||
+            ""
+
+        ).trim();
+
+
+        if (!reason) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Please enter a withdrawal restriction reason."
+
+            });
+
+        }
+
+
+        if (reason.length > MAX_REJECTION_REASON_LENGTH) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Restriction reason cannot exceed 500 characters."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // SEPARATE USER ALERT
+        // ==============================================
+
+        const alert = String(
+
+            req.body?.alert ||
+            req.body?.withdrawalDisabledAlert ||
+            ""
+
+        ).trim();
+
+
+        if (!alert) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Please enter a separate user alert message."
+
+            });
+
+        }
+
+
+        if (alert.length > MAX_ALERT_LENGTH) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Alert message cannot exceed 1000 characters."
+
+            });
+
+        }
+
+
+        // ==============================================
+        // DISABLE WITHDRAWAL
+        // ==============================================
+
+        user.withdrawalEnabled = false;
+
+        user.withdrawalDisabledReason = reason;
+
+        user.withdrawalDisabledAlert = alert;
+
+        user.withdrawalDisabledAt = new Date();
+
+
+        await user.save();
+
+
+        // ==============================================
+        // RESPONSE
+        // ==============================================
+
+        return res.json({
+
+            success: true,
+
+            message:
+                "User withdrawal facility disabled successfully.",
+
+            user: {
+
+                _id: user._id,
+
+                name: user.name,
+
+                phone: user.phone,
+
+                withdrawalEnabled: false,
+
+                withdrawalDisabledReason: reason,
+
+                withdrawalDisabledAlert: alert,
+
+                withdrawalDisabledAt:
+                    user.withdrawalDisabledAt
+
+            }
+
+        });
+
+
+    } catch (error) {
+
+        return serverError(
+            res,
+            error,
+            "DISABLE USER WITHDRAWAL ERROR:"
+        );
+
+    }
+
 };

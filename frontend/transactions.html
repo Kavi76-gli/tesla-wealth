@@ -1,240 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
     >
 
-    <title>My Transactions</title>
+    <meta name="theme-color" content="#061a13">
+
+    <title>Transactions | Tesla Wealth</title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
 
-    <link
-        rel="stylesheet"
-        href="css/transaction.css"
-    >
-
+    <link rel="stylesheet" href="css/transaction.css">
 </head>
-
 
 <body>
 
+    <div class="page-wrapper">
 
-    <!-- ==========================================
-         HEADER
-    =========================================== -->
+        <!-- HEADER -->
+        <header class="topbar">
 
-    <header class="topbar">
-
-        <button
-            class="back-btn"
-            onclick="history.back()"
-        >
-
-            <i class="fa-solid fa-arrow-left"></i>
-
-        </button>
-
-
-        <div>
-
-            <h1>Transactions</h1>
-
-            <p>Wallet transaction history</p>
-
-        </div>
-
-
-        <button
-            id="refreshBtn"
-            class="refresh-btn"
-        >
-
-            <i class="fa-solid fa-rotate"></i>
-
-        </button>
-
-    </header>
-
-
-
-    <!-- ==========================================
-         SUMMARY
-    =========================================== -->
-
-    <section class="summary">
-
-        <div class="summary-card">
-
-            <div class="summary-icon">
-
-                <i class="fa-solid fa-list"></i>
-
-            </div>
-
-            <div>
-
-                <span>Total Transactions</span>
-
-                <strong id="totalTransactions">
-                    0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="summary-icon income">
-
-                <i class="fa-solid fa-arrow-down"></i>
-
-            </div>
-
-            <div>
-
-                <span>Total Credit</span>
-
-                <strong id="totalCredit">
-                    ₹0
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="summary-icon expense">
-
-                <i class="fa-solid fa-arrow-up"></i>
-
-            </div>
-
-            <div>
-
-                <span>Total Debit</span>
-
-                <strong id="totalDebit">
-                    ₹0
-                </strong>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ==========================================
-         FILTER
-    =========================================== -->
-
-    <section class="filter-card">
-
-        <div class="search-box">
-
-            <i class="fa-solid fa-magnifying-glass"></i>
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search transaction..."
+            <button
+                class="back-button"
+                type="button"
+                onclick="history.back()"
+                aria-label="Go back"
             >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
 
-        </div>
+            <div class="header-content">
+                <span class="eyebrow">ACCOUNT ACTIVITY</span>
+                <h1>Transactions</h1>
+                <p>Your complete wallet history</p>
+            </div>
 
+            <button
+                class="refresh-button"
+                id="refreshBtn"
+                type="button"
+                aria-label="Refresh transactions"
+            >
+                <i class="fa-solid fa-rotate"></i>
+            </button>
 
-        <select id="typeFilter">
-
-            <option value="All">
-                All Transactions
-            </option>
-
-            <option value="Credit">
-                Credit
-            </option>
-
-            <option value="Debit">
-                Debit
-            </option>
-
-        </select>
-
-    </section>
+        </header>
 
 
+        <!-- SUMMARY -->
+        <section class="summary-section">
 
-    <!-- ==========================================
-         TRANSACTION LIST
-    =========================================== -->
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">OVERVIEW</span>
+                    <h2>Transaction Summary</h2>
+                </div>
 
-    <main>
+                <span class="live-badge">
+                    <span></span>
+                    HISTORY
+                </span>
+            </div>
 
-        <div
-            id="transactionList"
-            class="transaction-list"
-        >
 
-            <div class="loading">
+            <div class="summary-grid">
 
-                <i class="fa-solid fa-spinner fa-spin"></i>
+                <article class="summary-card total-card">
 
-                Loading transactions...
+                    <div class="summary-top">
+                        <span>Total Transactions</span>
+
+                        <div class="summary-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                    </div>
+
+                    <h3 id="totalTransactions">0</h3>
+
+                    <small>All recorded activities</small>
+
+                </article>
+
+
+                <article class="summary-card credit-card">
+
+                    <div class="summary-top">
+                        <span>Total Credits</span>
+
+                        <div class="summary-icon">
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </div>
+                    </div>
+
+                    <h3 id="totalCredit">₹0.00</h3>
+
+                    <small>Money received</small>
+
+                </article>
+
+
+                <article class="summary-card debit-card">
+
+                    <div class="summary-top">
+                        <span>Total Debits</span>
+
+                        <div class="summary-icon">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </div>
+                    </div>
+
+                    <h3 id="totalDebit">₹0.00</h3>
+
+                    <small>Money deducted</small>
+
+                </article>
 
             </div>
 
-        </div>
-
-    </main>
+        </section>
 
 
+        <!-- TRANSACTION HISTORY -->
+        <main class="history-section">
 
-    <!-- ==========================================
-         TRANSACTION MODAL
-    =========================================== -->
+            <div class="section-heading history-heading">
 
+                <div>
+                    <span class="eyebrow">WALLET RECORDS</span>
+                    <h2>Recent Activity</h2>
+                    <p>Review your credits and debits.</p>
+                </div>
+
+            </div>
+
+
+            <!-- FILTERS -->
+            <div class="filter-panel">
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Search transactions..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div class="filter-select">
+
+                    <i class="fa-solid fa-filter"></i>
+
+                    <select id="typeFilter">
+
+                        <option value="All">All Transactions</option>
+                        <option value="Credit">Credits</option>
+                        <option value="Debit">Debits</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- LIST HEADER -->
+            <div class="list-heading">
+
+                <span>TRANSACTION DETAILS</span>
+                <span>AMOUNT</span>
+
+            </div>
+
+
+            <!-- TRANSACTION LIST -->
+            <div id="transactionList" class="transaction-list">
+
+                <div class="loading">
+
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+
+                    Loading transactions...
+
+                </div>
+
+            </div>
+
+        </main>
+
+
+        <!-- FOOTER -->
+        <footer class="page-footer">
+
+            <div class="footer-logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                TESLA WEALTH
+            </div>
+
+            <p>
+                Your transaction records are available for review
+                through your account.
+            </p>
+
+        </footer>
+
+    </div>
+
+
+    <!-- TRANSACTION DETAILS MODAL -->
     <div
-        id="transactionModal"
         class="modal"
+        id="transactionModal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
     >
 
         <div class="modal-box">
 
             <div class="modal-header">
 
-                <h2>
-                    Transaction Details
-                </h2>
+                <div>
+                    <span class="eyebrow">TRANSACTION RECEIPT</span>
+                    <h2 id="modalTitle">Transaction Details</h2>
+                </div>
 
                 <button
+                    type="button"
                     id="closeModal"
-                    class="close-btn"
+                    class="modal-close"
+                    aria-label="Close details"
                 >
-
                     <i class="fa-solid fa-xmark"></i>
-
                 </button>
 
             </div>
 
 
-            <div
-                id="transactionDetails"
-                class="transaction-details"
-            ></div>
+            <div class="receipt-brand">
+                <div class="receipt-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+
+                <div>
+                    <strong>Tesla Wealth</strong>
+                    <small>Transaction information</small>
+                </div>
+            </div>
+
+
+            <div id="transactionDetails" class="transaction-details">
+            </div>
+
+
+            <div class="receipt-footer">
+                <i class="fa-solid fa-lock"></i>
+                Private account information
+            </div>
 
         </div>
 
@@ -244,5 +293,4 @@
     <script src="js/transaction.js"></script>
 
 </body>
-
 </html>

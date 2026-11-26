@@ -14,20 +14,17 @@ const mongoose = require("mongoose");
 
 const InvestmentPlanPermissionSchema = new mongoose.Schema(
     {
-        // Investment plan controlled by this permission.
         plan: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Plan",
             required: true
         },
 
-        // Whether this user can purchase this plan.
         enabled: {
             type: Boolean,
             default: true
         },
 
-        // Maximum lifetime purchases of this plan.
         // 0 means unlimited.
         maxLifetimePurchases: {
             type: Number,
@@ -40,7 +37,6 @@ const InvestmentPlanPermissionSchema = new mongoose.Schema(
             }
         },
 
-        // Optional explanation shown when purchasing is restricted.
         restrictionNote: {
             type: String,
             default: "",
@@ -78,6 +74,7 @@ const UserSchema = new mongoose.Schema(
             index: true
         },
 
+        // Keep the password hash excluded by default.
         password: {
             type: String,
             required: true,
@@ -114,8 +111,6 @@ const UserSchema = new mongoose.Schema(
         // ==============================================
         // M-PIN SECURITY
         // ==============================================
-
-        // Store only the bcrypt hash, never the actual M-PIN.
 
         mpinHash: {
             type: String,
@@ -174,46 +169,39 @@ const UserSchema = new mongoose.Schema(
         },
 
         // ==============================================
-        // WALLET BALANCE
+        // WALLET BALANCES
         // ==============================================
 
-        // Main wallet balance maintained by wallet routes.
         balance: {
             type: Number,
             default: 0,
             min: 0
         },
 
-        // Approved deposit funds eligible for investment.
-        // This balance is separate from withdrawable earnings.
         investableDepositBalance: {
             type: Number,
             default: 0,
             min: 0
         },
 
-        // Accumulated earnings recorded on the user account.
         earnings: {
             type: Number,
             default: 0,
             min: 0
         },
 
-        // Investment earnings explicitly eligible for withdrawal.
         withdrawableEarnings: {
             type: Number,
             default: 0,
             min: 0
         },
 
-        // Total approved deposits.
         totalDeposit: {
             type: Number,
             default: 0,
             min: 0
         },
 
-        // Total completed withdrawals.
         totalWithdraw: {
             type: Number,
             default: 0,
@@ -224,23 +212,17 @@ const UserSchema = new mongoose.Schema(
         // ADMIN-CONTROLLED INVESTMENT SETTINGS
         // ==============================================
 
-        // Controls whether the user can purchase investments.
         investmentPurchaseEnabled: {
             type: Boolean,
             default: true
         },
 
-        // Retained for compatibility with existing settings.
-        // The purchase controller can continue using automatic
-        // purchases without introducing manual approval requests.
         investmentApprovalMode: {
             type: String,
             enum: ["automatic", "manual"],
             default: "automatic"
         },
 
-        // Maximum simultaneously running investments.
-        // Zero means no running investments are permitted.
         maxActiveInvestments: {
             type: Number,
             default: 10,
@@ -252,7 +234,6 @@ const UserSchema = new mongoose.Schema(
             }
         },
 
-        // Optional account-wide purchase restriction message.
         investmentPurchaseNote: {
             type: String,
             default: "",
@@ -261,10 +242,9 @@ const UserSchema = new mongoose.Schema(
         },
 
         // ==============================================
-        // INDIVIDUAL INVESTMENT PLAN PERMISSIONS
+        // INDIVIDUAL PLAN PERMISSIONS
         // ==============================================
 
-        // Admin can control each user's access to each plan.
         investmentPlanPermissions: {
             type: [InvestmentPlanPermissionSchema],
             default: []
@@ -295,6 +275,32 @@ const UserSchema = new mongoose.Schema(
             default: false
         },
 
+    // ==============================================
+    // WITHDRAWAL PERMISSION CONTROL
+    // ==============================================
+
+    withdrawalEnabled: {
+        type: Boolean,
+        default: true
+    },
+
+    withdrawalDisabledReason: {
+        type: String,
+        default: "",
+        trim: true
+    },
+
+    withdrawalDisabledAlert: {
+        type: String,
+        default: ""
+    },
+
+    withdrawalDisabledAt: {
+        type: Date,
+        default: null
+    },
+
+
         isAdmin: {
             type: Boolean,
             default: false
@@ -306,17 +312,34 @@ const UserSchema = new mongoose.Schema(
 );
 
 // =====================================================
+// PASSWORD SELECTION FOR LOGIN
+// =====================================================
+
+// The existing authController uses:
+//
+// User.findOne({ phone: cleanPhone })
+//
+// This hook explicitly includes the password hash for
+// findOne queries, allowing the existing bcrypt.compare()
+// call to work without changing authController.js.
+//
+// IMPORTANT:
+// Queries using findOne() can now contain the password
+// hash. Never send a raw user document to a client.
+// Use a safe response object instead.
+
+UserSchema.pre("findOne", function () {
+    this.select("+password");
+});
+
+// =====================================================
 // INDEXES
 // =====================================================
 
-// Support admin searches by name and phone.
-// Phone already has a unique index; this additional index
-// supports queries that filter or sort by name.
 UserSchema.index({
     name: 1
 });
 
-// Support admin queries for investment permission settings.
 UserSchema.index({
     investmentPurchaseEnabled: 1
 });

@@ -1,70 +1,66 @@
-// ======================================================
-// SERVER.JS
-// TIRUPATI / BITCOIN INVESTMENT BACKEND
-// ======================================================
+
+// =====================================================
+// TESLA WEALTH - MAIN SERVER
+// =====================================================
+
+
+// =====================================================
+// LOAD ENVIRONMENT FIRST
+// =====================================================
+
+require("dotenv").config();
+
+
+// =====================================================
+// IMPORTS
+// =====================================================
 
 const express = require("express");
+
 const cors = require("cors");
-const dotenv = require("dotenv");
+
 const path = require("path");
+
 const cron = require("node-cron");
 
-// ======================================================
-// CONFIG
-// ======================================================
-
-const connectDB =
-    require("./config/db");
-
-// ======================================================
-// SERVICES
-// ======================================================
+const connectDB = require("./config/db");
 
 const {
     processDailyIncome
 } = require("./services/investmentService");
 
-// ======================================================
-// LOAD ENVIRONMENT VARIABLES
-// ======================================================
+const {
+    settleExpiredTrades
+} = require("./controllers/tradeController");
 
-dotenv.config();
 
-// ======================================================
-// FRONTEND PATH
-// ======================================================
-
-const frontendPath =
-    path.join(
-        __dirname,
-        "../frontend"
-    );
-
-// ======================================================
-// CONNECT DATABASE
-// ======================================================
-
-connectDB();
-
-// ======================================================
+// =====================================================
 // EXPRESS APP
-// ======================================================
+// =====================================================
 
-const app =
-    express();
+const app = express();
 
-// ======================================================
-// CORS
-// ======================================================
-// ======================================================
-// CORS
-// ======================================================
+
+// =====================================================
+// PORT
+// =====================================================
+
+const PORT = process.env.PORT || 5000;
+
+
+// =====================================================
+// CORS CONFIGURATION
+// =====================================================
 
 const allowedOrigins = [
 
     "http://localhost:5500",
 
     "http://127.0.0.1:5500",
+
+    "http://localhost:5501",
+
+    "http://127.0.0.1:5501",
 
     "https://shakshiselkande.online",
 
@@ -78,57 +74,27 @@ const allowedOrigins = [
 app.use(
     cors({
 
-        origin: function (
-            origin,
-            callback
-        ) {
+        origin: function (origin, callback) {
 
-            // ------------------------------------------
-            // No Origin
-            // ------------------------------------------
+            // Allow requests without an Origin header,
+            // such as server-to-server requests.
 
             if (!origin) {
+                return callback(null, true);
+            }
 
-                return callback(
-                    null,
-                    true
-                );
+
+            if (allowedOrigins.includes(origin)) {
+
+                return callback(null, true);
 
             }
 
 
-            // ------------------------------------------
-            // Allowed Origin
-            // ------------------------------------------
-
-            if (
-                allowedOrigins.includes(
-                    origin
-                )
-            ) {
-
-                return callback(
-                    null,
-                    true
-                );
-
-            }
-
-
-            // ------------------------------------------
-            // Blocked Origin
-            // ------------------------------------------
-
-            console.log(
-                "❌ CORS BLOCKED:",
-                origin
-            );
-
+            console.log("CORS BLOCKED:", origin);
 
             return callback(
-                new Error(
-                    "Not allowed by CORS"
-                )
+                new Error("Not allowed by CORS")
             );
 
         },
@@ -138,434 +104,438 @@ app.use(
     })
 );
 
-// ======================================================
+
+// =====================================================
 // BODY PARSER
-// ======================================================
+// =====================================================
 
-app.use(
-    express.json({
-        limit: "2mb"
-    })
+app.use(express.json({ limit: "10mb" }));
+
+app.use(express.urlencoded({
+    extended: true,
+    limit: "10mb"
+}));
+
+
+// =====================================================
+// STATIC FRONTEND
+// =====================================================
+
+const frontendPath = path.join(
+    __dirname,
+    "../frontend"
 );
 
 app.use(
-    express.urlencoded({
-
-        extended: true,
-
-        limit: "2mb"
-
-    })
+    express.static(frontendPath)
 );
 
-// ======================================================
-// FRONTEND STATIC FILES
-// ======================================================
-//
-// This automatically serves:
-//
-// /auth.html
-// /home.html
-// /investments.html
-// /withdraw.html
-// /profile.html
-//
-// etc.
-//
-// IMPORTANT:
-// Do NOT use app.get("*.html") with
-// the current Express/router version.
-// ======================================================
 
-app.use(
-    express.static(
-        frontendPath
-    )
-);
-
-// ======================================================
+// =====================================================
 // UPLOADS
-// ======================================================
+// =====================================================
 
 app.use(
     "/uploads",
     express.static(
-        path.join(
-            __dirname,
-            "uploads"
-        )
+        path.join(__dirname, "uploads")
     )
 );
 
-// ======================================================
-// API ROUTES
-// ======================================================
 
-// ======================================================
-// AUTH
-// ======================================================
+// =====================================================
+// API ROUTES
+// =====================================================
 
 app.use(
     "/api/auth",
-    require(
-        "./routes/authRoutes"
-    )
+    require("./routes/authRoutes")
 );
 
-// ======================================================
-// INVEST
-// ======================================================
 
 app.use(
     "/api/invest",
-    require(
-        "./routes/investRoutes"
-    )
+    require("./routes/investRoutes")
 );
 
-// ======================================================
-// PLANS
-// ======================================================
 
 app.use(
     "/api/plans",
-    require(
-        "./routes/planRoutes"
-    )
+    require("./routes/planRoutes")
 );
 
-// ======================================================
-// INVESTMENT
-// ======================================================
+
 
 app.use(
     "/api/investment",
-    require(
-        "./routes/investmentRoutes"
-    )
+    require("./routes/investmentRoutes")
 );
 
-// ======================================================
-// DEPOSIT
-// ======================================================
 
 app.use(
     "/api/deposit",
-    require(
-        "./routes/depositRoutes"
-    )
+    require("./routes/depositRoutes")
 );
 
-// ======================================================
-// TRANSACTIONS
-// ======================================================
 
 app.use(
     "/api/transactions",
-    require(
-        "./routes/transactionRoutes"
-    )
+    require("./routes/transactionRoutes")
 );
 
-// ======================================================
-// WITHDRAWALS
-// ======================================================
 
 app.use(
     "/api/withdrawals",
-    require(
-        "./routes/withdrableRoutes"
-    )
+    require("./routes/withdrableRoutes")
 );
 
-// ======================================================
-// REFERRAL
-// ======================================================
 
 app.use(
     "/api/referral",
-    require(
-        "./routes/referralRoutes"
-    )
+    require("./routes/referralRoutes")
 );
 
-
-// ======================================================
-// DEMO TRADING
-// ======================================================
 
 app.use(
-"/api/trades",
-require(
-"./routes/tradeRoutes"
-)
+    "/api/referral-rewards",
+    require("./routes/referralRewardRoutes")
+);
+// =====================================================
+// TESLA WEALTH TRADING ROUTES
+// =====================================================
+
+app.use(
+    "/api/trade",
+    require("./routes/tradeRoutes")
 );
 
-// ======================================================
+
+// =====================================================
 // HEALTH CHECK
-// ======================================================
+// =====================================================
 
-app.get(
-    "/health",
-    (req, res) => {
+app.get("/health", (req, res) => {
 
-        res.status(200).json({
+    res.status(200).json({
 
-            success: true,
+        success: true,
 
-            message:
-                "Server is healthy.",
+        message: "Tesla Wealth server is running",
 
-            time:
-                new Date().toISOString()
+        timestamp: new Date().toISOString()
 
-        });
+    });
 
-    }
-);
+});
 
-// ======================================================
-// API STATUS
-// ======================================================
 
-app.get(
-    "/api",
-    (req, res) => {
+// =====================================================
+// API INFORMATION
+// =====================================================
 
-        res.json({
+app.get("/api", (req, res) => {
 
-            success: true,
+    res.json({
 
-            message:
-                "Investment API is running.",
+        success: true,
 
-            server:
-                "Render",
+        message: "Tesla Wealth API is running",
 
-            time:
-                new Date().toISOString()
+       tradingMode: "REAL",
 
-        });
+        endpoints: {
 
-    }
-);
+            auth: "/api/auth",
 
-// ======================================================
-// FRONTEND ROOT
-// ======================================================
-//
-// Opening:
-//
-// https://your-domain.com/
-//
-// will open auth.html
-// ======================================================
+            investment: "/api/investment",
 
-app.get(
-    "/",
-    (req, res) => {
+            deposits: "/api/deposit",
 
-        res.sendFile(
-            path.join(
-                frontendPath,
-                "splash.html"
-            )
-        );
+            withdrawals: "/api/withdrawals",
 
-    }
-);
+            referrals: "/api/referral",
 
-// ======================================================
-// API 404 HANDLER
-// ======================================================
-//
-// IMPORTANT:
-// This must come AFTER all API routes.
-// ======================================================
+           trades: "/api/trade"
+        }
 
-app.use(
-    "/api",
-    (req, res) => {
+    });
 
-        return res.status(404).json({
+});
 
-            success: false,
 
-            message:
-                "API route not found.",
+// =====================================================
+// ROOT PAGE
+// =====================================================
 
-            path:
-                req.originalUrl
+app.get("/", (req, res) => {
 
-        });
+    res.sendFile(
+        path.join(frontendPath, "splash.html")
+    );
 
-    }
-);
+});
 
-// ======================================================
+
+// =====================================================
+// 404 HANDLER
+// =====================================================
+
+app.use((req, res) => {
+
+    res.status(404).json({
+
+        success: false,
+
+        message: "API route not found",
+
+        route: req.originalUrl
+
+    });
+
+});
+
+
+// =====================================================
 // GLOBAL ERROR HANDLER
-// ======================================================
+// =====================================================
 
-app.use(
-    (error, req, res, next) => {
+app.use((err, req, res, next) => {
 
-        console.error(
-            "================================"
+    console.error(
+        "GLOBAL SERVER ERROR:",
+        err
+    );
+
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+
+    res.status(err.status || 500).json({
+
+        success: false,
+
+        message:
+            err.message ||
+            "Internal server error"
+
+    });
+
+});
+
+
+// =====================================================
+// CRON JOB CONTROL
+// =====================================================
+
+let investmentJob = null;
+
+let tradeSettlementJob = null;
+
+let isProcessingInvestment = false;
+
+let isSettlingTrades = false;
+
+
+// =====================================================
+// DAILY INVESTMENT INCOME PROCESS
+// =====================================================
+
+function startInvestmentCron() {
+
+    investmentJob = cron.schedule(
+
+        "*/5 * * * *",
+
+        async () => {
+
+            if (isProcessingInvestment) {
+                return;
+            }
+
+            isProcessingInvestment = true;
+
+            try {
+
+                console.log(
+                    "INVESTMENT CRON STARTED"
+                );
+
+                await processDailyIncome();
+
+                console.log(
+                    "INVESTMENT CRON COMPLETED"
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "INVESTMENT CRON ERROR:",
+                    error
+                );
+
+            }
+
+            finally {
+
+                isProcessingInvestment = false;
+
+            }
+
+        }
+
+    );
+
+    console.log(
+        "INVESTMENT CRON SCHEDULED"
+    );
+
+}
+
+
+// =====================================================
+// DEMO TRADE SETTLEMENT PROCESS
+// =====================================================
+
+function startTradeSettlementCron() {
+
+    tradeSettlementJob = cron.schedule(
+
+        "*/5 * * * * *",
+
+        async () => {
+
+            if (isSettlingTrades) {
+                return;
+            }
+
+            isSettlingTrades = true;
+
+            try {
+
+                await settleExpiredTrades();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "TRADE SETTLEMENT ERROR:",
+                    error
+                );
+
+            }
+
+            finally {
+
+                isSettlingTrades = false;
+
+            }
+
+        }
+
+    );
+
+    console.log(
+        "DEMO TRADE SETTLEMENT CRON SCHEDULED - EVERY 5 SECONDS"
+    );
+
+}
+
+
+// =====================================================
+// START SERVER
+// =====================================================
+
+async function startServer() {
+
+    try {
+
+        console.log(
+            "CONNECTING TO MONGODB..."
         );
 
-        console.error(
-            "GLOBAL SERVER ERROR"
+
+        // Wait for database connection.
+
+        await connectDB();
+
+
+        console.log(
+            "DATABASE READY"
         );
 
+
+        // Start existing investment cron.
+
+        startInvestmentCron();
+
+
+        // Start demo trading settlement cron.
+
+        startTradeSettlementCron();
+
+
+        // Start Express server.
+
+        app.listen(PORT, () => {
+
+            console.log(
+                "===================================="
+            );
+
+            console.log(
+                "TESLA WEALTH SERVER STARTED"
+            );
+
+            console.log(
+                `PORT: ${PORT}`
+            );
+
+            console.log(
+                "DATABASE: CONNECTED"
+            );
+
+            console.log(
+                "TRADING MODE: DEMO"
+            );
+
+            console.log(
+                "===================================="
+
+            );
+
+        });
+
+    }
+
+    catch (error) {
+
         console.error(
+            "SERVER STARTUP FAILED:",
             error
         );
 
-        console.error(
-            "================================"
-        );
-
-        if (
-            res.headersSent
-        ) {
-
-            return next(
-                error
-            );
-
-        }
-
-        return res.status(500).json({
-
-            success: false,
-
-            message:
-                error.message ||
-                "Internal server error."
-
-        });
+        process.exit(1);
 
     }
-);
 
-// ======================================================
-// DAILY INCOME CRON
-// ======================================================
-//
-// Runs every 5 minutes.
-//
-// The service itself decides whether an
-// investment is actually due.
-//
-// Therefore this does NOT pay income
-// every 5 minutes.
-//
-// Example:
-//
-// Purchase:
-// 10:30 AM
-//
-// Due:
-// Next day around 10:30 AM
-//
-// Cron:
-// Checks every 5 minutes
-// ======================================================
+}
 
-cron.schedule(
-    "*/5 * * * *",
-    async () => {
 
-        console.log(
-            "================================"
-        );
+// =====================================================
+// RUN SERVER
+// =====================================================
 
-        console.log(
-            "⏰ INVESTMENT INCOME CHECK"
-        );
+startServer();
 
-        console.log(
-            new Date().toISOString()
-        );
 
-        console.log(
-            "================================"
-        );
+// =====================================================
+// EXPORT APP
+// =====================================================
 
-        try {
+module.exports = app;
 
-            const result =
-                await processDailyIncome();
-
-            console.log(
-                "✅ DAILY INCOME CHECK COMPLETE"
-            );
-
-            console.log(
-                "Processed:",
-                result?.processed ?? 0
-            );
-
-            console.log(
-                "Skipped:",
-                result?.skipped ?? 0
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "❌ DAILY INCOME CRON ERROR:",
-                error
-            );
-
-        }
-
-    }
-);
-
-// ======================================================
-// SERVER
-// ======================================================
-
-const PORT =
-    Number(
-        process.env.PORT
-    ) || 5000;
-
-// ======================================================
-// START SERVER
-// ======================================================
-
-app.listen(
-    PORT,
-    "0.0.0.0",
-    () => {
-
-        console.log(
-            "================================"
-        );
-
-        console.log(
-            "🚀 SERVER STARTED"
-        );
-
-        console.log(
-            `PORT: ${PORT}`
-        );
-
-        console.log(
-            `FRONTEND: ${frontendPath}`
-        );
-
-        console.log(
-            "DAILY INCOME CRON: Every 5 minutes"
-        );
-
-        console.log(
-            "================================"
-        );
-
-    }
-);

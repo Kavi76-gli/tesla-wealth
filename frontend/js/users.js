@@ -1,574 +1,826 @@
+"use strict";
+
 // ==========================================
 // API CONFIGURATION
 // ==========================================
 
-const API_URL = "https://tesla-wealth.onrender.com/api/auth";
+const API_BASE = "https://tesla-wealth.onrender.com/api";
+
+const AUTH_API = `${API_BASE}/auth`;
+
+const INVESTMENT_API = `${API_BASE}/investment`;
+
 
 // ==========================================
-// AUTHENTICATION
+// GET TOKEN
 // ==========================================
 
-function getAdminToken() {
-    return (
-        localStorage.getItem("adminToken") ||
-        localStorage.getItem("ki_token") ||
-        localStorage.getItem("token") ||
-        ""
-    );
-}
+const token =
+    localStorage.getItem("adminToken") ||
+    localStorage.getItem("ki_token") ||
+    localStorage.getItem("token");
 
-const token = getAdminToken();
+
+// ==========================================
+// SELECTED USER
+// ==========================================
+
+let selectedPlanUserId = null;
+
+
+// ==========================================
+// AUTHORIZATION
+// ==========================================
 
 if (!token) {
+
     alert("Please login first.");
+
     window.location.href = "../auth.html";
+
 }
+
 
 // ==========================================
-// HELPER FUNCTIONS
+// SAFE HTML
 // ==========================================
-
-function getValue(...values) {
-    return values.find(value =>
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-    );
-}
-
-function getNumber(...values) {
-    const value = getValue(...values, 0);
-
-    if (typeof value === "object" && value !== null) {
-        return getNumber(
-            value.balance,
-            value.amount,
-            value.total,
-            value.value
-        );
-    }
-
-    const number = Number(
-        typeof value === "string"
-            ? value.replace(/[₹,\s]/g, "")
-            : value
-    );
-
-    return Number.isFinite(number) ? number : 0;
-}
-
-function formatMoney(value) {
-    return "₹" + getNumber(value).toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
 
 function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, character => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    })[character]);
+
+    return String(value ?? "").replace(/[&<>"']/g, char => {
+
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+
+        return entities[char];
+
+    });
+
 }
 
+
 // ==========================================
-// WALLET BALANCE
+// API REQUEST HELPER
 // ==========================================
 
-function getUserWallet(user) {
-    return getNumber(
-        user.balance,
-        user.wallet?.balance,
-        typeof user.wallet === "number" ? user.wallet : undefined,
-        user.walletBalance,
-        user.availableBalance
-    );
+async function apiRequest(url, options = {}) {
+
+    const response = await fetch(url, {
+
+        ...options,
+
+        headers: {
+
+            Authorization: `Bearer ${token}`,
+
+            ...(options.headers || {})
+
+        }
+
+    });
+
+    let data;
+
+    try {
+
+        data = await response.json();
+
+    } catch {
+
+        throw new Error("Invalid server response.");
+
+    }
+
+    if (!response.ok || data.success === false) {
+
+        throw new Error(data.message || "Request failed.");
+
+    }
+
+    return data;
+
 }
 
-// ==========================================
-// TOTAL DEPOSITS
-// ==========================================
-
-function getUserDeposit(user) {
-    return getNumber(
-        user.totalDeposit,
-        user.totalDeposits,
-        user.approvedDeposits,
-        user.depositTotal,
-        user.totalDepositAmount,
-        user.depositAmount
-    );
-}
 
 // ==========================================
-// TOTAL WITHDRAWALS
-// ==========================================
-
-function getUserWithdraw(user) {
-    return getNumber(
-        user.totalWithdraw,
-        user.totalWithdrawal,
-        user.totalWithdrawals,
-        user.withdrawalTotal,
-        user.totalWithdrawAmount,
-        user.totalWithdrawn,
-        user.withdrawnAmount,
-        user.withdrawalAmount,
-        user.withdrawAmount,
-        user.wallet?.totalWithdraw,
-        user.wallet?.totalWithdrawals,
-        user.stats?.totalWithdraw,
-        user.statistics?.totalWithdraw
-    );
-}
-
-// ==========================================
-// TOTAL INVESTMENT
-// ==========================================
-
-function getUserInvestment(user) {
-    return getNumber(
-        user.totalInvestment,
-        user.totalInvestments,
-        user.totalInvested,
-        user.investmentTotal,
-        user.investedAmount,
-        user.totalInvestmentAmount,
-        user.investmentAmount,
-        user.investment?.amount,
-        user.investment?.total,
-        user.stats?.totalInvestment,
-        user.statistics?.totalInvestment
-    );
-}
-
-// ==========================================
-// LOAD USERS FROM BACKEND
+// LOAD ALL USERS
 // ==========================================
 
 async function loadUsers() {
-    if (!token) return;
-
-    const table = document.getElementById("usersTable");
-
-    if (!table) {
-        console.error("Element #usersTable was not found.");
-        return;
-    }
-
-    table.innerHTML = `
-        <tr>
-            <td colspan="9" style="text-align:center;padding:25px;">
-                Loading users...
-            </td>
-        </tr>
-    `;
 
     try {
-        const response = await fetch(`${API_URL}/admin/users`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json"
-            },
-            cache: "no-store"
-        });
 
-        const data = await response.json();
+        const data = await apiRequest(
+            `${AUTH_API}/admin/users`
+        );
 
-        if (response.status === 401) {
-            alert("Your session has expired. Please log in again.");
-            logout();
-            return;
-        }
+        renderUsers(data.users || []);
 
-        if (response.status === 403) {
-            throw new Error(
-                "Administrator permission is required."
-            );
-        }
-
-        if (!response.ok || data.success === false) {
-            throw new Error(
-                data.message || `Server error: ${response.status}`
-            );
-        }
-
-        const users =
-            data.users ??
-            data.data?.users ??
-            data.data ??
-            [];
-
-        if (!Array.isArray(users)) {
-            console.error("Unexpected API response:", data);
-            throw new Error("The server did not return a valid users list.");
-        }
-
-        window.adminUsers = users;
-
-        // Diagnostic information for checking missing fields.
-        console.log("Users API response:", data);
-
-        if (users.length > 0) {
-            console.log("First user object:", users[0]);
-
-            console.table(users.map(user => ({
-                name: user.name || user.fullName || user.username,
-                wallet: getUserWallet(user),
-                deposit: getUserDeposit(user),
-                withdrawal: getUserWithdraw(user),
-                investment: getUserInvestment(user)
-            })));
-        }
-
-        renderUsers(users);
-        updateCards(users);
+        updateCards(data.users || []);
 
     } catch (error) {
-        console.error("Users loading error:", error);
 
-        table.innerHTML = `
-            <tr>
-                <td colspan="9"
-                    style="text-align:center;padding:25px;color:#b91c1c;">
-                    ${escapeHTML(error.message)}
-                </td>
-            </tr>
-        `;
+        console.error("Load users error:", error);
+
+        alert(error.message || "Unable to load users.");
+
     }
+
 }
 
+
 // ==========================================
-// DISPLAY USERS
+// RENDER USERS
 // ==========================================
 
 function renderUsers(users) {
+
     const table = document.getElementById("usersTable");
 
-    if (!table) return;
+    table.innerHTML = "";
 
     if (!users.length) {
+
         table.innerHTML = `
             <tr>
-                <td colspan="9" style="text-align:center;padding:25px;">
-                    No users found.
-                </td>
+                <td colspan="9">No users found.</td>
             </tr>
         `;
+
         return;
+
     }
 
-    table.innerHTML = users.map((user, index) => {
-        const id = String(user._id || user.id || "");
+    users.forEach((user, index) => {
 
-        const name = getValue(
-            user.name,
-            user.fullName,
-            user.username,
-            "Unknown"
+        const wallet = Number(
+            user.balance ?? user.wallet ?? 0
         );
 
-        const phone = getValue(
-            user.phone,
-            user.mobile,
-            user.mobileNumber,
-            "—"
-        );
+        const row = document.createElement("tr");
 
-        const wallet = getUserWallet(user);
-        const deposit = getUserDeposit(user);
-        const withdraw = getUserWithdraw(user);
-        const investment = getUserInvestment(user);
+        row.innerHTML = `
 
-        const isBlocked = Boolean(
-            user.isBlocked || user.blocked
-        );
+            <td>${index + 1}</td>
 
-        return `
-            <tr>
-                <td>${index + 1}</td>
+            <td>${escapeHTML(user.name)}</td>
 
-                <td>${escapeHTML(name)}</td>
+            <td>${escapeHTML(user.phone)}</td>
 
-                <td>${escapeHTML(phone)}</td>
+            <td>₹${wallet.toFixed(2)}</td>
 
-                <td>${formatMoney(wallet)}</td>
+            <td>₹${Number(user.totalDeposit || 0).toFixed(2)}</td>
 
-                <td>${formatMoney(deposit)}</td>
+            <td>₹${Number(user.totalWithdraw || 0).toFixed(2)}</td>
 
-                <td>${formatMoney(withdraw)}</td>
+            <td>₹${Number(user.totalInvestment || 0).toFixed(2)}</td>
 
-                <td>${formatMoney(investment)}</td>
+            <td>
 
-                <td>
-                    <span class="${
-                        isBlocked ? "status-blocked" : "status-active"
-                    }">
-                        ${isBlocked ? "Blocked" : "Active"}
-                    </span>
-                </td>
+                <span class="${
+                    user.isBlocked
+                        ? "status-blocked"
+                        : "status-active"
+                }">
 
-                <td>
-                    <button
-                        class="btn view-btn"
-                        data-action="view"
-                        data-id="${escapeHTML(id)}">
-                        View
-                    </button>
+                    ${user.isBlocked ? "Blocked" : "Active"}
 
-                    <button
-                        class="btn block-btn"
-                        data-action="block"
-                        data-id="${escapeHTML(id)}">
-                        ${isBlocked ? "Unblock" : "Block"}
-                    </button>
+                </span>
 
-                    <button
-                        class="btn delete-btn"
-                        data-action="delete"
-                        data-id="${escapeHTML(id)}">
-                        Delete
-                    </button>
-                </td>
-            </tr>
+            </td>
+
+            <td class="user-actions">
+
+                <button
+                    class="btn view-btn"
+                    onclick="viewUser('${user._id}')">
+
+                    <i class="fas fa-eye"></i>
+                    View
+
+                </button>
+
+
+                <button
+                    class="btn plan-btn"
+                    onclick="openPlanModal('${user._id}', '${escapeHTML(user.name)}')">
+
+                    <i class="fas fa-sliders-h"></i>
+                    Manage Plans
+
+                </button>
+
+
+                <button
+                    class="btn block-btn"
+                    onclick="toggleBlock('${user._id}')">
+
+                    ${user.isBlocked ? "Unblock" : "Block"}
+
+                </button>
+
+
+                <button
+                    class="btn delete-btn"
+                    onclick="deleteUser('${user._id}')">
+
+                    Delete
+
+                </button>
+
+            </td>
+
         `;
-    }).join("");
+
+        table.appendChild(row);
+
+    });
+
 }
+
 
 // ==========================================
 // DASHBOARD STATISTICS
 // ==========================================
 
 function updateCards(users) {
-    const total = document.getElementById("totalUsers");
-    const active = document.getElementById("activeUsers");
-    const blocked = document.getElementById("blockedUsers");
-    const todayUsers = document.getElementById("todayUsers");
 
-    if (total) {
-        total.textContent = users.length;
-    }
+    document.getElementById("totalUsers").innerText =
+        users.length;
 
-    if (active) {
-        active.textContent = users.filter(user =>
-            !user.isBlocked && !user.blocked
-        ).length;
-    }
+    const active = users.filter(
+        user => !user.isBlocked
+    ).length;
 
-    if (blocked) {
-        blocked.textContent = users.filter(user =>
-            user.isBlocked || user.blocked
-        ).length;
-    }
+    const blocked = users.filter(
+        user => user.isBlocked
+    ).length;
 
-    if (todayUsers) {
-        const today = new Date();
+    document.getElementById("activeUsers").innerText =
+        active;
 
-        todayUsers.textContent = users.filter(user => {
-            if (!user.createdAt) return false;
+    document.getElementById("blockedUsers").innerText =
+        blocked;
 
-            const date = new Date(user.createdAt);
+    const today = new Date().toDateString();
 
-            return (
-                !Number.isNaN(date.getTime()) &&
-                date.getFullYear() === today.getFullYear() &&
-                date.getMonth() === today.getMonth() &&
-                date.getDate() === today.getDate()
-            );
-        }).length;
-    }
+    const todayUsers = users.filter(user => {
+
+        return user.createdAt &&
+            new Date(user.createdAt).toDateString() === today;
+
+    }).length;
+
+    document.getElementById("todayUsers").innerText =
+        todayUsers;
+
 }
 
-// ==========================================
-// USER TABLE ACTIONS
-// ==========================================
-
-const usersTable = document.getElementById("usersTable");
-
-if (usersTable) {
-    usersTable.addEventListener("click", event => {
-        const button = event.target.closest("button[data-action]");
-
-        if (!button) return;
-
-        const id = button.dataset.id;
-        const action = button.dataset.action;
-
-        if (!id) {
-            alert("User ID is missing.");
-            return;
-        }
-
-        if (action === "view") {
-            viewUser(id);
-        }
-
-        if (action === "block") {
-            toggleBlock(id);
-        }
-
-        if (action === "delete") {
-            deleteUser(id);
-        }
-    });
-}
 
 // ==========================================
 // VIEW USER
 // ==========================================
 
 function viewUser(id) {
+
     window.location.href =
         `user-details.html?id=${encodeURIComponent(id)}`;
+
 }
+
 
 // ==========================================
 // BLOCK / UNBLOCK USER
 // ==========================================
 
 async function toggleBlock(id) {
+
     if (!confirm("Are you sure you want to change this user's status?")) {
         return;
     }
 
     try {
-        const response = await fetch(
-            `${API_URL}/admin/users/block/${encodeURIComponent(id)}`,
+
+        const data = await apiRequest(
+            `${AUTH_API}/admin/users/block/${encodeURIComponent(id)}`,
             {
-                method: "PATCH",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json"
-                }
+                method: "PATCH"
             }
         );
-
-        const data = await response.json();
-
-        if (response.status === 401) {
-            logout();
-            return;
-        }
-
-        if (!response.ok || data.success === false) {
-            throw new Error(
-                data.message || "Could not update user status."
-            );
-        }
 
         alert(data.message || "User status updated.");
 
         await loadUsers();
 
     } catch (error) {
-        console.error("Update status error:", error);
+
+        console.error(error);
+
         alert(error.message);
+
     }
+
 }
+
 
 // ==========================================
 // DELETE USER
 // ==========================================
 
 async function deleteUser(id) {
+
     if (!confirm("Are you sure you want to delete this user?")) {
         return;
     }
 
     try {
-        const response = await fetch(
-            `${API_URL}/admin/users/${encodeURIComponent(id)}`,
+
+        const data = await apiRequest(
+            `${AUTH_API}/admin/users/${encodeURIComponent(id)}`,
             {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json"
-                }
+                method: "DELETE"
             }
         );
 
-        const data = await response.json();
-
-        if (response.status === 401) {
-            logout();
-            return;
-        }
-
-        if (!response.ok || data.success === false) {
-            throw new Error(
-                data.message || "Could not delete user."
-            );
-        }
-
-        alert(data.message || "User deleted.");
+        alert(data.message || "User deleted successfully.");
 
         await loadUsers();
 
     } catch (error) {
-        console.error("Delete user error:", error);
+
+        console.error(error);
+
         alert(error.message);
+
     }
+
 }
+
+
+// ==========================================
+// OPEN PLAN MANAGEMENT MODAL
+// ==========================================
+
+async function openPlanModal(userId, userName) {
+
+    selectedPlanUserId = userId;
+
+    const modal = document.getElementById("planModal");
+
+    const planList = document.getElementById("planList");
+
+    const loading = document.getElementById("planLoading");
+
+    const message = document.getElementById("planMessage");
+
+    document.getElementById("selectedUserName").innerText =
+        userName;
+
+    message.innerText = "";
+
+    message.className = "plan-message";
+
+    planList.innerHTML = "";
+
+    loading.style.display = "block";
+
+    modal.style.display = "flex";
+
+    try {
+
+        const data = await apiRequest(
+            `${INVESTMENT_API}/admin/users/${encodeURIComponent(userId)}/plan-permissions`
+        );
+
+        renderPlanPermissions(data.permissions || []);
+
+    } catch (error) {
+
+        console.error("Plan permission error:", error);
+
+        showPlanMessage(error.message, "error");
+
+    } finally {
+
+        loading.style.display = "none";
+
+    }
+
+}
+
+
+// ==========================================
+// RENDER PLAN PERMISSIONS
+// ==========================================
+
+function renderPlanPermissions(permissions) {
+
+    const container = document.getElementById("planList");
+
+    container.innerHTML = "";
+
+    if (!permissions.length) {
+
+        container.innerHTML = `
+            <div class="plan-empty">
+                No investment plans found.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    permissions.forEach(permission => {
+
+        const card = document.createElement("div");
+
+        card.className = "plan-permission-card";
+
+        const enabled = permission.enabled !== false;
+
+        const globalStatus =
+            permission.globalStatus !== false;
+
+        card.innerHTML = `
+
+            <div class="plan-card-top">
+
+                <div>
+
+                    <h3>${escapeHTML(permission.planName)}</h3>
+
+                    <p>
+                        Plan Price:
+                        <strong>₹${Number(permission.price || 0).toFixed(2)}</strong>
+                    </p>
+
+                    <p>
+                        Plan Type:
+                        ${escapeHTML(permission.planType || "Daily")}
+                    </p>
+
+                </div>
+
+
+                <div class="plan-switch-area">
+
+                    <label class="plan-switch">
+
+                        <input
+                            type="checkbox"
+                            class="permission-toggle"
+                            ${enabled ? "checked" : ""}
+                        >
+
+                        <span class="plan-slider"></span>
+
+                    </label>
+
+                    <span class="permission-status ${
+                        enabled ? "enabled" : "disabled"
+                    }">
+
+                        ${enabled ? "Enabled" : "Disabled"}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="global-plan-status">
+
+                Global Plan:
+
+                <strong class="${
+                    globalStatus ? "global-on" : "global-off"
+                }">
+
+                    ${globalStatus ? "ON" : "OFF"}
+
+                </strong>
+
+            </div>
+
+
+            <div class="plan-settings">
+
+                <label>
+                    Maximum Lifetime Purchases
+                </label>
+
+                <input
+                    type="number"
+                    class="purchase-limit"
+                    min="0"
+                    step="1"
+                    value="${Number(permission.maxLifetimePurchases || 0)}"
+                >
+
+                <small>
+                    Enter 0 for unlimited purchases.
+                </small>
+
+
+                <label>
+                    Restriction Message
+                </label>
+
+                <textarea
+                    class="restriction-note"
+                    rows="3"
+                    maxlength="500"
+                    placeholder="Enter the message displayed to this user..."
+                >${escapeHTML(permission.restrictionNote || "")}</textarea>
+
+
+                <button
+                    type="button"
+                    class="save-plan-btn"
+                >
+
+                    <i class="fas fa-save"></i>
+                    Save Plan Settings
+
+                </button>
+
+            </div>
+
+        `;
+
+
+        const toggle = card.querySelector(".permission-toggle");
+
+        const status = card.querySelector(".permission-status");
+
+        const saveButton = card.querySelector(".save-plan-btn");
+
+
+        // Update ON/OFF label immediately
+
+        toggle.addEventListener("change", function () {
+
+            status.textContent = this.checked
+                ? "Enabled"
+                : "Disabled";
+
+            status.className = this.checked
+                ? "permission-status enabled"
+                : "permission-status disabled";
+
+        });
+
+
+        // Save individual plan permission
+
+        saveButton.addEventListener("click", async function () {
+
+            await savePlanPermission(
+                permission.planId,
+                card,
+                saveButton
+            );
+
+        });
+
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+// ==========================================
+// SAVE PLAN PERMISSION
+// ==========================================
+
+async function savePlanPermission(planId, card, button) {
+
+    if (!selectedPlanUserId) {
+
+        showPlanMessage("Please select a user.", "error");
+
+        return;
+
+    }
+
+    const enabled = card.querySelector(
+        ".permission-toggle"
+    ).checked;
+
+    const restrictionNote = card.querySelector(
+        ".restriction-note"
+    ).value.trim();
+
+    const maxLifetimePurchases = Number(
+        card.querySelector(".purchase-limit").value
+    );
+
+
+    // Validate purchase limit
+
+    if (
+        !Number.isInteger(maxLifetimePurchases) ||
+        maxLifetimePurchases < 0
+    ) {
+
+        showPlanMessage(
+            "Purchase limit must be a whole number greater than or equal to 0.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // Require a message when disabled
+
+    if (!enabled && !restrictionNote) {
+
+        showPlanMessage(
+            "Please enter a restriction message before disabling this plan.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const originalText = button.innerHTML;
+
+    button.disabled = true;
+
+    button.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i>
+        Saving...
+    `;
+
+
+    try {
+
+        const data = await apiRequest(
+
+            `${INVESTMENT_API}/admin/users/${encodeURIComponent(selectedPlanUserId)}/plan-permissions/${encodeURIComponent(planId)}`,
+
+            {
+
+                method: "PATCH",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    enabled,
+
+                    restrictionNote,
+
+                    maxLifetimePurchases
+
+                })
+
+            }
+
+        );
+
+
+        showPlanMessage(
+            data.message || "Investment plan settings saved successfully.",
+            "success"
+        );
+
+
+        button.innerHTML = `
+            <i class="fas fa-check"></i>
+            Saved
+        `;
+
+
+    } catch (error) {
+
+        console.error("Save permission error:", error);
+
+        showPlanMessage(error.message, "error");
+
+        button.innerHTML = originalText;
+
+    } finally {
+
+        button.disabled = false;
+
+    }
+
+}
+
+
+// ==========================================
+// PLAN MESSAGE
+// ==========================================
+
+function showPlanMessage(message, type) {
+
+    const element = document.getElementById("planMessage");
+
+    element.innerText = message;
+
+    element.className = `plan-message ${type}`;
+
+}
+
+
+// ==========================================
+// CLOSE MODAL
+// ==========================================
+
+function closePlanModal() {
+
+    document.getElementById("planModal").style.display = "none";
+
+    selectedPlanUserId = null;
+
+}
+
+
+// Close when clicking outside modal
+
+document.getElementById("planModal").addEventListener(
+    "click",
+    function (event) {
+
+        if (event.target === this) {
+            closePlanModal();
+        }
+
+    }
+);
+
 
 // ==========================================
 // SEARCH USERS
 // ==========================================
 
-const searchInput = document.getElementById("searchUser");
+document.getElementById("searchUser").addEventListener(
+    "input",
+    function () {
 
-if (searchInput) {
-    searchInput.addEventListener("input", function () {
-        const search = this.value.trim().toLowerCase();
+        const value = this.value.toLowerCase();
 
-        const filteredUsers = (window.adminUsers || []).filter(user => {
-            const name = String(
-                user.name || user.fullName || user.username || ""
-            ).toLowerCase();
+        const rows = document.querySelectorAll(
+            "#usersTable tr"
+        );
 
-            const phone = String(
-                user.phone || user.mobile || user.mobileNumber || ""
-            ).toLowerCase();
+        rows.forEach(row => {
 
-            return (
-                name.includes(search) ||
-                phone.includes(search)
-            );
+            const text = row.innerText.toLowerCase();
+
+            row.style.display =
+                text.includes(value) ? "" : "none";
+
         });
 
-        renderUsers(filteredUsers);
-    });
-}
+    }
+);
+
 
 // ==========================================
 // LOGOUT
 // ==========================================
 
-function logout() {
-    [
-        "ki_token",
-        "token",
-        "adminToken",
-        "user"
-    ].forEach(key => localStorage.removeItem(key));
+document.getElementById("logoutBtn").addEventListener(
+    "click",
+    function (event) {
 
-    window.location.href = "../auth.html";
-}
-
-const logoutButton = document.getElementById("logoutBtn");
-
-if (logoutButton) {
-    logoutButton.addEventListener("click", event => {
         event.preventDefault();
-        logout();
-    });
+
+        localStorage.removeItem("ki_token");
+
+        localStorage.removeItem("token");
+
+        localStorage.removeItem("adminToken");
+
+        localStorage.removeItem("user");
+
+        window.location.href = "../auth.html";
+
+    }
+);
+
+
+// ==========================================
+// LOAD USERS
+// ==========================================
+
+if (token) {
+    loadUsers();
 }
-
-// ==========================================
-// INITIAL LOAD
-// ==========================================
-
-loadUsers();

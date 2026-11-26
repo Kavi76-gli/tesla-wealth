@@ -308,3 +308,382 @@ table{
 }
 
 }
+/* ==========================================
+   MANAGE PLANS BUTTON
+========================================== */
+
+.plan-btn {
+    background: #087f5b;
+    color: #fff;
+}
+
+.plan-btn:hover {
+    background: #066747;
+}
+
+
+/* ==========================================
+   USER ACTIONS
+========================================== */
+
+.user-actions {
+    min-width: 300px;
+}
+
+.user-actions .btn {
+    margin: 3px;
+    padding: 8px 11px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   PLAN MODAL
+========================================== */
+
+.plan-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.65);
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.plan-modal-content {
+    background: #ffffff;
+    width: 100%;
+    max-width: 750px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 15px 50px rgba(0,0,0,.2);
+}
+
+.plan-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 1px solid #e8eee9;
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+}
+
+.plan-modal-header h2 {
+    margin: 0;
+    color: #087f5b;
+    font-size: 23px;
+}
+
+.plan-modal-header p {
+    color: #68756d;
+    margin: 7px 0 0;
+}
+
+.plan-modal-close {
+    border: none;
+    background: #f1f5f2;
+    color: #333;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   INFO MESSAGE
+========================================== */
+
+.plan-info {
+    padding: 13px;
+    border-radius: 9px;
+    background: #e9f8ef;
+    color: #087f5b;
+    font-size: 13px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   LOADING
+========================================== */
+
+.plan-loading {
+    display: none;
+    text-align: center;
+    padding: 25px;
+    color: #087f5b;
+}
+
+
+/* ==========================================
+   PLAN CARD
+========================================== */
+
+.plan-permission-card {
+    border: 1px solid #e5ece7;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+    background: #ffffff;
+}
+
+.plan-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.plan-card-top h3 {
+    color: #183c2b;
+    margin: 0 0 10px;
+}
+
+.plan-card-top p {
+    font-size: 13px;
+    color: #66736a;
+    margin: 5px 0;
+}
+
+
+/* ==========================================
+   TOGGLE SWITCH
+========================================== */
+
+.plan-switch-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.plan-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.plan-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.plan-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #d2d8d4;
+    border-radius: 30px;
+    transition: .3s;
+}
+
+.plan-slider::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: .3s;
+}
+
+.plan-switch input:checked + .plan-slider {
+    background: #16a36b;
+}
+
+.plan-switch input:checked + .plan-slider::before {
+    transform: translateX(22px);
+}
+
+.permission-status {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.permission-status.enabled {
+    color: #11945e;
+}
+
+.permission-status.disabled {
+    color: #dc3545;
+}
+
+
+/* ==========================================
+   GLOBAL PLAN STATUS
+========================================== */
+
+.global-plan-status {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f7faf8;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+.global-on {
+    color: #11945e;
+}
+
+.global-off {
+    color: #dc3545;
+}
+
+
+/* ==========================================
+   PLAN FORM
+========================================== */
+
+.plan-settings {
+    margin-top: 17px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.plan-settings label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #34483b;
+    margin-top: 7px;
+}
+
+.plan-settings input,
+.plan-settings textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dce5df;
+    border-radius: 8px;
+    padding: 11px;
+    font-size: 14px;
+    outline: none;
+    font-family: inherit;
+}
+
+.plan-settings input:focus,
+.plan-settings textarea:focus {
+    border-color: #16a36b;
+}
+
+.plan-settings small {
+    color: #829087;
+    font-size: 12px;
+}
+
+
+/* ==========================================
+   SAVE BUTTON
+========================================== */
+
+.save-plan-btn {
+    background: #087f5b;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.save-plan-btn:hover {
+    background: #066747;
+}
+
+.save-plan-btn:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+
+/* ==========================================
+   PLAN MESSAGES
+========================================== */
+
+.plan-message {
+    display: none;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+.plan-message.success {
+    display: block;
+    background: #e5f7ec;
+    color: #087f5b;
+}
+
+.plan-message.error {
+    display: block;
+    background: #fff0f0;
+    color: #d12b2b;
+}
+
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+
+.plan-empty {
+    text-align: center;
+    padding: 30px;
+    color: #849087;
+}
+
+
+/* ==========================================
+   MODAL FOOTER
+========================================== */
+
+.plan-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.plan-close-btn {
+    background: #edf2ee;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media(max-width: 600px) {
+
+    .plan-modal-content {
+        padding: 17px;
+    }
+
+    .plan-card-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .plan-switch-area {
+        margin-top: 8px;
+    }
+
+    .plan-modal-header h2 {
+        font-size: 19px;
+    }
+
+}

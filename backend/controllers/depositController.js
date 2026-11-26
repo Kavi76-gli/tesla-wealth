@@ -12,19 +12,19 @@ const PaymentSetting = require("../models/paymentSetting");
 // ======================================================
 // DEFAULT PAYMENT SETTINGS
 // ======================================================
-
 const DEFAULT_PAYMENT_SETTINGS = {
     companyName: "Tesla Wealth",
-    paymentType: "UPI",
-    upiId: "jaishrishyamji12@axl",
+    paymentType: "BINANCE_PAY",
+    upiId: "",
     accountHolder: "",
     bankName: "",
     accountNumber: "",
     ifscCode: "",
-    minimumDeposit: 500,
+    qrImage: "",
+    minimumDeposit: 50,
     maximumDeposit: 100000,
     depositInstruction:
-        "Please make the payment using the details below and enter the correct UTR number after payment."
+        "Pay using the Binance Pay QR code. Enter your Binance Pay transaction reference and submit your payment screenshot. Your deposit will be credited after admin approval."
 };
 
 // ======================================================
@@ -149,23 +149,19 @@ exports.createDeposit = async (req, res) => {
                     "Deposit settings are temporarily unavailable."
             });
         }
+if (amount < minimumDeposit) {
+    return res.status(400).json({
+        success: false,
+        message: `Minimum deposit amount is ${minimumDeposit} USDT.`
+    });
+}
 
-        if (amount < minimumDeposit) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    `Minimum deposit amount is ₹${minimumDeposit}.`
-            });
-        }
-
-        if (amount > maximumDeposit) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    `Maximum deposit amount is ₹${maximumDeposit}.`
-            });
-        }
-
+if (amount > maximumDeposit) {
+    return res.status(400).json({
+        success: false,
+        message: `Maximum deposit amount is ${maximumDeposit} USDT.`
+    });
+}
         const deposit = await Deposit.create({
             user: req.user.id,
             amount: money(amount),
@@ -674,19 +670,21 @@ exports.getPaymentSettings = async (req, res) => {
             ...(setting || {})
         };
 
-        // Do not return internal MongoDB metadata.
-
+        // Return only fields required by the payment settings page.
         const publicSetting = {
-            companyName: finalSetting.companyName,
-            paymentType: finalSetting.paymentType,
-            upiId: finalSetting.upiId,
-            accountHolder: finalSetting.accountHolder,
-            bankName: finalSetting.bankName,
-            accountNumber: finalSetting.accountNumber,
-            ifscCode: finalSetting.ifscCode,
-            minimumDeposit: finalSetting.minimumDeposit,
-            maximumDeposit: finalSetting.maximumDeposit,
-            depositInstruction: finalSetting.depositInstruction
+            companyName: finalSetting.companyName || "",
+            paymentType: finalSetting.paymentType || "BINANCE_PAY",
+            upiId: finalSetting.upiId || "",
+            accountHolder: finalSetting.accountHolder || "",
+            bankName: finalSetting.bankName || "",
+            accountNumber: finalSetting.accountNumber || "",
+            ifscCode: finalSetting.ifscCode || "",
+            minimumDeposit: finalSetting.minimumDeposit ?? 50,
+            maximumDeposit: finalSetting.maximumDeposit ?? 100000,
+            depositInstruction: finalSetting.depositInstruction || "",
+
+            // Required to display the uploaded Binance Pay QR.
+            qrImage: finalSetting.qrImage || ""
         };
 
         return res.status(200).json({
@@ -743,14 +741,14 @@ exports.updatePaymentSettings = async (req, res) => {
             }
         }
 
+        // Validate and save deposit limits
         if (req.body.minimumDeposit !== undefined) {
             const minimum = Number(req.body.minimumDeposit);
 
             if (!Number.isFinite(minimum) || minimum <= 0) {
                 return res.status(400).json({
                     success: false,
-                    message:
-                        "Minimum deposit must be greater than zero."
+                    message: "Minimum deposit must be greater than zero."
                 });
             }
 
@@ -763,8 +761,7 @@ exports.updatePaymentSettings = async (req, res) => {
             if (!Number.isFinite(maximum) || maximum <= 0) {
                 return res.status(400).json({
                     success: false,
-                    message:
-                        "Maximum deposit must be greater than zero."
+                    message: "Maximum deposit must be greater than zero."
                 });
             }
 
@@ -784,11 +781,20 @@ exports.updatePaymentSettings = async (req, res) => {
         if (minimumDeposit > maximumDeposit) {
             return res.status(400).json({
                 success: false,
-                message:
-                    "Minimum deposit cannot exceed maximum deposit."
+                message: "Minimum deposit cannot exceed maximum deposit."
             });
         }
 
+        // ==============================================
+        // SAVE UPLOADED BINANCE QR IMAGE
+        // ==============================================
+
+        if (req.file) {
+            // upload.single("qrImage") must provide req.file.filename
+            setting.qrImage = `/uploads/${req.file.filename}`;
+        }
+
+        // Save all settings, including the QR path
         await setting.save();
 
         return res.status(200).json({
@@ -805,7 +811,8 @@ exports.updatePaymentSettings = async (req, res) => {
                 ifscCode: setting.ifscCode,
                 minimumDeposit: setting.minimumDeposit,
                 maximumDeposit: setting.maximumDeposit,
-                depositInstruction: setting.depositInstruction
+                depositInstruction: setting.depositInstruction,
+                qrImage: setting.qrImage || ""
             }
         });
 
@@ -823,4 +830,3 @@ exports.updatePaymentSettings = async (req, res) => {
         });
     }
 };
-

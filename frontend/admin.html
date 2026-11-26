@@ -1,74 +1,609 @@
-<aside class="sidebar">
+```html
+<!-- FONT AWESOME -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
 
-    <div class="logo">
-        <h2>Admin Panel</h2>
+<style>
+/* =========================================
+   ADMIN PANEL - WHITE THEME
+========================================= */
+
+:root {
+    --admin-primary: #16a36a;
+    --admin-primary-light: #eaf8f1;
+    --admin-bg: #f5f7fa;
+    --admin-white: #ffffff;
+    --admin-text: #263445;
+    --admin-muted: #82909f;
+    --admin-border: #e9edf2;
+    --admin-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    background: var(--admin-bg);
+    color: var(--admin-text);
+}
+
+/* =========================================
+   TOP HEADER
+========================================= */
+
+.admin-header {
+    height: 72px;
+    background: var(--admin-white);
+    border-bottom: 1px solid var(--admin-border);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 30px;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    z-index: 1000;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-toggle {
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+
+    background: white;
+    color: var(--admin-text);
+
+    cursor: pointer;
+    font-size: 17px;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.header-logo {
+    width: 39px;
+    height: 39px;
+
+    border-radius: 11px;
+
+    background: var(--admin-primary);
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 19px;
+}
+
+.header-brand h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 750;
+}
+
+.header-brand span {
+    display: block;
+    color: var(--admin-muted);
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.admin-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    background: #effaf4;
+    color: #15965d;
+
+    padding: 8px 13px;
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    background: #16b66e;
+    border-radius: 50%;
+}
+
+.admin-avatar {
+    width: 38px;
+    height: 38px;
+
+    background: #eaf8f1;
+    color: var(--admin-primary);
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 800;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar {
+    position: fixed;
+
+    top: 72px;
+    left: 0;
+    bottom: 0;
+
+    width: 255px;
+
+    background: white;
+    border-right: 1px solid var(--admin-border);
+
+    padding: 22px 15px;
+
+    overflow-y: auto;
+
+    z-index: 999;
+
+    transition: transform 0.3s ease;
+}
+
+.sidebar-section-title {
+    color: #a1aab5;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+
+    padding: 10px 13px;
+    margin-top: 8px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    margin-bottom: 5px;
+}
+
+.sidebar li a {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    color: #596779;
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.sidebar li a i {
+    width: 19px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.sidebar li a:hover {
+    background: #f4f9f6;
+    color: var(--admin-primary);
+}
+
+.sidebar li a.active {
+    background: var(--admin-primary-light);
+    color: var(--admin-primary);
+    font-weight: 750;
+}
+
+.sidebar li a.active i {
+    color: var(--admin-primary);
+}
+
+/* LOGOUT */
+
+.sidebar li.logout-item {
+    margin-top: 25px;
+    padding-top: 17px;
+    border-top: 1px solid var(--admin-border);
+}
+
+.sidebar li.logout-item a {
+    color: #e05252;
+}
+
+.sidebar li.logout-item a:hover {
+    background: #fff0f0;
+    color: #d93636;
+}
+
+/* =========================================
+   MAIN CONTENT AREA
+========================================= */
+
+.admin-main {
+    margin-left: 255px;
+    padding: 105px 30px 30px;
+
+    min-height: 100vh;
+
+    transition: margin-left 0.3s ease;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 850px) {
+
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: var(--admin-shadow);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .admin-main {
+        margin-left: 0;
+        padding: 100px 18px 25px;
+    }
+
+    .admin-header {
+        padding: 0 15px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .header-brand h2 {
+        font-size: 15px;
+    }
+
+    .header-brand span {
+        font-size: 10px;
+    }
+
+    .admin-status {
+        display: none;
+    }
+
+    .admin-header {
+        height: 65px;
+    }
+
+    .sidebar {
+        top: 65px;
+    }
+
+    .admin-main {
+        padding-top: 90px;
+    }
+
+}
+</style>
+
+
+<!-- =========================================
+     TOP HEADER
+========================================= -->
+
+<header class="admin-header">
+
+    <div class="header-left">
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Toggle navigation"
+        >
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="header-brand">
+
+            <div class="header-logo">
+                <i class="fas fa-chart-line"></i>
+            </div>
+
+            <div>
+                <h2>Tesla Wealth</h2>
+                <span>Administration Panel</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <div class="admin-status">
+            <span class="status-dot"></span>
+            System Online
+        </div>
+
+        <div class="admin-avatar">
+            A
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     SIDEBAR NAVIGATION
+========================================= -->
+
+<aside class="sidebar" id="adminSidebar">
+
+    <div class="sidebar-section-title">
+        Main Menu
     </div>
 
     <ul>
 
         <li>
-            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="dashboard.html">
+                <i class="fas fa-gauge-high"></i>
+                Dashboard
+            </a>
         </li>
 
         <li>
-            <a href="users.html">👥 Users</a>
-        </li>
-
-
-<li>
-    <a href="admin-referral-report.html">👥 Referral Report</a>
-
-</li>
-
-
-<li>
-            <a href="tesla-wealth.html">Tesla Wealth</a>
-        </li>
-
-
-
-
-        <li>
-            <a href="per-user.html">Tesla Wealth</a>
+            <a href="users.html">
+                <i class="fas fa-users"></i>
+                Users
+            </a>
         </li>
 
         <li>
-            <a href="deposits.html">💰 Deposits</a>
+            <a href="admin-referral-report.html">
+                <i class="fas fa-user-group"></i>
+                Referral Report
+            </a>
+        </li>
+
+    </ul>
+
+
+    <div class="sidebar-section-title">
+        Tesla Wealth
+    </div>
+
+    <ul>
+
+        <li>
+            <a href="tesla-wealth.html">
+                <i class="fas fa-building-columns"></i>
+                Tesla Wealth Overview
+            </a>
         </li>
 
         <li>
-            <a href="withdrawals.html">💸 Withdrawals</a>
+            <a href="per-user.html">
+                <i class="fas fa-user-gear"></i>
+                User Management
+            </a>
+        </li>
+
+    </ul>
+
+
+    <div class="sidebar-section-title">
+        Financial Management
+    </div>
+
+    <ul>
+
+        <li>
+            <a href="deposits.html">
+                <i class="fas fa-wallet"></i>
+                Deposits
+            </a>
         </li>
 
         <li>
-            <a href="investment-plans.html">📈 Investment Plans</a>
-        </li>
-
-        <a href="admin-purchase.html">
-    <i class="fas fa-chart-line"></i>
-    Purchase History
-</a>
-
-        <li>
-            <a href="daily-income.html">💵 Daily Income</a>
+            <a href="withdrawals.html">
+                <i class="fas fa-money-bill-transfer"></i>
+                Withdrawals
+            </a>
         </li>
 
         <li>
-            <a href="banner.html">🖼 Banner</a>
+            <a href="investment-plans.html">
+                <i class="fas fa-chart-line"></i>
+                Investment Plans
+            </a>
         </li>
 
         <li>
-            <a href="notice.html">📢 Notice</a>
+            <a href="admin-purchase.html">
+                <i class="fas fa-clock-rotate-left"></i>
+                Purchase History
+            </a>
         </li>
 
         <li>
-            <a href="settings.html">⚙ Settings</a>
+            <a href="daily-income.html">
+                <i class="fas fa-coins"></i>
+                Daily Income
+            </a>
+        </li>
+
+    </ul>
+
+
+    <div class="sidebar-section-title">
+        Website Management
+    </div>
+
+    <ul>
+
+        <li>
+            <a href="banner.html">
+                <i class="fas fa-images"></i>
+                Banner Management
+            </a>
         </li>
 
         <li>
-            <a href="#" id="logoutBtn">🚪 Logout</a>
+            <a href="notice.html">
+                <i class="fas fa-bullhorn"></i>
+                Notice Management
+            </a>
+        </li>
+
+        <li>
+            <a href="settings.html">
+                <i class="fas fa-gear"></i>
+                Settings
+            </a>
+        </li>
+
+        <li class="logout-item">
+            <a href="#" id="logoutBtn">
+                <i class="fas fa-right-from-bracket"></i>
+                Logout
+            </a>
         </li>
 
     </ul>
 
 </aside>
+
+
+<!-- =========================================
+     SIDEBAR JAVASCRIPT
+========================================= -->
+
+<script>
+(function () {
+
+    const sidebar = document.getElementById("adminSidebar");
+
+    const menuToggle = document.getElementById("menuToggle");
+
+    if (!sidebar || !menuToggle) return;
+
+
+    // MOBILE SIDEBAR TOGGLE
+
+    menuToggle.addEventListener("click", function () {
+
+        sidebar.classList.toggle("open");
+
+    });
+
+
+    // ACTIVE PAGE HIGHLIGHT
+
+    const currentPage = window.location.pathname
+        .split("/")
+        .pop()
+        .toLowerCase();
+
+    const links = sidebar.querySelectorAll("a[href]");
+
+    links.forEach(function (link) {
+
+        const linkPage = link.getAttribute("href")
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+        if (
+            linkPage === currentPage &&
+            linkPage !== "#"
+        ) {
+
+            link.classList.add("active");
+
+        }
+
+    });
+
+
+    // CLOSE SIDEBAR AFTER MOBILE NAVIGATION
+
+    links.forEach(function (link) {
+
+        link.addEventListener("click", function () {
+
+            if (window.innerWidth <= 850) {
+
+                sidebar.classList.remove("open");
+
+            }
+
+        });
+
+    });
+
+
+    // CLOSE SIDEBAR WHEN CLICKING OUTSIDE
+
+    document.addEventListener("click", function (event) {
+
+        if (window.innerWidth > 850) return;
+
+        if (
+            !sidebar.contains(event.target) &&
+            !menuToggle.contains(event.target)
+        ) {
+
+            sidebar.classList.remove("open");
+
+        }
+
+    });
+
+})();
+</script>
+```

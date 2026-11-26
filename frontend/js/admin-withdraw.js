@@ -1,1371 +1,1447 @@
-// ======================================================
-// ADMIN WITHDRAWAL MANAGEMENT
-// ======================================================
+"use strict";
 
-const API_URL = "https://tesla-wealth.onrender.com/api";
+(() => {
 
+    // =====================================================
+    // CONFIGURATION
+    // =====================================================
 
-// ======================================================
-// TOKEN
-// ======================================================
+    const API_BASE =
+        window.BITCOIN_API_BASE ||
+        (
+            location.hostname === "localhost" ||
+            location.hostname === "127.0.0.1"
+                ? "http://localhost:5000/api"
+                : "https://tesla-wealth.onrender.com/api"
+        );
 
-const token =
-    localStorage.getItem("adminToken") ||
-    localStorage.getItem("ki_token") ||
-    localStorage.getItem("token");
+    const WITHDRAW_API = `${API_BASE}/withdrawals`;
 
-
-if (!token) {
-
-    alert("Please login first.");
-
-    window.location.href = "../auth.html";
-
-}
-
-
-// ======================================================
-// AUTH HEADERS
-// ======================================================
-
-const headers = {
-
-    Authorization: `Bearer ${token}`
-
-};
+    const TOKEN =
+        localStorage.getItem("adminToken") ||
+        localStorage.getItem("ki_token") ||
+        localStorage.getItem("token");
 
 
-// ======================================================
-// GLOBAL DATA
-// ======================================================
+    // =====================================================
+    // DOM ELEMENTS
+    // =====================================================
 
-let withdrawals = [];
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
+
+    const pendingCount = document.getElementById("pendingCount");
+    const approvedCount = document.getElementById("approvedCount");
+    const rejectedCount = document.getElementById("rejectedCount");
+    const totalCount = document.getElementById("totalCount");
+
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+
+    const withdrawalTableBody =
+        document.getElementById("withdrawalTableBody");
+
+    const resultCount = document.getElementById("resultCount");
+
+    const detailsModal = document.getElementById("detailsModal");
+    const modalContent = document.getElementById("modalContent");
+    const closeModalButton = document.getElementById("closeModal");
 
 
-// ======================================================
-// LOAD WITHDRAWALS
-// ======================================================
+    // =====================================================
+    // STATE
+    // =====================================================
 
-async function loadWithdrawals() {
+    let allWithdrawals = [];
+    let isLoading = false;
+    let processingActions = new Set();
 
-    try {
 
-        const response = await fetch(
-            `${API_URL}/withdrawals/admin/all`,
-            {
-                method: "GET",
-                headers
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
+
+    if (!TOKEN) {
+        window.location.href = "auth.html";
+        return;
+    }
+
+
+    // =====================================================
+    // API REQUEST
+    // =====================================================
+
+    async function apiRequest(url, options = {}) {
+
+        const response = await fetch(url, {
+
+            ...options,
+
+            headers: {
+
+                "Content-Type": "application/json",
+
+                "Authorization": `Bearer ${TOKEN}`,
+
+                ...options.headers
+
             }
-        );
 
+        });
 
-        const data = await response.json();
+        let data = {};
 
-
-        console.log(
-            "ADMIN WITHDRAW RESPONSE:",
-            data
-        );
-
+        try {
+            data = await response.json();
+        } catch {
+            data = {};
+        }
 
         if (!response.ok) {
 
-            throw new Error(
-                data.message ||
-                "Failed to load withdrawals"
+            const error = new Error(
+                data.message || "Request failed."
             );
 
-        }
+            error.status = response.status;
+            error.data = data;
 
-
-        // Support different backend response formats
-
-        if (Array.isArray(data)) {
-
-            withdrawals = data;
+            throw error;
 
         }
 
-        else if (Array.isArray(data.withdrawals)) {
+        return data;
 
-            withdrawals = data.withdrawals;
+    }
+
+
+    // =====================================================
+    // ESCAPE HTML
+    // =====================================================
+
+    function escapeHTML(value) {
+
+        return String(value ?? "").replace(
+            /[&<>"']/g,
+            character => ({
+
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+
+            })[character]
+        );
+
+    }
+
+
+    // =====================================================
+    // FORMAT CURRENCY
+    // =====================================================
+
+    function formatCurrency(amount) {
+
+        return "₹" + Number(amount || 0).toLocaleString(
+            "en-IN",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // FORMAT DATE
+    // =====================================================
+
+    function formatDate(date) {
+
+        if (!date) return "N/A";
+
+        const parsedDate = new Date(date);
+
+        if (Number.isNaN(parsedDate.getTime())) {
+            return "N/A";
+        }
+
+        return parsedDate.toLocaleString("en-IN", {
+
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+
+        });
+
+    }
+
+
+    // =====================================================
+    // NORMALIZE STATUS
+    // =====================================================
+
+    function normalizeStatus(status) {
+
+        const value = String(status || "Pending").toLowerCase();
+
+        if (value === "approved") return "Approved";
+        if (value === "rejected") return "Rejected";
+        if (value === "processing") return "Processing";
+        if (value === "completed") return "Completed";
+
+        return "Pending";
+
+    }
+
+
+    // =====================================================
+    // USER WITHDRAWAL PERMISSION
+    // =====================================================
+
+    function isWithdrawalEnabled(user) {
+
+        // Older user records without this field
+        // are treated as enabled.
+
+        return user?.withdrawalEnabled !== false;
+
+    }
+
+
+    // =====================================================
+    // NOTIFICATION
+    // =====================================================
+
+    function showNotification(message, type = "success") {
+
+        let notification =
+            document.getElementById("adminNotification");
+
+        if (!notification) {
+
+            notification = document.createElement("div");
+
+            notification.id = "adminNotification";
+
+            document.body.appendChild(notification);
 
         }
 
-        else if (Array.isArray(data.data)) {
+        notification.textContent = message;
 
-            withdrawals = data.data;
+        notification.className =
+            `admin-notification ${type}`;
 
+        Object.assign(notification.style, {
+
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: "5000",
+            maxWidth: "350px",
+            padding: "14px 18px",
+            borderRadius: "10px",
+            color: "#ffffff",
+
+            background:
+                type === "error"
+                    ? "#d94350"
+                    : "#128653",
+
+            boxShadow: "0 8px 25px rgba(0,0,0,.15)",
+            fontSize: "13px",
+            fontWeight: "600"
+
+        });
+
+        clearTimeout(notification.timer);
+
+        notification.timer = setTimeout(() => {
+            notification.remove();
+        }, 4000);
+
+    }
+
+
+    // =====================================================
+    // CLEAR AUTHENTICATION
+    // =====================================================
+
+    function clearAuthentication() {
+
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("ki_token");
+        localStorage.removeItem("token");
+
+        window.location.href = "auth.html";
+
+    }
+
+
+    // =====================================================
+    // LOAD WITHDRAWALS
+    // =====================================================
+
+    async function loadWithdrawals() {
+
+        if (isLoading) return;
+
+        isLoading = true;
+
+        if (refreshBtn) {
+            refreshBtn.disabled = true;
         }
 
-        else {
+        if (withdrawalTableBody) {
 
-            withdrawals = [];
-
-        }
-
-
-        console.log(
-            "Withdrawals:",
-            withdrawals
-        );
-
-
-        updateStatistics();
-
-        renderWithdrawals();
-
-
-    } catch (error) {
-
-        console.error(
-            "LOAD WITHDRAWALS ERROR:",
-            error
-        );
-
-        alert(
-            "Unable to load withdrawals."
-        );
-
-    }
-
-}
-
-
-// ======================================================
-// UPDATE STATISTICS
-// ======================================================
-
-function updateStatistics() {
-
-    const pending =
-        withdrawals.filter(
-            item =>
-                item.status === "Pending"
-        ).length;
-
-
-    const approved =
-        withdrawals.filter(
-            item =>
-                item.status === "Approved"
-        ).length;
-
-
-    const rejected =
-        withdrawals.filter(
-            item =>
-                item.status === "Rejected"
-        ).length;
-
-
-    const total =
-        withdrawals.length;
-
-
-    // IMPORTANT:
-    // These IDs match your HTML
-
-    const pendingElement =
-        document.getElementById(
-            "pendingCount"
-        );
-
-
-    const approvedElement =
-        document.getElementById(
-            "approvedCount"
-        );
-
-
-    const rejectedElement =
-        document.getElementById(
-            "rejectedCount"
-        );
-
-
-    const totalElement =
-        document.getElementById(
-            "totalCount"
-        );
-
-
-    if (pendingElement) {
-
-        pendingElement.textContent =
-            pending;
-
-    }
-
-
-    if (approvedElement) {
-
-        approvedElement.textContent =
-            approved;
-
-    }
-
-
-    if (rejectedElement) {
-
-        rejectedElement.textContent =
-            rejected;
-
-    }
-
-
-    if (totalElement) {
-
-        totalElement.textContent =
-            total;
-
-    }
-
-}
-
-// ======================================================
-// RENDER WITHDRAWALS
-// ======================================================
-
-function renderWithdrawals() {
-
-    const tbody = document.getElementById(
-        "withdrawalTableBody"
-    );
-
-    if (!tbody) {
-        console.error("withdrawalTableBody not found");
-        return;
-    }
-
-    tbody.innerHTML = "";
-
-
-    // ==================================================
-    // REQUEST COUNT
-    // ==================================================
-
-    const requestCount = document.getElementById(
-        "resultCount"
-    );
-
-    if (requestCount) {
-
-        requestCount.textContent =
-            `${withdrawals.length} requests`;
-
-    }
-
-
-    // ==================================================
-    // NO DATA
-    // ==================================================
-
-    if (!withdrawals || withdrawals.length === 0) {
-
-        tbody.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="8"
-                    style="
-                        text-align:center;
-                        padding:40px;
-                    "
-                >
-
-                    <i class="fa-solid fa-wallet"></i>
-
-                    <div style="margin-top:10px;">
-                        No withdrawal requests found.
-                    </div>
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    // ==================================================
-    // LOOP WITHDRAWALS
-    // ==================================================
-
-    withdrawals.forEach(
-        (withdrawal, index) => {
-
-            const user =
-                withdrawal.user || {};
-
-
-            const userName =
-                user.name ||
-                "Unknown User";
-
-
-            const phone =
-                user.phone ||
-                "-";
-
-
-            const amount =
-                Number(
-                    withdrawal.amount || 0
-                );
-
-
-            const method =
-                withdrawal.paymentMethod ||
-                "-";
-
-
-            const status =
-                withdrawal.status ||
-                "Pending";
-
-
-            // ==================================================
-            // PAYMENT DETAILS
-            // ==================================================
-
-            /*
-                New format:
-
-                withdrawal.paymentDetails = {
-                    upiId,
-                    accountHolder,
-                    bankName,
-                    accountNumber,
-                    ifscCode
-                }
-
-                Old format:
-
-                withdrawal.upiId
-                withdrawal.accountHolder
-                withdrawal.bankName
-                withdrawal.accountNumber
-                withdrawal.ifscCode
-            */
-
-            const details =
-                withdrawal.paymentDetails || {};
-
-
-            const upiId =
-                details.upiId ||
-                withdrawal.upiId ||
-                "";
-
-
-            const accountHolder =
-                details.accountHolder ||
-                withdrawal.accountHolder ||
-                "";
-
-
-            const bankName =
-                details.bankName ||
-                withdrawal.bankName ||
-                "";
-
-
-            const accountNumber =
-                details.accountNumber ||
-                withdrawal.accountNumber ||
-                "";
-
-
-            const ifscCode =
-                details.ifscCode ||
-                withdrawal.ifscCode ||
-                "";
-
-
-            let paymentDetailsHTML = "-";
-
-
-            // ==================================================
-            // UPI
-            // ==================================================
-
-            if (method === "UPI") {
-
-                paymentDetailsHTML = `
-
-                    <div class="payment-details">
-
-                        <div>
-                            <strong>UPI ID:</strong>
-                            ${escapeHTML(
-                                upiId || "-"
-                            )}
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            // ==================================================
-            // BANK
-            // ==================================================
-
-            if (method === "Bank") {
-
-                paymentDetailsHTML = `
-
-                    <div class="payment-details">
-
-                        <div>
-                            <strong>Holder:</strong>
-                            ${escapeHTML(
-                                accountHolder || "-"
-                            )}
-                        </div>
-
-                        <div>
-                            <strong>Bank:</strong>
-                            ${escapeHTML(
-                                bankName || "-"
-                            )}
-                        </div>
-
-                        <div>
-                            <strong>A/C:</strong>
-                            ${escapeHTML(
-                                accountNumber || "-"
-                            )}
-                        </div>
-
-                        <div>
-                            <strong>IFSC:</strong>
-                            ${escapeHTML(
-                                ifscCode || "-"
-                            )}
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            // ==================================================
-            // DATE
-            // ==================================================
-
-            const date =
-                withdrawal.createdAt
-                    ? formatDate(
-                        withdrawal.createdAt
-                    )
-                    : "-";
-
-
-            // ==================================================
-            // STATUS CLASS
-            // ==================================================
-
-            let statusClass = "pending";
-
-
-            if (status === "Approved") {
-
-                statusClass = "approved";
-
-            }
-            else if (status === "Rejected") {
-
-                statusClass = "rejected";
-
-            }
-
-
-            // ==================================================
-            // ACTION BUTTONS
-            // ==================================================
-
-            let actionHTML = `
-
-                <button
-                    class="view-btn"
-                    onclick="viewWithdrawal('${withdrawal._id}')"
-                    title="View Details"
-                >
-
-                    <i class="fa-solid fa-eye"></i>
-
-                </button>
-
-            `;
-
-
-            // ==================================================
-            // PENDING ACTIONS
-            // ==================================================
-
-            if (status === "Pending") {
-
-                actionHTML = `
-
-                    <button
-                        class="approve-btn"
-                        onclick="approveWithdrawal('${withdrawal._id}')"
-                        title="Approve"
-                    >
-
-                        <i class="fa-solid fa-check"></i>
-
-                    </button>
-
-
-                    <button
-                        class="reject-btn"
-                        onclick="rejectWithdrawal('${withdrawal._id}')"
-                        title="Reject"
-                    >
-
-                        <i class="fa-solid fa-xmark"></i>
-
-                    </button>
-
-
-                    <button
-                        class="view-btn"
-                        onclick="viewWithdrawal('${withdrawal._id}')"
-                        title="View Details"
-                    >
-
-                        <i class="fa-solid fa-eye"></i>
-
-                    </button>
-
-                `;
-
-            }
-
-
-            // ==================================================
-            // USER AVATAR
-            // ==================================================
-
-            const avatarLetter =
-                userName
-                    .charAt(0)
-                    .toUpperCase();
-
-
-            // ==================================================
-            // CREATE TABLE ROW
-            // ==================================================
-
-            tbody.innerHTML += `
+            withdrawalTableBody.innerHTML = `
 
                 <tr>
+                    <td colspan="8" class="loading">
 
-                    <!-- NUMBER -->
+                        <i class="fa-solid fa-spinner fa-spin"></i>
 
-                    <td>
-
-                        ${index + 1}
-
-                    </td>
-
-
-                    <!-- USER -->
-
-                    <td>
-
-                        <div class="user-cell">
-
-                            <div class="user-avatar">
-
-                                ${escapeHTML(
-                                    avatarLetter
-                                )}
-
-                            </div>
-
-
-                            <div>
-
-                                <strong>
-
-                                    ${escapeHTML(
-                                        userName
-                                    )}
-
-                                </strong>
-
-
-                                <small>
-
-                                    ${escapeHTML(
-                                        phone
-                                    )}
-
-                                </small>
-
-                            </div>
-
-                        </div>
+                        Loading withdrawal requests...
 
                     </td>
-
-
-                    <!-- AMOUNT -->
-
-                    <td>
-
-                        <strong class="amount">
-
-                            ₹${amount.toLocaleString(
-                                "en-IN"
-                            )}
-
-                        </strong>
-
-                    </td>
-
-
-                    <!-- METHOD -->
-
-                    <td>
-
-                        <span class="method">
-
-                            ${escapeHTML(
-                                method
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <!-- PAYMENT DETAILS -->
-
-                    <td>
-
-                        ${paymentDetailsHTML}
-
-                    </td>
-
-
-                    <!-- DATE -->
-
-                    <td>
-
-                        ${escapeHTML(
-                            date
-                        )}
-
-                    </td>
-
-
-                    <!-- STATUS -->
-
-                    <td>
-
-                        <span
-                            class="status ${statusClass}"
-                        >
-
-                            ${escapeHTML(
-                                status
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <!-- ACTION -->
-
-                    <td>
-
-                        <div class="action-buttons">
-
-                            ${actionHTML}
-
-                        </div>
-
-                    </td>
-
                 </tr>
 
             `;
 
         }
-    );
 
-}
-// ======================================================
-// APPROVE WITHDRAWAL
-// ======================================================
+        try {
 
-async function approveWithdrawal(id) {
+            const data = await apiRequest(
+                `${WITHDRAW_API}/admin/all`
+            );
 
-    if (
-        !confirm(
-            "Approve this withdrawal?"
-        )
-    ) {
+            allWithdrawals =
+                Array.isArray(data.withdrawals)
+                    ? data.withdrawals
+                    : [];
 
-        return;
+            updateStatistics();
 
-    }
+            applyFilters();
 
+        } catch (error) {
 
-    try {
+            console.error("LOAD WITHDRAWALS ERROR:", error);
 
-        const response = await fetch(
+            if (withdrawalTableBody) {
 
-            `${API_URL}/withdrawals/admin/approve/${id}`,
+                withdrawalTableBody.innerHTML = `
 
-            {
+                    <tr>
+                        <td colspan="8" class="empty-state">
 
-                method: "PATCH",
+                            Unable to load withdrawal requests.
 
-                headers
+                            <br><br>
+
+                            ${escapeHTML(error.message)}
+
+                        </td>
+                    </tr>
+
+                `;
 
             }
 
-        );
+            showNotification(error.message, "error");
 
-
-        const data =
-            await response.json();
-
-
-        console.log(
-            "APPROVE RESPONSE:",
-            data
-        );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Approval failed"
-            );
-
-        }
-
-
-        alert(
-            data.message ||
-            "Withdrawal approved successfully."
-        );
-
-
-        loadWithdrawals();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(error.message);
-
-    }
-
-}
-
-
-// ======================================================
-// REJECT WITHDRAWAL
-// ======================================================
-// ======================================================
-// REJECT WITHDRAWAL
-// ======================================================
-
-async function rejectWithdrawal(id) {
-
-    // ==================================================
-    // ASK FOR REJECTION REASON
-    // ==================================================
-
-    const rejectionReason = prompt(
-        "Enter the reason for rejecting this withdrawal:"
-    );
-
-
-    // ==================================================
-    // CANCELLED
-    // ==================================================
-
-    if (rejectionReason === null) {
-
-        return;
-
-    }
-
-
-    // ==================================================
-    // EMPTY REASON
-    // ==================================================
-
-    const reason = 
-        rejectionReason.trim();
-
-
-    if (!reason) {
-
-        alert(
-            "Please enter a rejection reason."
-        );
-
-        return;
-
-    }
-
-
-    // ==================================================
-    // CONFIRM REJECTION
-    // ==================================================
-
-    const confirmed = confirm(
-        `Reject this withdrawal?\n\nReason:\n${reason}`
-    );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    // ==================================================
-    // SEND REQUEST
-    // ==================================================
-
-    try {
-
-        const response = await fetch(
-
-            `${API_URL}/withdrawals/admin/reject/${id}`,
-
-            {
-
-                method: "PATCH",
-
-                headers: {
-
-                    ...headers,
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body: JSON.stringify({
-
-                    rejectionReason:
-                        reason
-
-                })
-
+            if (error.status === 401) {
+                clearAuthentication();
             }
 
-        );
+        } finally {
 
+            isLoading = false;
 
-        const data =
-            await response.json();
-
-
-        console.log(
-            "REJECT RESPONSE:",
-            data
-        );
-
-
-        // ==================================================
-        // SERVER ERROR
-        // ==================================================
-
-        if (!response.ok) {
-
-            throw new Error(
-
-                data.message ||
-                "Rejection failed"
-
-            );
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+            }
 
         }
 
-
-        // ==================================================
-        // SUCCESS
-        // ==================================================
-
-        alert(
-
-            data.message ||
-            "Withdrawal rejected successfully."
-
-        );
-
-
-        // ==================================================
-        // REFRESH WITHDRAWALS
-        // ==================================================
-
-        await loadWithdrawals();
-
-
-    } catch (error) {
-
-        console.error(
-            "REJECT WITHDRAWAL ERROR:",
-            error
-        );
-
-
-        alert(
-            error.message ||
-            "Unable to reject withdrawal."
-        );
-
     }
 
-}
 
-// ======================================================
-// VIEW WITHDRAWAL
-// ======================================================
-// ======================================================
-// VIEW WITHDRAWAL
-// ======================================================
+    // =====================================================
+    // UPDATE STATISTICS
+    // =====================================================
 
-function viewWithdrawal(id) {
+    function updateStatistics() {
 
-    const withdrawal =
-        withdrawals.find(
-            item =>
-                item._id === id
-        );
+        const pending = allWithdrawals.filter(
+            item => normalizeStatus(item.status) === "Pending"
+        ).length;
 
+        const approved = allWithdrawals.filter(
+            item => normalizeStatus(item.status) === "Approved"
+        ).length;
 
-    if (!withdrawal) {
+        const rejected = allWithdrawals.filter(
+            item => normalizeStatus(item.status) === "Rejected"
+        ).length;
 
-        console.error(
-            "Withdrawal not found:",
-            id
-        );
+        if (pendingCount) {
+            pendingCount.textContent = pending;
+        }
 
-        return;
+        if (approvedCount) {
+            approvedCount.textContent = approved;
+        }
+
+        if (rejectedCount) {
+            rejectedCount.textContent = rejected;
+        }
+
+        if (totalCount) {
+            totalCount.textContent = allWithdrawals.length;
+        }
 
     }
 
 
-    // ==================================================
-    // USER
-    // ==================================================
+    // =====================================================
+    // GET PAYMENT DETAILS
+    // =====================================================
 
-    const user =
-        withdrawal.user || {};
+    function getPaymentDetails(withdrawal) {
 
+        const details = withdrawal.paymentDetails || {};
 
-    // ==================================================
-    // PAYMENT DETAILS
-    // ==================================================
+        return {
 
-    const paymentDetails =
-        withdrawal.paymentDetails || {};
+            upiId:
+                details.upiId ||
+                withdrawal.upiId ||
+                "",
 
+            accountHolder:
+                details.accountHolder ||
+                withdrawal.accountHolder ||
+                "",
 
-    const upiId =
-        paymentDetails.upiId ||
-        withdrawal.upiId ||
-        "";
+            bankName:
+                details.bankName ||
+                withdrawal.bankName ||
+                "",
 
+            accountNumber:
+                details.accountNumber ||
+                withdrawal.accountNumber ||
+                "",
 
-    const accountHolder =
-        paymentDetails.accountHolder ||
-        withdrawal.accountHolder ||
-        "";
+            ifscCode:
+                details.ifscCode ||
+                details.ifsc ||
+                withdrawal.ifscCode ||
+                ""
 
-
-    const bankName =
-        paymentDetails.bankName ||
-        withdrawal.bankName ||
-        "";
-
-
-    const accountNumber =
-        paymentDetails.accountNumber ||
-        withdrawal.accountNumber ||
-        "";
-
-
-    const ifscCode =
-        paymentDetails.ifscCode ||
-        withdrawal.ifscCode ||
-        "";
-
-
-    // ==================================================
-    // MODAL CONTENT
-    // ==================================================
-
-    const content =
-        document.getElementById(
-            "modalContent"
-        );
-
-
-    if (!content) {
-
-        console.error(
-            "modalContent not found"
-        );
-
-        return;
+        };
 
     }
 
 
-    // ==================================================
-    // PAYMENT INFORMATION
-    // ==================================================
+    // =====================================================
+    // GET USER DETAILS
+    // =====================================================
 
-    let paymentHTML = "";
+    function getUserDetails(withdrawal) {
+
+        const user = withdrawal.user || {};
+
+        return {
+
+            name:
+                user.name ||
+                withdrawal.userName ||
+                "Unknown User",
+
+            phone:
+                user.phone ||
+                withdrawal.phone ||
+                "N/A",
+
+            id:
+                user._id ||
+                withdrawal.userId ||
+                "",
+
+            withdrawalEnabled:
+                isWithdrawalEnabled(user),
+
+            disabledReason:
+                user.withdrawalDisabledReason || "",
+
+            disabledAlert:
+                user.withdrawalDisabledAlert || "",
+
+            disabledAt:
+                user.withdrawalDisabledAt || null
+
+        };
+
+    }
 
 
-    if (
-        withdrawal.paymentMethod === "UPI"
-    ) {
+    // =====================================================
+    // PAYMENT DISPLAY
+    // =====================================================
 
-        paymentHTML = `
+    function paymentDisplay(withdrawal) {
 
-            <div class="detail-row">
+        const details = getPaymentDetails(withdrawal);
+
+        if (withdrawal.paymentMethod === "UPI") {
+
+            return `
 
                 <strong>UPI ID:</strong>
 
-                <span>
-                    ${escapeHTML(
-                        upiId || "-"
-                    )}
-                </span>
+                ${escapeHTML(details.upiId || "N/A")}
 
-            </div>
+            `;
 
-        `;
+        }
 
-    }
+        return `
 
+            <strong>Account:</strong>
 
-    if (
-        withdrawal.paymentMethod === "Bank"
-    ) {
-
-        paymentHTML = `
-
-            <div class="detail-row">
-
-                <strong>Account Holder:</strong>
-
-                <span>
-                    ${escapeHTML(
-                        accountHolder || "-"
-                    )}
-                </span>
-
-            </div>
-
-
-            <div class="detail-row">
-
-                <strong>Bank:</strong>
-
-                <span>
-                    ${escapeHTML(
-                        bankName || "-"
-                    )}
-                </span>
-
-            </div>
-
-
-            <div class="detail-row">
-
-                <strong>Account Number:</strong>
-
-                <span>
-                    ${escapeHTML(
-                        accountNumber || "-"
-                    )}
-                </span>
-
-            </div>
-
-
-            <div class="detail-row">
-
-                <strong>IFSC:</strong>
-
-                <span>
-                    ${escapeHTML(
-                        ifscCode || "-"
-                    )}
-                </span>
-
-            </div>
+            ${escapeHTML(details.accountNumber || "N/A")}
 
         `;
 
     }
 
 
-    // ==================================================
-    // MODAL
-    // ==================================================
+    // =====================================================
+    // USER PERMISSION BUTTON
+    // =====================================================
 
-    content.innerHTML = `
+    function permissionButton(user, withdrawal) {
 
-        <div class="detail-row">
+        if (!user.id) {
+            return "";
+        }
 
-            <strong>User:</strong>
+        if (user.withdrawalEnabled) {
 
-            <span>
-                ${escapeHTML(
-                    user.name || "-"
-                )}
-            </span>
+            return `
 
-        </div>
+                <button
+                    type="button"
+                    class="reject-btn"
+                    data-action="disable-user"
+                    data-user-id="${escapeHTML(user.id)}"
+                    title="Disable user withdrawals"
+                >
 
+                    <i class="fa-solid fa-lock"></i>
 
-        <div class="detail-row">
+                </button>
 
-            <strong>Phone:</strong>
+            `;
 
-            <span>
-                ${escapeHTML(
-                    user.phone || "-"
-                )}
-            </span>
+        }
 
-        </div>
+        return `
 
+            <button
+                type="button"
+                class="approve-btn"
+                data-action="enable-user"
+                data-user-id="${escapeHTML(user.id)}"
+                title="Enable user withdrawals"
+            >
 
-        <div class="detail-row">
+                <i class="fa-solid fa-lock-open"></i>
 
-            <strong>Amount:</strong>
+            </button>
 
-            <span>
-                ₹${Number(
-                    withdrawal.amount || 0
-                ).toLocaleString("en-IN")}
-            </span>
-
-        </div>
-
-
-        <div class="detail-row">
-
-            <strong>Method:</strong>
-
-            <span>
-                ${escapeHTML(
-                    withdrawal.paymentMethod || "-"
-                )}
-            </span>
-
-        </div>
-
-
-        ${paymentHTML}
-
-
-        <div class="detail-row">
-
-            <strong>Status:</strong>
-
-            <span>
-                ${escapeHTML(
-                    withdrawal.status || "-"
-                )}
-            </span>
-
-        </div>
-
-
-        <div class="detail-row">
-
-            <strong>Remark:</strong>
-
-            <span>
-                ${escapeHTML(
-                    withdrawal.remark || "-"
-                )}
-            </span>
-
-        </div>
-
-
-        <div class="detail-row">
-
-            <strong>Created:</strong>
-
-            <span>
-                ${withdrawal.createdAt
-                    ? escapeHTML(
-                        formatDate(
-                            withdrawal.createdAt
-                        )
-                    )
-                    : "-"
-                }
-            </span>
-
-        </div>
-
-    `;
-
-
-    // ==================================================
-    // OPEN MODAL
-    // ==================================================
-
-    const modal =
-        document.getElementById(
-            "detailsModal"
-        );
-
-
-    if (modal) {
-
-        modal.style.display =
-            "flex";
+        `;
 
     }
 
-}
 
-// ======================================================
-// CLOSE MODAL
-// ======================================================
+    // =====================================================
+    // RENDER TABLE
+    // =====================================================
 
-function closeModal() {
+    function renderTable(withdrawals) {
 
-    const modal =
-        document.getElementById(
-            "detailsModal"
-        );
+        if (!withdrawalTableBody) return;
 
+        if (!withdrawals.length) {
 
-    if (modal) {
+            withdrawalTableBody.innerHTML = `
 
-        modal.style.display =
-            "none";
+                <tr>
+                    <td colspan="8" class="empty-state">
+
+                        <i class="fa-solid fa-folder-open"></i>
+
+                        <h3>No withdrawal requests found</h3>
+
+                        <p>There are no matching records.</p>
+
+                    </td>
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+        withdrawalTableBody.innerHTML =
+            withdrawals.map((withdrawal, index) => {
+
+                const status = normalizeStatus(withdrawal.status);
+
+                const user = getUserDetails(withdrawal);
+
+                const badgeClass = status.toLowerCase();
+
+                const payment = paymentDisplay(withdrawal);
+
+                const permissionStatus = user.withdrawalEnabled
+                    ? `<span class="status-badge status-approved">Enabled</span>`
+                    : `<span class="status-badge status-rejected">Disabled</span>`;
+
+                const actions = `
+
+                    <div class="action-buttons">
+
+                        ${
+                            status === "Pending"
+                                ? `
+
+                                    <button
+                                        type="button"
+                                        class="approve-btn"
+                                        data-action="approve"
+                                        data-id="${escapeHTML(withdrawal._id)}"
+                                        title="Approve withdrawal"
+                                    >
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="reject-btn"
+                                        data-action="reject"
+                                        data-id="${escapeHTML(withdrawal._id)}"
+                                        title="Reject withdrawal"
+                                    >
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+
+                                `
+                                : ""
+                        }
+
+                        <button
+                            type="button"
+                            class="view-btn"
+                            data-action="view"
+                            data-id="${escapeHTML(withdrawal._id)}"
+                            title="View details"
+                        >
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+
+                        ${permissionButton(user, withdrawal)}
+
+                    </div>
+
+                `;
+
+                return `
+
+                    <tr>
+
+                        <td>${index + 1}</td>
+
+                        <td>
+
+                            <strong class="user-name">
+                                ${escapeHTML(user.name)}
+                            </strong>
+
+                            <div class="user-phone">
+                                ${escapeHTML(user.phone)}
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            <strong class="amount">
+                                ${formatCurrency(withdrawal.amount)}
+                            </strong>
+
+                        </td>
+
+                        <td>
+                            ${escapeHTML(withdrawal.paymentMethod || "N/A")}
+                        </td>
+
+                        <td>${payment}</td>
+
+                        <td>${formatDate(withdrawal.createdAt)}</td>
+
+                        <td>
+
+                            <span class="status-badge status-${badgeClass}">
+                                ${status}
+                            </span>
+
+                            <div style="margin-top:6px;">
+                                ${permissionStatus}
+                            </div>
+
+                        </td>
+
+                        <td>${actions}</td>
+
+                    </tr>
+
+                `;
+
+            }).join("");
 
     }
 
-}
+
+    // =====================================================
+    // SEARCH AND FILTER
+    // =====================================================
+
+    function applyFilters() {
+
+        const search =
+            String(searchInput?.value || "")
+                .trim()
+                .toLowerCase();
+
+        const selectedStatus =
+            statusFilter?.value || "All";
+
+        const filtered = allWithdrawals.filter(withdrawal => {
+
+            const user = getUserDetails(withdrawal);
+
+            const searchableText = [
+
+                user.name,
+                user.phone,
+                withdrawal._id,
+                withdrawal.paymentMethod,
+                withdrawal.status
+
+            ].join(" ").toLowerCase();
+
+            const matchesSearch =
+                !search || searchableText.includes(search);
+
+            const matchesStatus =
+                selectedStatus === "All" ||
+                normalizeStatus(withdrawal.status) === selectedStatus;
+
+            return matchesSearch && matchesStatus;
+
+        });
+
+        renderTable(filtered);
+
+        if (resultCount) {
+            resultCount.textContent = `${filtered.length} requests`;
+        }
+
+    }
 
 
-// ======================================================
-// DATE FORMAT
-// ======================================================
+    searchInput?.addEventListener("input", applyFilters);
 
-function formatDate(date) {
+    statusFilter?.addEventListener("change", applyFilters);
 
-    return new Date(date)
-        .toLocaleString(
-            "en-IN",
-            {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit"
-            }
+
+    // =====================================================
+    // FIND WITHDRAWAL
+    // =====================================================
+
+    function findWithdrawal(id) {
+
+        return allWithdrawals.find(
+            withdrawal => String(withdrawal._id) === String(id)
         );
 
-}
+    }
 
 
-// ======================================================
-// HTML ESCAPE
-// ======================================================
+    // =====================================================
+    // VIEW WITHDRAWAL
+    // =====================================================
 
-function escapeHTML(value) {
+    function viewWithdrawal(id) {
 
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        const withdrawal = findWithdrawal(id);
 
-}
+        if (!withdrawal) {
+
+            showNotification("Withdrawal not found.", "error");
+            return;
+
+        }
+
+        const user = getUserDetails(withdrawal);
+
+        const details = getPaymentDetails(withdrawal);
+
+        const status = normalizeStatus(withdrawal.status);
+
+        const paymentInformation =
+            withdrawal.paymentMethod === "UPI"
+
+                ? [
+                    ["UPI ID", details.upiId]
+                ]
+
+                : [
+                    ["Account Holder", details.accountHolder],
+                    ["Bank Name", details.bankName],
+                    ["Account Number", details.accountNumber],
+                    ["IFSC Code", details.ifscCode]
+                ];
+
+        const rows = [
+
+            ["Withdrawal ID", withdrawal._id],
+            ["User", user.name],
+            ["Phone", user.phone],
+            ["Amount", formatCurrency(withdrawal.amount)],
+            ["Payment Method", withdrawal.paymentMethod],
+            ...paymentInformation,
+            ["Withdrawal Status", status],
+
+            [
+                "Withdrawal Permission",
+                user.withdrawalEnabled ? "Enabled" : "Disabled"
+            ],
+
+            ["Created", formatDate(withdrawal.createdAt)],
+            ["Processed", formatDate(withdrawal.processedAt)]
+
+        ];
+
+        modalContent.innerHTML = rows.map(([label, value]) => `
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    ${escapeHTML(label)}
+                </span>
+
+                <span class="detail-value">
+                    ${escapeHTML(value || "N/A")}
+                </span>
+
+            </div>
+
+        `).join("");
 
 
-// ======================================================
-// REFRESH BUTTON
-// ======================================================
+        // =================================================
+        // REJECTION INFORMATION
+        // =================================================
 
-const refreshBtn =
-    document.getElementById(
-        "refreshBtn"
-    );
+        if (status === "Rejected") {
+
+            modalContent.innerHTML += `
+
+                <div class="rejection-reason">
+
+                    <h4>Withdrawal Rejection Reason</h4>
+
+                    <p>
+                        ${escapeHTML(
+                            withdrawal.rejectionReason ||
+                            withdrawal.remark ||
+                            "No rejection reason provided."
+                        )}
+                    </p>
+
+                    <h4 style="margin-top:15px;">
+                        User Alert Message
+                    </h4>
+
+                    <p>
+                        ${escapeHTML(
+                            withdrawal.rejectionAlert ||
+                            "No separate alert message provided."
+                        )}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
 
 
-if (refreshBtn) {
+        // =================================================
+        // DISABLED PERMISSION INFORMATION
+        // =================================================
 
-    refreshBtn.addEventListener(
-        "click",
-        loadWithdrawals
-    );
+        if (!user.withdrawalEnabled) {
 
-}
+            modalContent.innerHTML += `
+
+                <div class="rejection-reason">
+
+                    <h4>Withdrawal Restriction</h4>
+
+                    <p>
+                        ${escapeHTML(
+                            user.disabledReason || "No restriction reason provided."
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Disabled At:</strong>
+                        ${escapeHTML(formatDate(user.disabledAt))}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+        detailsModal.style.display = "flex";
+        detailsModal.classList.add("show");
+
+        document.body.style.overflow = "hidden";
+
+    }
 
 
-// ======================================================
-// CLOSE MODAL WHEN CLICKING OUTSIDE
-// ======================================================
+    // =====================================================
+    // CLOSE MODAL
+    // =====================================================
 
-window.addEventListener(
-    "click",
-    function (event) {
+    function closeModal() {
 
-        const modal =
-            document.getElementById(
-                "detailsModal"
+        if (!detailsModal) return;
+
+        detailsModal.style.display = "none";
+        detailsModal.classList.remove("show");
+
+        document.body.style.overflow = "";
+
+    }
+
+    window.closeModal = closeModal;
+
+    closeModalButton?.addEventListener("click", closeModal);
+
+    detailsModal?.addEventListener("click", event => {
+
+        if (event.target === detailsModal) {
+            closeModal();
+        }
+
+    });
+
+    document.addEventListener("keydown", event => {
+
+        if (event.key === "Escape") {
+            closeModal();
+        }
+
+    });
+
+
+    // =====================================================
+    // APPROVE WITHDRAWAL
+    // =====================================================
+
+    async function approveWithdrawal(id) {
+
+        const withdrawal = findWithdrawal(id);
+
+        if (!withdrawal) return;
+
+        if (normalizeStatus(withdrawal.status) !== "Pending") {
+
+            showNotification(
+                "This withdrawal has already been processed.",
+                "error"
             );
 
+            return;
 
-        if (
-            modal &&
-            event.target === modal
-        ) {
+        }
 
-            modal.style.display =
-                "none";
+        const confirmed = window.confirm(
+            `Approve withdrawal of ${formatCurrency(withdrawal.amount)}?`
+        );
+
+        if (!confirmed) return;
+
+        try {
+
+            const data = await apiRequest(
+
+                `${WITHDRAW_API}/admin/approve/${encodeURIComponent(id)}`,
+
+                {
+
+                    method: "PATCH",
+
+                    body: JSON.stringify({
+
+                        remark: "Withdrawal approved by admin."
+
+                    })
+
+                }
+
+            );
+
+            showNotification(
+                data.message || "Withdrawal approved successfully."
+            );
+
+            await loadWithdrawals();
+
+        } catch (error) {
+
+            console.error("APPROVE WITHDRAWAL ERROR:", error);
+
+            showNotification(error.message, "error");
+
+            if (error.status === 401) {
+                clearAuthentication();
+            }
 
         }
 
     }
-);
 
 
-// ======================================================
-// INITIAL LOAD
-// ======================================================
+    // =====================================================
+    // REJECT WITHDRAWAL
+    // =====================================================
 
-loadWithdrawals();
+    async function rejectWithdrawal(id) {
+
+        const withdrawal = findWithdrawal(id);
+
+        if (!withdrawal) return;
+
+        if (normalizeStatus(withdrawal.status) !== "Pending") {
+
+            showNotification(
+                "This withdrawal has already been processed.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        // =================================================
+        // ADMIN ENTERS REJECTION REASON
+        // =================================================
+
+        const rejectionReason = window.prompt(
+
+            "Enter the withdrawal rejection reason:\n\n" +
+            "Example: The submitted bank account details are incorrect."
+
+        );
+
+        if (rejectionReason === null) return;
+
+        const reason = rejectionReason.trim();
+
+        if (!reason) {
+
+            showNotification(
+                "Withdrawal rejection reason is required.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        if (reason.length > 500) {
+
+            showNotification(
+                "Rejection reason cannot exceed 500 characters.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        // =================================================
+        // ADMIN ENTERS SEPARATE ALERT MESSAGE
+        // =================================================
+
+        const rejectionAlert = window.prompt(
+
+            "Enter a separate alert message for the user:\n\n" +
+            "Example: Your withdrawal facility has been temporarily disabled. Please contact customer support."
+
+        );
+
+        if (rejectionAlert === null) return;
+
+        const alertMessage = rejectionAlert.trim();
+
+        if (!alertMessage) {
+
+            showNotification(
+                "A separate user alert message is required.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        if (alertMessage.length > 1000) {
+
+            showNotification(
+                "Alert message cannot exceed 1000 characters.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        // =================================================
+        // CONFIRM
+        // =================================================
+
+        const confirmed = window.confirm(
+
+            "Reject this withdrawal?\n\n" +
+            "The withdrawal amount will be refunded to the user's wallet.\n" +
+            "The user's future withdrawal permission will also be disabled."
+
+        );
+
+        if (!confirmed) return;
+
+
+        try {
+
+            const data = await apiRequest(
+
+                `${WITHDRAW_API}/admin/reject/${encodeURIComponent(id)}`,
+
+                {
+
+                    method: "PATCH",
+
+                    body: JSON.stringify({
+
+                        rejectionReason: reason,
+
+                        rejectionAlert: alertMessage
+
+                    })
+
+                }
+
+            );
+
+            showNotification(
+                data.message || "Withdrawal rejected successfully."
+            );
+
+            await loadWithdrawals();
+
+        } catch (error) {
+
+            console.error("REJECT WITHDRAWAL ERROR:", error);
+
+            showNotification(error.message, "error");
+
+            if (error.status === 401) {
+                clearAuthentication();
+            }
+
+        }
+
+    }
+
+
+    // =====================================================
+    // ENABLE USER WITHDRAWALS
+    // =====================================================
+
+    async function enableUserWithdrawal(userId) {
+
+        if (!userId) return;
+
+        const confirmed = window.confirm(
+
+            "Enable withdrawal permission for this user?\n\n" +
+            "The user will be able to submit withdrawal requests again."
+
+        );
+
+        if (!confirmed) return;
+
+        try {
+
+            const data = await apiRequest(
+
+                `${WITHDRAW_API}/admin/users/${encodeURIComponent(userId)}/enable`,
+
+                {
+
+                    method: "PATCH",
+
+                    body: JSON.stringify({})
+
+                }
+
+            );
+
+            showNotification(
+                data.message || "User withdrawal permission enabled."
+            );
+
+            await loadWithdrawals();
+
+        } catch (error) {
+
+            console.error("ENABLE WITHDRAWAL ERROR:", error);
+
+            showNotification(error.message, "error");
+
+            if (error.status === 401) {
+                clearAuthentication();
+            }
+
+        }
+
+    }
+
+
+    // =====================================================
+    // DISABLE USER WITHDRAWALS
+    // =====================================================
+
+    async function disableUserWithdrawal(userId) {
+
+        if (!userId) return;
+
+        const enteredReason = window.prompt(
+
+            "Enter the reason for disabling this user's withdrawal permission:"
+
+        );
+
+        if (enteredReason === null) return;
+
+        const reason = enteredReason.trim();
+
+        if (!reason) {
+
+            showNotification(
+                "Please enter a withdrawal restriction reason.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        if (reason.length > 500) {
+
+            showNotification(
+                "Restriction reason cannot exceed 500 characters.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const confirmed = window.confirm(
+
+            "Disable withdrawal permission for this user?"
+
+        );
+
+        if (!confirmed) return;
+
+        try {
+
+            const data = await apiRequest(
+
+                `${WITHDRAW_API}/admin/users/${encodeURIComponent(userId)}/disable`,
+
+                {
+
+                    method: "PATCH",
+
+                    body: JSON.stringify({
+
+                        reason: reason
+
+                    })
+
+                }
+
+            );
+
+            showNotification(
+                data.message || "User withdrawal permission disabled."
+            );
+
+            await loadWithdrawals();
+
+        } catch (error) {
+
+            console.error("DISABLE WITHDRAWAL ERROR:", error);
+
+            showNotification(error.message, "error");
+
+            if (error.status === 401) {
+                clearAuthentication();
+            }
+
+        }
+
+    }
+
+
+    // =====================================================
+    // TABLE ACTION HANDLER
+    // =====================================================
+
+    withdrawalTableBody?.addEventListener("click", event => {
+
+        const button = event.target.closest("button[data-action]");
+
+        if (!button) return;
+
+        const action = button.dataset.action;
+
+        const id = button.dataset.id;
+
+        const userId = button.dataset.userId;
+
+
+        if (action === "view" && id) {
+            viewWithdrawal(id);
+            return;
+        }
+
+        if (action === "approve" && id) {
+            approveWithdrawal(id);
+            return;
+        }
+
+        if (action === "reject" && id) {
+            rejectWithdrawal(id);
+            return;
+        }
+
+        if (action === "enable-user" && userId) {
+            enableUserWithdrawal(userId);
+            return;
+        }
+
+        if (action === "disable-user" && userId) {
+            disableUserWithdrawal(userId);
+            return;
+        }
+
+    });
+
+
+    // =====================================================
+    // REFRESH
+    // =====================================================
+
+    refreshBtn?.addEventListener("click", loadWithdrawals);
+
+
+    // =====================================================
+    // MOBILE SIDEBAR
+    // =====================================================
+
+    menuBtn?.addEventListener("click", () => {
+
+        sidebar?.classList.toggle("active");
+
+    });
+
+    document.addEventListener("click", event => {
+
+        if (
+
+            window.innerWidth <= 900 &&
+            sidebar?.classList.contains("active") &&
+            !sidebar.contains(event.target) &&
+            !menuBtn?.contains(event.target)
+
+        ) {
+
+            sidebar.classList.remove("active");
+
+        }
+
+    });
+
+
+    // =====================================================
+    // LOGOUT
+    // =====================================================
+
+    logoutBtn?.addEventListener("click", () => {
+
+        const confirmed = window.confirm(
+            "Are you sure you want to logout?"
+        );
+
+        if (confirmed) {
+            clearAuthentication();
+        }
+
+    });
+
+
+    // =====================================================
+    // INITIALIZE
+    // =====================================================
+
+    loadWithdrawals();
+
+})(); 

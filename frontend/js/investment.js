@@ -131,11 +131,10 @@ function numeric(value, fallback = 0) {
         : fallback;
 }
 
-
 function formatMoney(value) {
-    return new Intl.NumberFormat("en-IN", {
+    return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "INR",
+        currency: "USD",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(numeric(value));
